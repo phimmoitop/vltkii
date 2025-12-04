@@ -1,90 +1,106 @@
-// --- 1. SERVICE WORKER (BẮT BUỘC ĐỂ CÀI APP) ---
+// --- 1. CONFIG & VARIABLES ---
+const popupAndroid = document.getElementById('popup-android');
+const btnInstall = document.getElementById('btn-install');
+const btnFullscreen = document.getElementById('btn-fullscreen');
+const btnClose = document.getElementById('btn-close');
+const gameContainer = document.getElementById('game-container');
+const statusText = document.getElementById('status-text');
+
+let deferredPrompt; // Biến lưu sự kiện cài đặt
+
+// Kiểm tra môi trường
+const ua = navigator.userAgent;
+const isAndroid = /Android/i.test(ua);
+const isIOS = /iPhone|iPad|iPod/i.test(ua);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+// --- 2. SERVICE WORKER ---
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(() => console.log('SW Ready'))
-            .catch(err => console.error('SW Fail', err));
-    });
+    navigator.serviceWorker.register('./sw.js');
 }
 
-// --- 2. XỬ LÝ NÚT CÀI ĐẶT (ANDROID) ---
-let deferredPrompt;
-const installBtn = document.getElementById('install-btn');
+// --- 3. LOGIC HIỂN THỊ POPUP (CHỈ ANDROID BROWSER) ---
+window.addEventListener('load', () => {
+    // Nếu là Android VÀ KHÔNG PHẢI App đã cài
+    if (isAndroid && !isStandalone) {
+        popupAndroid.style.display = 'flex';
+    } else {
+        // iOS hoặc PC hoặc App đã cài -> Vào thẳng game
+        statusText.innerText = "Sẵn sàng chiến đấu";
+    }
+    
+    checkOrientation(); // Chạy layout lần đầu
+    
+    // Hack cuộn trang cho iOS/Android để giấu thanh địa chỉ (nếu có)
+    setTimeout(() => window.scrollTo(0, 1), 100);
+});
 
+// --- 4. XỬ LÝ CÁC NÚT BẤM ---
+
+// Nút Đóng Popup
+btnClose.addEventListener('click', () => {
+    popupAndroid.style.display = 'none';
+});
+
+// Nút Fullscreen (Quan trọng để ẩn thanh bottom Android)
+btnFullscreen.addEventListener('click', () => {
+    const doc = document.documentElement;
+    
+    // Gọi API Fullscreen chuẩn
+    const request = doc.requestFullscreen || doc.webkitRequestFullscreen || doc.msRequestFullscreen;
+    
+    if (request) {
+        request.call(doc).then(() => {
+            // Sau khi full, thử khóa xoay màn hình (chỉ Android hỗ trợ)
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(e => console.log('Lock fail:', e));
+            }
+        }).catch(err => console.log('Fullscreen Error:', err));
+    }
+    
+    popupAndroid.style.display = 'none';
+});
+
+// Nút Cài đặt App
+// Lắng nghe sự kiện cài đặt từ Chrome Android
 window.addEventListener('beforeinstallprompt', (e) => {
-    // Ngăn Chrome hiển thị popup mặc định xấu xí
     e.preventDefault();
     deferredPrompt = e;
     
-    // Hiện nút cài đặt tùy chỉnh của ta
-    installBtn.style.display = 'block';
+    // Khi bắt được sự kiện, mới HIỆN nút cài đặt lên
+    btnInstall.style.display = 'block';
 });
 
-installBtn.addEventListener('click', async () => {
+btnInstall.addEventListener('click', () => {
     if (deferredPrompt) {
         deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-            installBtn.style.display = 'none';
-        }
-        deferredPrompt = null;
+        deferredPrompt.userChoice.then((choice) => {
+            if (choice.outcome === 'accepted') {
+                // Người dùng đồng ý cài -> Ẩn popup luôn
+                popupAndroid.style.display = 'none';
+            }
+            deferredPrompt = null;
+        });
     }
 });
 
-// --- 3. LOGIC XOAY & FULLSCREEN ---
-const container = document.getElementById('game-container');
-const androidOverlay = document.getElementById('android-overlay');
-const modeDebug = document.getElementById('mode-debug');
-
+// --- 5. LOGIC XOAY MÀN HÌNH (Layout Engine) ---
 function checkOrientation() {
     const w = window.innerWidth;
     const h = window.innerHeight;
 
+    // Logic: Nếu chiều rộng nhỏ hơn chiều cao (Cầm dọc)
     if (w < h) {
-        // ĐANG CẦM DỌC -> Kích hoạt chế độ xoay CSS
-        container.classList.remove('mode-landscape');
-        container.classList.add('mode-portrait');
-        modeDebug.innerText = "Giả lập Ngang (Tràn viền)";
+        gameContainer.classList.add('force-landscape');
+        statusText.innerText = "Chế độ xoay ngang";
     } else {
-        // ĐANG CẦM NGANG -> Bình thường
-        container.classList.remove('mode-portrait');
-        container.classList.add('mode-landscape');
-        modeDebug.innerText = "Ngang Gốc";
+        gameContainer.classList.remove('force-landscape');
+        statusText.innerText = "Chế độ gốc";
     }
 }
 
-// --- 4. HỖ TRỢ ANDROID BROWSER (CHƯA CÀI APP) ---
-// Android Browser cần người dùng chạm để ẩn thanh điều hướng dưới
-const isAndroid = /Android/i.test(navigator.userAgent);
-const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-
-if (isAndroid && !isStandalone) {
-    // Nếu là Android và đang chạy trên trình duyệt (chưa cài app)
-    // Hiện overlay nhắc người dùng chạm vào để full màn hình
-    androidOverlay.style.display = 'flex';
-    
-    androidOverlay.addEventListener('click', () => {
-        // Thử kích hoạt Fullscreen API
-        const doc = document.documentElement;
-        if (doc.requestFullscreen) doc.requestFullscreen();
-        
-        // Ẩn overlay
-        androidOverlay.style.display = 'none';
-        
-        // Khóa xoay ngang nếu có thể
-        if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock('landscape').catch(() => {});
-        }
-    });
-}
-
-// --- SỰ KIỆN ---
+// Lắng nghe thay đổi kích thước/xoay
 window.addEventListener('resize', checkOrientation);
-window.addEventListener('load', () => {
-    checkOrientation();
-    // Fix cuộn trang iOS
-    setTimeout(() => window.scrollTo(0, 1), 100);
-});
 
-// Chặn kéo bậy bạ
+// Chặn kéo lung tung
 document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
