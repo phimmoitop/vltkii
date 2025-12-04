@@ -2,31 +2,43 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- QUAN TRỌNG: viewport-fit=cover giúp tràn viền tai thỏ -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Professional Landscape App</title>
+    
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1e1e1e">
+
+    <!-- Cấu hình riêng cho iOS để Fullscreen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#121212">
 </head>
 <body>
 
-    <!-- Container chính chứa toàn bộ nội dung App -->
+    <!-- Màn hình chờ: Bắt buộc phải có để kích hoạt Fullscreen bằng JS -->
+    <div id="start-overlay">
+        <div class="start-content">
+            <h1>Chạm để vào Ứng dụng</h1>
+            <p>Chế độ toàn màn hình</p>
+        </div>
+    </div>
+
+    <!-- Container chính -->
     <div id="app-container">
         <header>
-            <h1>Ứng Dụng Ngang</h1>
-            <button id="installBtn" style="display:none;">📲 Cài đặt App</button>
-            <button id="fullscreenBtn">⛶ Fullscreen</button>
+            <h1>App Ngang Fullscreen</h1>
+            <button id="installBtn" style="display:none;">📲 Cài App</button>
         </header>
         
         <main>
             <div class="card">
-                <h2>Dashboard</h2>
-                <p>Nội dung này luôn hiển thị theo chiều ngang.</p>
-                <p>Hãy thử xoay điện thoại dọc, nội dung sẽ tự xoay 90 độ để giữ nguyên bố cục.</p>
+                <h2>Tràn viền tuyệt đối</h2>
+                <p>Nội dung đã được xử lý Safe Area trên iOS và ẩn thanh điều hướng trên Android.</p>
             </div>
             <div class="card">
-                <h2>Thống kê</h2>
-                <div class="chart-placeholder">Biểu đồ giả lập</div>
+                <h2>Khu vực 2</h2>
+                <div class="chart-placeholder">Demo Content</div>
             </div>
         </main>
     </div>
