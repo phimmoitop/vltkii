@@ -2,47 +2,45 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <!-- QUAN TRỌNG: viewport-fit=cover giúp tràn viền tai thỏ -->
+    <!-- CHÌA KHÓA TRÀN VIỀN -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Professional Landscape App</title>
     
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- Status bar trong suốt để nội dung đè lên -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> 
+    <meta name="format-detection" content="telephone=no">
+    
+    <title>Auto Full Landscape</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-
-    <!-- Cấu hình riêng cho iOS để Fullscreen -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#121212">
 </head>
 <body>
+    <!-- GAME STAGE: Nơi chứa toàn bộ game/app -->
+    <div id="stage">
+        <div id="content-wrapper">
+            <!-- Background Game -->
+            <div class="game-bg"></div>
+            
+            <!-- UI Game -->
+            <div class="ui-layer">
+                <div class="top-bar">
+                    <span class="avatar">👤</span>
+                    <span class="info">Lực chiến: 999.999</span>
+                </div>
+                
+                <div class="center-msg">
+                    <h1>VÕ LÂM WEB</h1>
+                    <p id="debug-info">Đang tải tài nguyên...</p>
+                </div>
 
-    <!-- Màn hình chờ: Bắt buộc phải có để kích hoạt Fullscreen bằng JS -->
-    <div id="start-overlay">
-        <div class="start-content">
-            <h1>Chạm để vào Ứng dụng</h1>
-            <p>Chế độ toàn màn hình</p>
+                <div class="bottom-controls">
+                    <button class="skill-btn">⚔️</button>
+                    <button class="skill-btn">🔥</button>
+                    <button class="skill-btn">⚡</button>
+                </div>
+            </div>
         </div>
     </div>
-
-    <!-- Container chính -->
-    <div id="app-container">
-        <header>
-            <h1>App Ngang Fullscreen</h1>
-            <button id="installBtn" style="display:none;">📲 Cài App</button>
-        </header>
-        
-        <main>
-            <div class="card">
-                <h2>Tràn viền tuyệt đối</h2>
-                <p>Nội dung đã được xử lý Safe Area trên iOS và ẩn thanh điều hướng trên Android.</p>
-            </div>
-            <div class="card">
-                <h2>Khu vực 2</h2>
-                <div class="chart-placeholder">Demo Content</div>
-            </div>
-        </main>
-    </div>
-
     <script src="script.js"></script>
 </body>
 </html>
