@@ -3,47 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- Meta tag ép iOS full -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Võ Lâm Mobile Web</title>
+    
+    <title>Game V6 Final</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
-    <!-- POPUP DÀNH RIÊNG CHO ANDROID BROWSER -->
+    <!-- POPUP ANDROID -->
     <div id="popup-android">
         <div class="popup-box">
-            <h3>Cấu hình hiển thị</h3>
-            <p>Để có trải nghiệm tốt nhất, hãy chọn chế độ chơi:</p>
+            <h3>Cài đặt Game</h3>
+            <p id="install-status">Đang kiểm tra tính năng cài đặt...</p>
             
             <div class="popup-actions">
-                <!-- Nút 1: Cài đặt (Mặc định ẩn, hiện khi sẵn sàng) -->
-                <button id="btn-install" class="btn primary" style="display:none;">📲 Cài đặt App</button>
+                <!-- Nút Cài đặt: Luôn hiện, xử lý logic bên trong -->
+                <button id="btn-install" class="btn primary">📲 Cài đặt App</button>
                 
-                <!-- Nút 2: Fullscreen -->
                 <button id="btn-fullscreen" class="btn secondary">⛶ Chơi Full Screen</button>
                 
-                <!-- Nút 3: Đóng -->
-                <button id="btn-close" class="btn outline">✕ Đóng (Chơi thường)</button>
+                <button id="btn-close" class="btn outline">✕ Đóng</button>
             </div>
+            <div class="debug-msg" id="debug-log"></div>
         </div>
     </div>
 
-    <!-- GAME STAGE -->
+    <!-- GAME CONTAINER -->
     <div id="game-container">
         <div class="bg-layer"></div>
         <div class="ui-content">
             <div class="header">
-                <span>⚔️ Hiệp Khách</span>
+                <div class="avatar">👤</div>
+                <div class="info">User: Admin</div>
             </div>
             <div class="center-stage">
-                <h1>VÕ LÂM WEB</h1>
-                <p>Status: <span id="status-text">Đang tải...</span></p>
+                <h1>V6: HARDCORE FULL</h1>
+                <p id="screen-info">Loading size...</p>
             </div>
             <div class="controls">
-                <div class="skill-btn">Skill 1</div>
-                <div class="skill-btn">Skill 2</div>
+                <div class="btn-circle">A</div>
+                <div class="btn-circle">B</div>
             </div>
         </div>
     </div>
