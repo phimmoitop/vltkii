@@ -3,50 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Game Web Full</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Professional Landscape App</title>
+<style>
+/* Reset cơ bản */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+    overflow: hidden; /* Ẩn thanh cuộn thừa */
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Container chính của App */
+#app-container {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-y: auto;
+}
+
+/* --- LOGIC XOAY MÀN HÌNH --- */
+
+/* Nếu màn hình đang ở chế độ DỌC (Portrait) -> Ép xoay ngang */
+@media screen and (orientation: portrait) {
+    #app-container {
+        width: 100vh; /* Đảo chiều rộng thành cao */
+        height: 100vw; /* Đảo chiều cao thành rộng */
+        transform: rotate(90deg); /* Xoay 90 độ */
+        transform-origin: center; /* Tâm xoay ở giữa */
+        
+        /* Căn chỉnh lại vị trí do xoay */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-left: -50vh; /* Căn giữa thủ công sau khi xoay */
+        margin-top: -50vw;
+    }
+}
+
+/* --- GIAO DIỆN NỘI DUNG (CSS Của App) --- */
+header {
+    background-color: #007acc;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+header h1 {
+    font-size: 1.2rem;
+}
+
+button {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-left: 10px;
+}
+
+button:hover {
+    background: rgba(255,255,255,0.4);
+}
+
+main {
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    height: 100%;
+}
+
+.card {
+    background: #333;
+    padding: 20px;
+    border-radius: 8px;
+    flex: 1;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.chart-placeholder {
+    width: 100%;
+    height: 100px;
+    background: #444;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    border: 2px dashed #555;
+}
+</style>
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1e1e">
 </head>
 <body>
 
-    <!-- POPUP ANDROID (Mặc định ẩn) -->
-    <div id="popup-android">
-        <div class="popup-box">
-            <h3>Cấu hình Game</h3>
-            <p>Chọn chế độ hiển thị:</p>
-            
-            <div class="popup-actions">
-                <!-- Nút Cài đặt: Sẽ tự hiện khi Android báo sẵn sàng -->
-                <button id="btn-install" class="btn primary" style="display:none;">📲 Cài đặt App</button>
-                
-                <button id="btn-fullscreen" class="btn secondary">⛶ Chơi Full Screen</button>
-                <button id="btn-close" class="btn outline">✕ Đóng</button>
-            </div>
-            <p style="font-size: 10px; color: #666; margin-top:10px">Lưu ý: Nếu không thấy nút cài, hãy đợi vài giây.</p>
-        </div>
-    </div>
-
-    <!-- GAME CONTAINER -->
-    <div id="game-container">
-        <!-- Background trùm ra ngoài (Fix vệt đen) -->
-        <div class="bg-oversize"></div>
+    <!-- Container chính chứa toàn bộ nội dung App -->
+    <div id="app-container">
+        <header>
+            <h1>Ứng Dụng Ngang</h1>
+            <button id="installBtn" style="display:none;">📲 Cài đặt App</button>
+            <button id="fullscreenBtn">⛶ Fullscreen</button>
+        </header>
         
-        <!-- Nội dung chính (Giữ an toàn bên trong) -->
-        <div class="ui-content">
-            <div class="header">User: HiepKhach</div>
-            <div class="center-stage">
-                <h1>VÕ LÂM WEB</h1>
-                <p id="status-debug">Đang tải...</p>
+        <main>
+            <div class="card">
+                <h2>Dashboard</h2>
+                <p>Nội dung này luôn hiển thị theo chiều ngang.</p>
+                <p>Hãy thử xoay điện thoại dọc, nội dung sẽ tự xoay 90 độ để giữ nguyên bố cục.</p>
             </div>
-            <div class="controls">
-                <div class="btn-skill">A</div>
-                <div class="btn-skill">B</div>
+            <div class="card">
+                <h2>Thống kê</h2>
+                <div class="chart-placeholder">Biểu đồ giả lập</div>
             </div>
-        </div>
+        </main>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+// Đăng ký Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker đã đăng ký!', reg))
+            .catch(err => console.log('Lỗi SW:', err));
+    });
+}
+
+// Xử lý nút Cài đặt App (PWA Install Prompt)
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Ngăn Chrome tự động hiện popup cũ
+    e.preventDefault();
+    deferredPrompt = e;
+    // Hiện nút cài đặt của mình
+    installBtn.style.display = 'block';
+});
+
+installBtn.addEventListener('click', () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Người dùng đã cài đặt');
+                installBtn.style.display = 'none';
+            }
+            deferredPrompt = null;
+        });
+    }
+});
+
+// Xử lý Fullscreen
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+fullscreenBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.log(`Lỗi fullscreen: ${err.message}`);
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+});
+    </script>
 </body>
 </html>
