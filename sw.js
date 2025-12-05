@@ -2,8 +2,6 @@ const CACHE_NAME = 'VLTKi';
 const ASSETS = [
     '/vltkii/',
     '/vltkii/index.html',
-    '/vltkii/style.css',
-    '/vltkii/script.js',
     '/vltkii/manifest.json'
 ];
 
