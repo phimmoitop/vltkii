@@ -1,0 +1,33 @@
+{
+  "ghiChu": "Kho tên bot Tống Kim (anh gửi 05/11/2026). nam: chỉ bot nam; nu: chỉ bot nữ; chung: bot nào cũng được. Tên trùng nhân vật thật thì máy chủ bỏ qua. Thêm tên mới vào chung.",
+  "nam": [
+    "๖ۣۜĐạiCa", "™ĐạiCa™", "†ĐạiCa†", "๖ۣۜÔngTrùm", "™ÔngTrùm", "๖ۣۜThiếuGia", "™ThiếuGia", "†CôngTử†", "๖ۣۜAnhHai", "™AnhBa", "†AnhTư†",
+    "๖ۣۜAnhBảy", "™BốGià", "†ĐạiCa79†",
+    "๖ۣۜBoyHN", "™BoySG", "†BoyHP†", "๖ۣۜBoy9x", "™BoyVip", "†BoyPro†", "๖ۣۜBadBoy", "™GoodBoy", "†PlayBoy†", "๖ۣۜCoolBoy", "™BabyBoy",
+    "†BoyCôĐơn†", "๖ۣۜBoyĐẹpTrai", "™BoyBuồn", "†BoyKhờ†", "๖ۣۜMrBin", "™MrKen", "†MrTom†", "๖ۣۜMrTony", "™MrLee", "†MrKiller†", "๖ۣۜMrZero",
+    "™MrHuy", "†MrLong†", "๖ۣۜMrPhong",
+    "™ThằngKhùng", "†ThằngĐiên†", "๖ۣۜThằngNgốc", "™ThằngHâm", "†ThằngNghiện†", "†ÔngGià†", "๖ۣۜLãoTrượng",
+    "xXMrBinXx", "xXBadBoyXx", "_MrKen_", "_DaiCa_", "_BoyHN_", "Boy_9x", "MrBin_9x", "๖ۣۜMrBin9x"
+  ],
+  "nu": [
+    "๖ۣۜGirlXinh", "™GirlVip", "†GirlPro†", "๖ۣۜBadGirl", "™BabyGirl", "†Girl9x†", "๖ۣۜCôBé", "™CôBéXinh", "†TiểuMuội†", "๖ۣۜTiểuThư",
+    "™BúpBê", "†NàngTiên†", "๖ۣۜMsMoon", "™MsCherry", "†MsCandy†", "Girl_9x"
+  ],
+  "chung": [
+    "๖ۣۜSátThủ", "™SátThủ™", "†SátThủ†", "๖ۣۜĐồSát", "†ĐồSát†", "™ThầnChết", "๖ۣۜTửThần", "†TửThần†", "๖ۣۜHuyếtMa", "™HuyếtSát",
+    "†HắcLong†", "๖ۣۜCuồngLong", "™ChiếnThần", "†ChiếnThần†", "๖ۣۜVôĐịch", "™BấtBại", "†BấtTử†", "๖ۣۜKiếmMa", "™ĐaoMa", "†KiếmKhách†",
+    "๖ۣۜTrùmPK", "™VuaPK", "†OneHit†", "๖ۣۜKiller", "™Killer™", "†KillYou†", "๖ۣۜNoFear", "™ProPK", "†HuyếtLong†", "๖ۣۜCuồngSát",
+    "™ĐộcCô", "†VôTình†", "๖ۣۜVôDanh", "™HắcPhong", "†MaVương†", "๖ۣۜSátThần", "™ÁcQuỷ", "†QuỷVương†", "๖ۣۜPKPro", "™ĐộcBá",
+    "†TrùmSV†", "๖ۣۜĐạiGia", "™ĐạiGia™", "†ĐạiGia†", "๖ۣۜBoss", "™Boss™", "†BigBoss†", "๖ۣۜVipPro", "™ProVip", "†VipNo1†",
+    "๖ۣۜTop1", "™TopSV", "†TopSever†", "†PhúHộ†", "๖ۣۜTỷPhú", "™NhàGiàu", "†TiềnNhiều†", "๖ۣۜDânChơi", "™DânChơi", "†DânChơiHP†",
+    "๖ۣۜDânChơiHN", "™DânChơiSG", "†Vip999†", "๖ۣۜPro123", "™Boss007", "๖ۣۜTrùmCuối",
+    "๖ۣۜGàCon", "™GàChọi", "†GàRừng†", "๖ۣۜGàNhà", "™GàPro", "†GàNhưngVip†", "๖ۣۜTrẻTrâu", "๖ۣۜĂnXin", "™ĂnTrộm", "†CướpĐồ†",
+    "๖ۣۜNhặtRác", "™NhặtĐồ", "†BánVéSố†", "๖ۣۜBánTràĐá", "™DânCày", "†CàyThuê†", "๖ۣۜCàyĐêm", "™CàyLevel", "†TreoMáy†", "๖ۣۜChimSẻ",
+    "™ChimLợn", "†ChóĐiên†", "๖ۣۜMèoCon", "™HeoSữa", "™ChủBãi", "†ĐừngĐánh†", "๖ۣۜXinTha", "™ĐừngPK", "†ChạyĐiĐâu†", "๖ۣۜĐánhLàChạy",
+    "™NghèoMàVip", "†HếtTiền†", "๖ۣۜMấtMạng",
+    "xXSatThuXx", "xXVoDanhXx", "xXKillerXx", "xXProVipXx", "xXHacLongXx", "xXThanChetXx", "xXGaConXx", "xXBossXx",
+    "_SatThu_", "_VoDanh_", "_Killer_", "_ProVip_", "_HacLong_", "_ThanChet_", "_Boss_",
+    "SatThu_9x", "VoDanh_9x", "Pro_9x", "Vip_9x", "Killer_9x", "GaCon_9x", "Boss_9x",
+    "๖ۣۜXxBossxX", "™xXProXx", "†xXVipXx†", "™SatThu9x", "†Boss999†", "๖ۣۜKiller007", "™Vip2000", "†ProMax†", "๖ۣۜNo1"
+  ]
+}

@@ -1,0 +1,273 @@
+{
+ "format": "vl-s1-thuoc",
+ "version": 1,
+ "built": "2026-10-26T15:10:31.177Z",
+ "source": "client settings/item/004/potion.txt, goods.txt, buysell.txt",
+ "note": "hp / mp = [số hồi mỗi nửa giây, số lần hồi]; gia = giá mua 1 bình (lượng); shops[Sale của script NPC] = hàng bày",
+ "items": {
+  "potion:1": {
+   "n": "Kim Sáng Dược (tiểu)",
+   "intro": "Hồi phục chút ít khí huyết",
+   "ic": "item/medecine/obj-potion01.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 1,
+   "gia": 50,
+   "hp": [
+    10,
+    10
+   ]
+  },
+  "potion:2": {
+   "n": "Kim Sáng Dược (trung)",
+   "intro": "Hồi phục khí huyết tương đối nhanh.",
+   "ic": "item/medecine/obj-potion01.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 2,
+   "gia": 100,
+   "hp": [
+    25,
+    10
+   ]
+  },
+  "potion:3": {
+   "n": "Kim Sáng Dược (đại)",
+   "intro": "Hồi phục khí huyết cực nhanh.",
+   "ic": "item/medecine/obj-potion02.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 3,
+   "gia": 250,
+   "hp": [
+    25,
+    20
+   ]
+  },
+  "potion:4": {
+   "n": "Hồi Thiên đan",
+   "intro": "Thần dược chữa thương, cải tử hoàn sinh",
+   "ic": "item/medecine/obj-potion02.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 4,
+   "gia": 500,
+   "hp": [
+    50,
+    20
+   ]
+  },
+  "potion:5": {
+   "n": "Cửu Chuyển Hoàn Hồn đan",
+   "intro": "Lập tức hồi phục 5000 điểm sinh lực",
+   "ic": "item/medecine/obj-potion03.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 5,
+   "gia": 2000,
+   "hp": [
+    500,
+    10
+   ]
+  },
+  "potion:6": {
+   "n": "Ngưng Thần đan (tiểu)",
+   "intro": "Có thể hồi phục chút ít Nội lực",
+   "ic": "item/medecine/obj-potion06.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 1,
+   "gia": 50,
+   "mp": [
+    5,
+    20
+   ]
+  },
+  "potion:7": {
+   "n": "Ngưng Thần đan (trung)",
+   "intro": "Hồi phục Nội lực tương đối nhanh.",
+   "ic": "item/medecine/obj-potion06.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 2,
+   "gia": 100,
+   "mp": [
+    10,
+    20
+   ]
+  },
+  "potion:8": {
+   "n": "Ngưng Thần đan (đại)",
+   "intro": "Hồi phục Nội lực cục nhanh",
+   "ic": "item/medecine/obj-potion07.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 3,
+   "gia": 250,
+   "mp": [
+    20,
+    25
+   ]
+  },
+  "potion:9": {
+   "n": "Đại Bổ tán",
+   "intro": "Hồi phục Nội lục trong nháy mắt",
+   "ic": "item/medecine/obj-potion07.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 4,
+   "gia": 500,
+   "mp": [
+    50,
+    20
+   ]
+  },
+  "potion:10": {
+   "n": "Ô đầu Hoàn thần đan",
+   "intro": "Lập tức hồi phục 5000 điểm Nội lực",
+   "ic": "item/medecine/obj-potion08.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 5,
+   "gia": 2000,
+   "mp": [
+    500,
+    10
+   ]
+  },
+  "potion:11": {
+   "n": "Thừa Tiên Mật (tiểu)",
+   "intro": "Đồng thời hồi phục chút ít Sinh lực và Nội lực.",
+   "ic": "item/medecine/obj-potion11.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 1,
+   "gia": 80,
+   "hp": [
+    10,
+    10
+   ],
+   "mp": [
+    6,
+    10
+   ]
+  },
+  "potion:12": {
+   "n": "Thừa Tiên Mật (trung)",
+   "intro": "Đồng thời hồi phục nhanh Sinh lực và Nội lực",
+   "ic": "item/medecine/obj-potion11.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 2,
+   "gia": 150,
+   "hp": [
+    25,
+    10
+   ],
+   "mp": [
+    6,
+    25
+   ]
+  },
+  "potion:13": {
+   "n": "Thừa Tiên Mật (đại)",
+   "intro": "Đồng thời hồi phục cực nhanh Sinh lực và Nội lực",
+   "ic": "item/medecine/obj-potion12.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 3,
+   "gia": 375,
+   "hp": [
+    25,
+    20
+   ],
+   "mp": [
+    15,
+    20
+   ]
+  },
+  "potion:14": {
+   "n": "Thất Khiếu Bổ tâm đan",
+   "intro": "Lập tức hồi phục Sinh lực và Nội lực",
+   "ic": "item/medecine/obj-potion12.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 4,
+   "gia": 750,
+   "hp": [
+    50,
+    20
+   ],
+   "mp": [
+    30,
+    20
+   ]
+  },
+  "potion:15": {
+   "n": "Ngũ Hoa Ngọc Lộ Hoàn",
+   "intro": "Đồng thời hồi phục 5000 điểm Sinh lực và Nội lực",
+   "ic": "item/medecine/obj-potion13.png",
+   "c": [
+    1,
+    1
+   ],
+   "lv": 5,
+   "gia": 3000,
+   "hp": [
+    500,
+    10
+   ],
+   "mp": [
+    500,
+    10
+   ]
+  }
+ },
+ "shops": {
+  "39": [
+   "potion:1",
+   "potion:2",
+   "potion:3",
+   "potion:4",
+   "potion:5",
+   "potion:6",
+   "potion:7",
+   "potion:8",
+   "potion:9",
+   "potion:10",
+   "potion:11",
+   "potion:12",
+   "potion:13",
+   "potion:14",
+   "potion:15"
+  ]
+ }
+}

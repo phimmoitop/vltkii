@@ -1,0 +1,9 @@
+{
+  "name": "vltk-idle-render-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Võ Lâm Idle game server, WebSocket RPC, RAM state and Google Sheets snapshots",
+  "main": "index.js",
+  "scripts": { "start": "node index.js" },
+  "engines": { "node": ">=20" }
+}

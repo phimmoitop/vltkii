@@ -1,0 +1,721 @@
+{
+ "_goc": "Võ Lâm Idle - HuyHuyy — bản chia sẻ",
+ "_ghiChu": "Tin cập nhật cho người chơi (Esc → Tin cập nhật — khung Nhật ký / Cập nhật sự kiện của client, windows.js _tin). Tin mới nhất để đầu, id tăng dần (không dùng lại id): người chơi chưa xem tin có id lớn hơn hero.auto.tinXem thì vào game được nhắc + dấu Mới. ten: dòng ở danh sách bên trái (ngắn). noi: mỗi phần tử 1 dòng — '• ' gạch đầu dòng, '## ' tiêu đề nhỏ, *chữ* tô vàng (src/game/giupdo.js giupHtml). Sửa tệp này rồi gửi lên máy chủ, người chơi F5 là thấy (không cần khởi động lại).",
+ "tin": [
+  {
+   "id": 88,
+   "ngay": "18/11",
+   "ten": "Chào mừng đến với Võ Lâm Idle - HuyHuyy",
+   "noi": [
+    "• Đây là bản chia sẻ của Võ Lâm Idle, có đủ các chức năng tới *Tống Kim* (chiến trường theo lịch, bot như người chơi, Quân Nhu quan).",
+    "• Tạo tài khoản: bấm *Tao_Tai_Khoan.bat* trong thư mục game — tài khoản đầu tiên là quản trị (bảng F10, công cụ thử phím `).",
+    "• Nếu bạn yêu thích bản game của mình thì hãy chung tay chia sẻ cho anh em khác trong group để ai cũng có thể trải nghiệm. Cảm ơn anh chị em group *Hội Quán* rất nhiều!"
+   ]
+  },
+  {
+   "id": 87,
+   "ngay": "06/11",
+   "ten": "Mở chiến trường Tống Kim",
+   "noi": [
+    "## Chiến trường Tống Kim",
+    "• Mỗi ngày *4 trận*: *10:50, 12:50, 16:50, 22:00* (giờ có thể đổi — xem Lịch hoạt động). Mỗi trận báo danh *5 phút* rồi đánh *30 phút*.",
+    "• Báo danh ở *Mộ binh quan* (Biện Kinh): từ *cấp 100*, phí *3.000 lượng* một lần mỗi trận; hai phe lệch tối đa 1 người. Vào muộn được tới phút 15; rớt mạng vào lại đúng phe, không mất phí.",
+    "• Vào trận rời tổ đội; Phân Thân không vào chiến trường. Bị hạ không mất gì — về *hậu doanh* (khu an toàn), 8 giây sau ra trận lại; ra / vào hậu doanh bằng bẫy dịch chuyển.",
+    "• Mỗi phe có quân 6 bậc và bot; phút 15 *Nguyên Soái* phe ít điểm xuất hiện, phút 20 phe kia. Phe hạ Nguyên Soái địch trước thắng; không ai hạ được thì phe nhiều điểm thắng.",
+    "• Điểm: hạ người / bot theo chức, hạ quân 5 – 1.000 điểm; chức *Hiệu úy / Thống lĩnh / Phó tướng / Đại tướng* tăng sinh lực, kháng.",
+    "• *Chiến báo*: nút dưới bảng nhỏ góc phải (máy tính đúng khung client); hết trận có bảng *Thông báo Tống Kim*.",
+    "## Thưởng cuối trận (từ 100 điểm trận)",
+    "• *Điểm Tống Kim* = điểm trận + 1.200 (thắng) / 600 (thua); *kinh nghiệm* theo điểm trận và cấp (tối đa 20 triệu).",
+    "• *Nhạc Vương Hồn Thạch*: thắng 2 viên, +1 nếu ≥ 3.000 điểm, +2 người đánh Nguyên Soái địch nhiều nhất. *Huân công bài* (thắng, ≥ 1.000 điểm, tối đa 2 / ngày).",
+    "• Trận tối thứ 3, 5, 7: *Thiên Tử* — nhân đôi điểm Tống Kim và kinh nghiệm.",
+    "## Quân Nhu quan (Biện Kinh)",
+    "• Đổi điểm Tống Kim lấy Hồn Thạch, Chiến cổ, Lệnh bài, Càn Khôn Tạo Hóa Đan và 6 loại hoàn Tống Kim (chỉ dùng trong chiến trường). Đóng cửa lúc đang đánh.",
+    "• *100 Hồn Thạch đúc 1 Nhạc Vương Kiếm*."
+   ]
+  },
+  {
+   "id": 86,
+   "ngay": "06/11",
+   "ten": "Thẻ PK trong Trợ Thủ; quái bản chung mượt hơn",
+   "noi": [
+    "## Trợ Thủ: thẻ PK",
+    "• Trợ Thủ có thêm thẻ *PK* (hàng thẻ thứ 2). Dùng khi tự đánh ở chiến trường *Tống Kim* — chiến trường sẽ mở sau, hiện chỉ để cài trước.",
+    "• *Bật PK*: trong trận Trợ Thủ chỉ đánh phe kia — không đánh quái, không nhặt đồ, không về thành, không làm nhiệm vụ, không tự mời / theo đội.",
+    "• Thứ tự ra chiêu: *1. Bùa lợi* (3 ô) → *2. Bùa hại* lên mục tiêu (tự dùng bùa hại đã học / chọn 1 bùa / không dùng) → *3. Chiêu đánh*.",
+    "• *Ưu tiên*: gần nhất, máu thấp nhất, kẻ đang đánh mình hoặc người chơi trước; chỉ đánh trong phạm vi quanh nhân vật.",
+    "• *Bơm máu*: mức sinh lực / nội lực uống thuốc riêng khi PK (loại thuốc theo thẻ Thuốc); sinh lực thấp thì chạy về doanh, hồi đủ mới ra lại.",
+    "## Quái bản chung mượt hơn",
+    "• Ở máy không làm chủ bãi: quái không còn chớp đi / chạy liên tục, vung đòn đều nhịp như ở máy chủ bãi."
+   ]
+  },
+  {
+   "id": 85,
+   "ngay": "06/11",
+   "ten": "Lời mời tổ đội; nút Sắp xếp; buff ở bản quái chung",
+   "noi": [
+    "## Lời mời tổ đội như client",
+    "• Được mời vào nhóm: ô tin hệ thống (góc trái dưới, trên thanh kỹ năng) hiện dòng *\"<Tên> mời bạn gia nhập nhóm của họ  Đồng ý  Cự tuyệt  Xem nhẹ\"*, bên cạnh có *biểu tượng tổ đội* nhấp nháy. Bấm chữ để trả lời, hoặc bấm biểu tượng để mở khung hỏi.",
+    "• *Xem nhẹ*: bỏ qua, người mời không nhận tin gì; lời mời tự hết sau *60 giây*.",
+    "• *Đang ở trong đội* vẫn nhận được lời mời của đội khác: chỉ hiện biểu tượng nhấp nháy, bấm vào để xem. Đồng ý thì rời nhóm hiện tại (nhóm trưởng thì nhóm giải tán) để vào nhóm mới.",
+    "• Điện thoại: nút biểu tượng tổ đội nằm cạnh nút Chat.",
+    "• Trợ Thủ *Tự mời* vẫn không mời người đã có đội.",
+    "## Sắp xếp hành trang, rương",
+    "• Nút *Sắp xếp* ở Hành trang, Rương chứa đồ, Rương mở rộng và Túi tử mẫu: dồn các chồng cùng loại, xếp gọn theo loại — trang bị, thuốc, phù, vật phẩm Kỳ Trân Các, món khác.",
+    "• Món *khóa bảo hiểm* và món không khóa không bao giờ dồn chung. Túi không tự xếp — chỉ khi bấm nút.",
+    "• Đang cầm món trên tay, đang giao dịch hoặc đang định giá bày bán thì chưa xếp được.",
+    "## Buff giữa người chơi chỉ ở bản quái chung",
+    "• Ở bãi luyện công, *Tăng ích tổ đội* (tốc độ, hồi phục, kinh nghiệm) cùng vòng sáng, bùa lợi, hồi máu của người khác *chỉ có ở bản quái chung*. Bản quái riêng — và bãi chưa có bản chung — không còn nhận.",
+    "• Vòng sáng của *Phân Thân* bạn thuê vẫn nhận ở mọi bản. Thành, Vượt Ải, Phong Hỏa Liên Thành như cũ."
+   ]
+  },
+  {
+   "id": 84,
+   "ngay": "05/11",
+   "ten": "Phân Thân — thuê bản sao người chơi",
+   "noi": [
+    "## Phân Thân",
+    "• Nút *Phân Thân* mới ở cột nút (hình người xanh; điện thoại: ô *Phân thân* trong bảng chức năng) mở khung thuê bản sao của người chơi khác trong *bảng xếp hạng* để theo hỗ trợ khi luyện công.",
+    "• Chỉ thuê được nhân vật *không quá cấp mình + 30*. Phí *120 Mật đồ thần bí* mỗi phân thân; người bị sao chép nhận *12 Mật đồ thần bí*.",
+    "• Mỗi ngày thuê tối đa *2 phân thân*, dùng chung *12 giờ* — chỉ tính giờ khi phân thân đang theo ở bãi luyện công. Qua 00:00 tính ngày mới.",
+    "• Phân thân mang *100% chỉ số* của người bị sao chép lúc thuê. Tên hiện: *Tên bạn (Tên người đó Phân Thân)*, cùng màu tên với bạn.",
+    "## Phân thân làm gì",
+    "• Đi theo bạn, bật *vòng sáng* (bạn được hưởng), dùng *bùa lợi* và *hồi máu* lên bạn, *đánh quái* quanh bạn (cả Boss Sát thủ trên bãi).",
+    "• Quái do phân thân hạ đòn cuối: bạn nhận *đủ kinh nghiệm*, *không rơi tiền, không rơi đồ*. Boss Sát thủ do phân thân hạ: vẫn *hoàn thành nhiệm vụ* (nhận Sát thủ lệnh), không rơi vật phẩm.",
+    "• Không tốn sinh lực / nội lực, quái không đánh phân thân. Chỉ hiện ở bãi luyện công — về thành tự ẩn, quay lại bãi tự theo. Người cùng bãi cũng thấy phân thân của bạn.",
+    "• Ủy thác không tính phân thân."
+   ]
+  },
+  {
+   "id": 83,
+   "ngay": "05/11",
+   "ten": "Khóa bảo hiểm đồ thưởng; Lễ quan hủy vật phẩm",
+   "noi": [
+    "## Khóa bảo hiểm",
+    "• Vật phẩm nhận từ *Thưởng thăng cấp* và *Online nhận thưởng* từ nay được *khóa bảo hiểm vĩnh viễn* — rê chuột lên món thấy dòng chữ xanh lá *Vật phẩm này đã được khóa bảo hiểm vĩnh viễn*.",
+    "• Món khóa: *không giao dịch*, *không bày bán* ở Chợ Trời, *không vứt ra đất*. Vẫn dùng, cất rương, nộp nhiệm vụ như thường.",
+    "• Món mở ra từ món khóa (lễ bao, mã bài, bảo rương) cũng khóa. Món khóa và món thường cùng loại *không gộp chung một chồng*.",
+    "• Vật phẩm đã nhận *trước* bản cập nhật này giữ nguyên như cũ.",
+    "## Lễ quan — Hủy vật phẩm",
+    "• *Lễ quan* (Ba Lăng) có thêm *Hủy vật phẩm*: đặt món trong hành trang vào khung, bấm Xác nhận rồi đồng ý — hủy được *mọi loại vật phẩm*, kể cả món khóa bảo hiểm.",
+    "• Vật phẩm đã hủy *không lấy lại được* — xem kỹ trước khi xác nhận."
+   ]
+  },
+  {
+   "id": 82,
+   "ngay": "05/11",
+   "ten": "Người chơi khác và quái chung chạy mượt hơn",
+   "noi": [
+    "## Di chuyển mượt hơn",
+    "• *Người chơi khác* và *quái ở bãi quái chung* giờ chạy đều hơn khi mạng lúc nhanh lúc chậm: không còn *nhảy cóc*, *chạy lùi* hay *chạy vọt lên* để đuổi kịp.",
+    "• Người chơi khác đang chạy không còn *chớp qua lại giữa chạy và đứng*.",
+    "• Mạng quá chậm thì nhân vật / quái vẫn có thể *dừng lại một chút*, nhưng giờ chỉ dừng rồi đi tiếp từ chỗ đang đứng, không giật lùi.",
+    "• Chỉ đổi cách *hiển thị* trên máy mình — vị trí thật, đòn đánh, sát thương không đổi. *Tải lại trang* để nhận bản mới.",
+    "## Sửa",
+    "• Khung *Hướng dẫn hoạt động*: danh sách *việc hằng ngày* hiện đủ các dòng, bấm vào không còn bị lệch / che dòng cuối."
+   ]
+  },
+  {
+   "id": 81,
+   "ngay": "05/11",
+   "ten": "Hướng dẫn hoạt động: lịch, giờ, tra cứu rơi đồ và rương",
+   "noi": [
+    "## Hướng dẫn hoạt động",
+    "• Nút *cờ vàng* mới ở cột biểu tượng bên phải, dưới nút Trợ Thủ (điện thoại: ô *Hoạt động* đầu bảng Giang hồ) — mở *khung Hướng dẫn hoạt động* như client. Nút có *chấm đỏ* khi đang có hoạt động diễn ra.",
+    "• *Lịch trình hoạt động*: hoạt động theo giờ (Phong Hỏa, Săn Nhím, Boss Hoàng Kim, Phong Lăng Độ, Rương Thần Bí, Phú Quý) kèm giờ và trạng thái *đang diễn ra / còn bao lâu / đã kết thúc*; việc hằng ngày kèm *số lần đã làm hôm nay* (Vượt Ải, Sát thủ, Dã Tẩu, Minh Chủ, bắt nhím, Online, Thiết La Hán, Ủy thác, Đăng nhập).",
+    "• Bấm 1 hoạt động để xem *thời gian, NPC, điều kiện, cách chơi, phần thưởng*; 4 ô *Sắp diễn ra* đếm ngược. Giờ hoạt động có thể được điều chỉnh — luôn xem ở đây để biết giờ mới nhất.",
+    "## Tra cứu",
+    "• Thẻ *Tra cứu*: rương và hộp quà *mở ra gì, tỉ lệ bao nhiêu, kiếm ở đâu*; quái *rơi gì* (tỉ lệ rơi, số dòng, cấp món, tiền, món đặc biệt từng bãi); thưởng từng hoạt động; *vật phẩm có từ đâu*. Có ô tìm — gõ không dấu cũng được.",
+    "• Thẻ *Phần thưởng*: Đăng nhập, Online, Thăng cấp, Phúc duyên, mốc Dã Tẩu… Số liệu lấy thẳng từ máy chủ nên luôn đúng với game.",
+    "• *Trợ Thủ → Tiện ích → Tra cứu*: tìm nhanh, bấm 1 mục để mở bảng đầy đủ. Điện thoại dựng dọc: chữ to, chạm 1 mục để xem trang chi tiết.",
+    "## Sửa",
+    "• Dã Tẩu: chuỗi nhiệm vụ bị xóa rồi làm lại không còn bị mất *Bảo rương thần bí* ở mốc đầu tiên của chuỗi mới."
+   ]
+  },
+  {
+   "id": 80,
+   "ngay": "05/11",
+   "ten": "Phong Hỏa 20 phút; Trợ Thủ ở hoạt động; cần điều khiển",
+   "noi": [
+    "## Phong Hỏa Liên Thành — trận 20 phút",
+    "• *19:00* mở báo danh *5 phút*, *19:05* khai chiến, đánh *20 phút* (trước đây 1 tiếng).",
+    "• Quân Tống tới theo *3 đợt*: *Tiền quân* (đầu trận), *Trung quân* (phút 5), *Đại quân* (phút 10) — đợt sau quân đông hơn, nhiều Đội trưởng / Tiên phong hơn, *hành quân nhanh hơn* và thêm Chủ tướng.",
+    "• *Công Thành Chiến Xa* tới ở phút 2 / 6 / 10 / 14 / 17 của trận — càng về cuối càng nhiều xe, đi càng nhanh. Thành có *10 điểm*, mỗi xe tới cổng trừ 1.",
+    "• Phút *14*: *10 Chủ soái* xuất trận (đóng báo danh) — hạ đủ 10 Chủ soái là thắng ngay. Còn 3 phút / 1 phút có báo.",
+    "• *Tiên phong, Chủ tướng, Chủ soái, Thần binh* giờ *ra chiêu võ công các phái* (Tiên phong chiêu 3x / 4x, Chủ tướng 5x – 7x, Chủ soái và Thần binh 9x), có làm chậm / trúng độc / choáng theo chiêu, thấy người chơi là đuổi đánh. Chết trong trận không mất gì, hồi sinh ở đại doanh.",
+    "## Trợ Thủ ở Phong Hỏa / Boss Hoàng Kim",
+    "• Trong trận Phong Hỏa (bật *ở lại trận*) hoặc khi đứng gần Boss Hoàng Kim: tự đánh *chỉ đánh trong phạm vi 550 quanh nhân vật* — kéo nhân vật đi đâu đánh ở đó, quân / boss tới gần mới đánh, không tự chạy đi chỗ khác. Đổi phạm vi ở Trợ Thủ → Đánh quái → Phong Hỏa (hoặc Boss Hoàng Kim).",
+    "## Điện thoại",
+    "• Sửa lỗi đang tự đánh (nhất là đánh boss) kéo *cần điều khiển* mà nhân vật không đi: giờ kéo cần là bỏ mục tiêu, ra nốt chiêu đang ra rồi chạy ngay."
+   ]
+  },
+  {
+   "id": 79,
+   "ngay": "05/11",
+   "ten": "Phong Hỏa: bùa trong trận; Minh Chủ thêm rương",
+   "noi": [
+    "## Phong Hỏa Liên Thành — bùa trong trận",
+    "• Hạ quân Tống có thể rơi *bùa* (18 loại như client): *nhặt là dùng ngay*, không vào túi, tác dụng *30 giây – 1 phút*. Quân càng mạnh càng hay rơi — *Chủ tướng, Chủ soái* rơi nhiều nhất; chiến xa không rơi.",
+    "• *Lợi Nhận* (5 hệ): tăng sát thương theo hệ — Kim / Mộc / Thủy nội công hoặc ngoại công, Hỏa / Thổ nội công. *Hộ giáp* (5 hệ): +10–70 % phòng thủ vật lý hoặc một loại kháng. *Chiến Hồn*: tốc độ đánh +10–40.",
+    "• *Hành quân đơn / Tiểu hoàn đơn / Ngũ Hoa Lộ*: hồi ngay sinh lực / nội lực, hoặc hồi liên tục 30 giây, hoặc tăng sinh lực / nội lực tối đa 30 giây.",
+    "• Bùa rơi cho người đánh con đó nhiều nhất (chỉ người đó thấy và nhặt); Trợ Thủ đang tự đánh tự nhặt. Nhặt bùa cùng loại thì thay bùa cũ. Bùa đang có hiện ở hàng biểu tượng trạng thái góc trái — rê chuột để xem.",
+    "## Võ Lâm Minh Chủ",
+    "• Mỗi nhiệm vụ trả xong (Sát quái, Đối thoại, Thu thập) thêm *1 Bảo rương đồ xanh* — tối đa 3 rương mỗi ngày. Túi đầy thì rương chờ, dọn túi là tự vào."
+   ]
+  },
+  {
+   "id": 78,
+   "ngay": "04/11",
+   "ten": "Bảo rương đồ xanh cần 6 ô trống",
+   "noi": [
+    "## Bảo rương đồ xanh",
+    "• Mở rương cần *ít nhất 6 ô trống* trong hành trang (như các rương của client).",
+    "• Đã mở là *chốt món*: món ra mà túi không có chỗ đặt vừa (ô trống rời rạc, vũ khí dài) thì món *chờ nhận* — dọn túi là tự vào, không mất."
+   ]
+  },
+  {
+   "id": 77,
+   "ngay": "04/11",
+   "ten": "Bảo rương đồ xanh",
+   "noi": [
+    "## Bảo rương đồ xanh",
+    "• Vật phẩm mới: bấm chuột phải mở ra *1 món trang bị xanh 3–6 dòng* — 3 dòng 70 %, 4 dòng 22 %, 5 dòng 7 %, *6 dòng 1 %*.",
+    "• Loại món và ngũ hành ngẫu nhiên như đồ rơi, *cấp món theo cấp nhân vật* (cấp chia 10, tối đa 10), dòng thuộc tính gieo y như đồ quái rơi. Mở ra món 5–6 dòng thì cả máy chủ được báo.",
+    "• Túi phải còn chỗ cho món mới. Rương xếp chồng, giao dịch và bán Chợ Trời được.",
+    "## Nhận rương ở đâu",
+    "• *Vượt Ải*: xong trọn ải, mỗi người 2 rương.",
+    "• *Dã Tẩu*: hoàn thành 40 nhiệm vụ trong ngày, thêm 3 rương.",
+    "• *Boss thế giới*: top 1–3 sát thương, mỗi người 2 rương.",
+    "• *Phong Hỏa Liên Thành*: thắng trận và đạt mức thưởng cao nhất, thêm 3 rương.",
+    "• *Cửa hàng phúc duyên* (Nhận thưởng → Phúc duyên): 50 điểm đổi 1 rương.",
+    "• Rương thưởng Vượt Ải / Phong Hỏa tự vào túi; túi đầy thì rương chờ, dọn 1 ô là tự vào."
+   ]
+  },
+  {
+   "id": 76,
+   "ngay": "04/11",
+   "ten": "Mặc đồ thoải mái, khung đặt món",
+   "noi": [
+    "## Trang bị",
+    "• *Mang đồ thoải mái hơn*: bỏ yêu cầu *ngũ hành* và *môn phái* khi mặc — áo / mũ hệ Thổ (Đạo sĩ võ bào, Nữ thức đạo y, Mộc Trâm…) và áo Cái Bang giờ phái nào, hệ nào cũng mặc được. Vẫn giữ yêu cầu cấp, sức mạnh, thân pháp và đồ nam / nữ.",
+    "## Hành trang (máy tính)",
+    "• Cầm món lên: *khung vàng* hiện đúng chỗ món sẽ nằm khi bấm (như điện thoại) — trên túi, rương, khung Giao, giao dịch, ô trang bị. Khung *đỏ*: món lòi ra ngoài lưới hoặc không mặc vào ô đó được.",
+    "## Dã Tẩu",
+    "• Món mua ở *sạp Hệ thống* (ghi *Món Dã Tẩu*) nay *Dã Tẩu giữ luôn* khi nộp — cả nhiệm vụ *Xem vật phẩm* (trước đây xem xong trả lại). Đồ riêng của bạn đưa Dã Tẩu xem thì vẫn được trả lại.",
+    "• Trợ Thủ tự làm Dã Tẩu: dùng Món Dã Tẩu có trong túi trước, không có mới đưa đồ của bạn xem hoặc mua ở sạp."
+   ]
+  },
+  {
+   "id": 75,
+   "ngay": "04/11",
+   "ten": "Dời NPC Ba Lăng, Biện Kinh",
+   "noi": [
+    "• *Ba Lăng*: Hắc Bạch Sứ Giả và Chủ tiền trang dời sang cùng hàng với Lễ quan (giữa Lễ quan và Võ Đang Đạo Nhân) — không còn bị sạp bày bán che.",
+    "• *Biện Kinh*: Chủ Chợ Trời dời lên cùng hàng Dã Tẩu — không còn bị mái nhà che.",
+    "• *Trợ Thủ → Đánh quái*: bỏ nút Mở khung Lập nhóm — khung Lập nhóm mở bằng nút *Tổ đội* (điện thoại: Giang hồ → Tổ đội)."
+   ]
+  },
+  {
+   "id": 74,
+   "ngay": "04/11",
+   "ten": "Phong Hỏa: thưởng rơi, Trợ Thủ giữ cổng",
+   "noi": [
+    "## Phong Hỏa Liên Thành",
+    "• *Thêm thưởng rơi*: hạ quân từ *Đội trưởng* trở lên (Đội trưởng, Tiên phong, Chủ tướng, Chủ soái, Công Thành Chiến Xa, Thần binh) — 0,5 % rơi *Thủy Tinh / Tinh Hồng Bảo Thạch*, 1 % rơi *Thiết La Hán* (người đánh nhiều nhất nhặt), 0,1 % nhận *1–2 Xu*.",
+    "• *Trợ Thủ ở lại trận*: đứng ở đại doanh thì chỉ ra đánh quân địch *đã tới gần cổng thành*; tự kéo nhân vật ra tiền tuyến / giữa đường thì đánh *quanh chỗ đó* — không còn chạy sang doanh trại địch.",
+    "• Khung Phong Hỏa trên máy tính nằm dưới bản đồ nhỏ — phóng to bản đồ không bị đè."
+   ]
+  },
+  {
+   "id": 73,
+   "ngay": "04/11",
+   "ten": "Phong Hỏa Liên Thành",
+   "noi": [
+    "## Phong Hỏa Liên Thành",
+    "• *19:00 mỗi ngày*: nói chuyện với *Vệ binh thành môn Biện Kinh* → *Tham gia chiến dịch thủ thành* (đẳng cấp *90* trở lên, lệ phí *100 vạn* — mỗi trận nộp 1 lần, ra rồi vào lại không mất thêm). Báo danh 10 phút, đánh 60 phút.",
+    "• Phe Kim giữ thành: quân Tống từ 3 doanh trại theo *3 con đường* tiến về thành — Tiểu hiệu, Đội trưởng, Tiên phong, Chủ tướng; mỗi 5 phút 3 *Công Thành Chiến Xa*; 15 phút cuối *10 Chủ soái* xuất hiện (đóng báo danh). 12 Thần binh canh doanh trại địch.",
+    "• *Thua* khi 3 Tướng quân thủ thành tử trận, hoặc *điểm thủ thành* 24 về 0 (mỗi chiến xa tới cổng trừ 1). *Thắng* khi giữ thành tới hết giờ, hoặc hạ đủ 10 Chủ soái. 30 Vệ binh + 3 Tướng quân thủ thành cùng đánh quân địch.",
+    "• Cấp quân theo cấp trung bình người trong trận; số lính theo số người. Giết quái nhận *kinh nghiệm* (không rơi tiền / đồ). Thắng trận: ai còn trong trận và kiếm đủ kinh nghiệm trong trận nhận thêm *10 – 20 triệu kinh nghiệm*.",
+    "• Trọng thương *không mất gì*, hồi sinh ở đại doanh (có Quân Nhu quan bán thuốc, Rương chứa đồ, Xa phu về Biện Kinh). Hết trận tự về Biện Kinh.",
+    "• *Trợ Thủ → Đánh quái → Phong Hỏa*: ô *Đang ở trận: tự đánh ở lại trận* — hồi sinh xong tự ra đánh tiếp, sắp hết thuốc về Quân Nhu quan mua, không chạy về bãi treo. Trợ Thủ không tự đi vào trận."
+   ]
+  },
+  {
+   "id": 72,
+   "ngay": "03/11",
+   "ten": "Trợ Thủ về bãi, khung Nhiệm vụ",
+   "noi": [
+    "## Trợ Thủ, nhiệm vụ, hành trang",
+    "• *Tự làm Dã Tẩu / tự săn Boss Sát thủ*: làm xong (hoặc dừng) thì *tự về bãi treo máy* — bãi của mục *Treo ở*, không bật thì đúng chỗ đang đánh lúc Trợ Thủ đưa đi.",
+    "• Trong lúc tự làm, Trợ Thủ *tạm bỏ qua Theo sau* của tổ đội; về tới bãi thì theo sau tiếp.",
+    "• Khung *Nhiệm vụ* làm mới: mỗi nhiệm vụ đang nhận 1 ô ở hàng trên, bấm ô xem chi tiết — tiến độ, số đã xong hôm nay; chữ xanh bấm để tự chạy tới NPC / chỗ boss. Bảng nhiệm vụ góc trái và khung này *chỉ hiện nhiệm vụ đã nhận*.",
+    "• Điện thoại: *Hành trang* chỉ mở túi đồ; *Túi tử mẫu* mở bằng nút ở bên trái túi đồ.",
+    "• Thẻ *Ngũ hành* (Trợ Thủ → Tiện ích): gợi ý không còn che hình khi chọn hệ vũ khí."
+   ]
+  },
+  {
+   "id": 71,
+   "ngay": "03/11",
+   "ten": "Nâng cấp Trợ Thủ",
+   "noi": [
+    "## Nâng cấp Trợ Thủ (phím K)",
+    "• *Tự uống thuốc* — chọn *Bất kỳ* (hoặc hết loại đã chọn): uống cả thuốc hồi cả hai như *Ngũ Hoa Ngọc Lộ Hoàn*, *Hồi Thiên Tái Tạo Đơn* — thuốc một loại uống trước.",
+    "• *Bùa hại* chọn được mục tiêu: *Tất cả quái* hoặc chỉ *Tinh anh, thủ lĩnh, boss* (Boss Sát thủ, Boss Hoàng Kim…) — đỡ tốn nội lực với quái thường. Mục *Người chơi* mở khi có PK.",
+    "• Thẻ *Đánh quái* chia 2: *Quái thường* và *Boss Hoàng Kim*. Boss Hoàng Kim: ưu tiên đánh boss, đứng gần boss không tự về thành; *trọng thương / về thành thì mua bán xong quay lại boss* (không về bãi treo máy nữa); bật *Boss xuất hiện thì tự đi đánh* (từ cấp tự chọn); boss chết thì về bãi treo máy.",
+    "• Thẻ *Về thành*: chọn thành Trợ Thủ về — *Ba Lăng huyện* hoặc *Biện Kinh*. Thổ Địa Phù đưa về đó; bán, sửa, mua thuốc, cất đồ / tiền vào rương ở đó.",
+    "• Thẻ mới *Tiện ích*:",
+    "• *Ngũ hành*: chọn hệ vũ khí, Trợ Thủ chỉ hệ cần mặc cho từng ô trang bị để kích đủ dòng ẩn.",
+    "• *Nhiệm vụ ngày*: *tự làm Dã Tẩu* (mở khóa *10 Xu* / ngày — tới đủ 40 nhiệm vụ: tự nhận, tự mua món, tự đi đánh quái, tự trả, chọn thưởng) và *tự săn Boss Sát thủ* (mở khóa *5 Xu* / ngày — boss bậc đúng cấp, tới đủ 8 boss). Mở khóa 1 lần dùng cả ngày, tắt bật / thoát game giữa chừng vẫn còn. Cần bật *Tự đánh* và mang Thổ Địa Phù."
+   ]
+  },
+  {
+   "id": 70,
+   "ngay": "03/11",
+   "ten": "Nhiệm vụ Minh Chủ",
+   "noi": [
+    "## Nhiệm vụ Võ Lâm Minh Chủ hằng ngày",
+    "• Gặp *Hắc Bạch Sứ Giả* ở *Biện Kinh* (cạnh Thần Tài) hoặc *Ba Lăng huyện* (cạnh Nhiếp Thí Trần). Nhân vật *cấp 120 trở lên* mỗi ngày nhận được *3 nhiệm vụ*, mỗi loại hoàn thành 1 lần.",
+    "• *Tiêu diệt ác bá*: hạ *500 con* một loại quái ở bãi bằng cấp hoặc thấp hơn tối đa 50 cấp. Đồng đội cùng bãi hạ cũng được tính. Thưởng *20.000.000 kinh nghiệm*.",
+    "• *Giao thư tuyệt mật*: mang *Thư của Long Nhi* cho *Tiểu Chiêu* (trên thuyền Phong Lăng Độ) hoặc *Phụng Phụng* (trong ải Vượt Ải), chọn *Ta đến trao thư cho ngươi*. Lỡ mất thư thì xin sứ giả viết lại. Thưởng *15.000.000 kinh nghiệm*.",
+    "• *Thu thập nguyên liệu*: hái *3 cây* cùng loại mọc *ngoài thành* — Kiếm Tâm Hải Đường (ngoài Cổng Đông), Hiệp Hương Thảo (ngoài Cổng Bắc) ở Ba Lăng huyện; Tình Nghĩa Kim Lan (ngoài Cổng Bắc), Duyên Trường Thanh Liên (ngoài Cổng Tây) ở Biện Kinh. Mỗi lần hái mất *3 giây* (đi lại hoặc đánh là hỏng). Thưởng *15.000.000 kinh nghiệm*.",
+    "• Mỗi cụm cây có *2 Hộ Vệ Hoa Viên* canh giữ (*1.000.000 máu*, đánh trả, không rơi đồ) — phải hạ hết mới hái được. Cả cụm bị hạ thì *5 phút* sau sống lại. Nhiều người cùng đánh sẽ nhanh hơn.",
+    "• Xong thì về gặp sứ giả → *Ta đến nhận thưởng nhiệm vụ*. Tiến độ xem ở bảng *Nhiệm vụ* góc trái."
+   ]
+  },
+  {
+   "id": 69,
+   "ngay": "03/11",
+   "ten": "Sự kiện Rương Thần Bí",
+   "noi": [
+    "## Rương Thần Bí — 20:10 mỗi ngày",
+    "• Đúng *20:10* mỗi ngày có *3 Rương Thần Bí* xuất hiện ngẫu nhiên ở các bãi luyện công *từ cấp 90 trở lên* (chỉ bãi có người đủ cấp vào được). Kênh hệ thống báo tên bản đồ, không báo tọa độ — hãy mau đi tìm!",
+    "• Nhân vật *cấp 120 trở lên* đứng gần rương bấm vào rương (điện thoại: nút *Mở rương*). Ai mở trước được *1 phần thưởng ngẫu nhiên*, rương biến mất và cả máy chủ được báo.",
+    "• Phần thưởng: *10 / 15 / 20 / 30 triệu kinh nghiệm*, Pháo Hoa, Hoa hồng, Phi Phong, Phúc Duyên Lộ (tiểu / trung / đại), Tiên Thảo Lộ, Quế Hoa Tửu, *10 Xu* hoặc *25 Xu*. Hành trang đầy thì không mở được — dọn chỗ trước.",
+    "• Không ai mở thì rương biến mất sau *2 giờ*.",
+    "## Vật phẩm mới",
+    "• *Pháo Hoa* — chuột phải: bắn pháo hoa quanh mình. *Hoa hồng* — chuột phải: mưa hoa hồng. Người đứng gần cũng thấy.",
+    "• *Phi Phong* — chuột phải: khoác áo choàng lên y phục, giữ luôn kể cả khi thay đồ.",
+    "• Cả 3 món có ở *cửa hàng phúc duyên* (Nhận thưởng → Phúc duyên → Giao dịch): Pháo Hoa *4 điểm*, Hoa hồng *20 điểm*, Phi Phong *500 điểm* — và trong Rương Thần Bí."
+   ]
+  },
+  {
+   "id": 68,
+   "ngay": "03/11",
+   "ten": "Sự kiện Phú Quý Cẩm Hạp",
+   "noi": [
+    "## Phú Quý Cẩm Hạp — Thần Tài (Biện Kinh 220/190)",
+    "• Thần Tài bán *Phú quý cẩm hạp*, giá *1 Xu* một hộp.",
+    "• Nhân vật *cấp 60 trở lên*, đứng trong thôn / thành, *chuột phải* vào hộp rồi *nhập 1 số từ 10 đến 99* — nhận ngay *200.000 kinh nghiệm*. Có thể chọn trùng hoặc khác số.",
+    "• Mỗi ngày mỗi nhân vật dùng tối đa *10 hộp*. Chọn trước 22:10 là đợt hôm nay, sau 22:10 tính cho đợt ngày mai.",
+    "• Đúng *22:10* mỗi ngày Thần Tài công bố *9 số may mắn thường* và *1 số đặc biệt* (khác nhau, từ 10 đến 99).",
+    "• Mỗi lần chọn trúng số thường: *10.000.000 kinh nghiệm + 1 Tiên Thảo Lộ* (tối đa 10 lần một đợt). Trúng số đặc biệt: *30.000.000 kinh nghiệm + 1 Tiên Thảo Lộ đặc biệt* (tối đa 1 lần một đợt).",
+    "• Nhận thưởng ở Thần Tài *từ 22:10 tới 17:10 hôm sau* — quá hạn thì mất. Trúng số thì vào game có dòng nhắc. Thần Tài cho xem số đã chọn và số may mắn lần trước."
+   ]
+  },
+  {
+   "id": 67,
+   "ngay": "03/11",
+   "ten": "Boss Sát thủ ở bãi quái chung",
+   "noi": [
+    "## Boss Sát thủ ở bãi quái chung",
+    "• Boss Sát thủ nay chỉ xuất hiện ở *bản quái chung* của bãi: ai đang nhận nhiệm vụ boss nào vào bản chung của bãi đó thì boss hiện ra — *mọi người trong bản chung đều thấy, cùng đánh được*.",
+    "• Boss bị giết thì *2 phút sau* mới hiện lại (nếu vẫn còn người đang nhận nhiệm vụ boss đó). Không còn ai cần thì khoảng 1 phút sau boss rời đi.",
+    "• Ai đang nhận đúng boss đó, *có đánh* lúc boss chết đều hoàn thành nhiệm vụ (Sát Thủ lệnh + kinh nghiệm + 8 lượt rơi), kể cả khi không đánh nhiều nhất. Người không có nhiệm vụ đánh giúp thì không nhận gì.",
+    "• 72 boss ở các bãi phụ (Tần Lăng, Miêu Lĩnh, Vi sơn đảo…) đã dời về bãi chung cùng dãy cấp — Nhiếp Thí Trần và bảng nhiệm vụ báo chỗ mới.",
+    "• *Xa phu*: đang nhận nhiệm vụ sát thủ thì có thêm *Đưa ta đến bản đồ nhiệm vụ sát thủ* — đưa thẳng vào bản quái chung của bãi có boss.",
+    "• *Trợ Thủ → Đánh quái*: ô *Né Boss Sát thủ* (bật sẵn) — không đánh Boss Sát thủ (trừ boss nhiệm vụ của mình), đánh hết quái quanh boss thì tự sang chỗ khác."
+   ]
+  },
+  {
+   "id": 66,
+   "ngay": "03/11",
+   "ten": "Nhắc phần thưởng chưa nhận",
+   "noi": [
+    "## Nhắc phần thưởng chưa nhận",
+    "• Nút *Nhận thưởng* (máy tính: dưới bản đồ nhỏ; điện thoại: Giang hồ → Nhận thưởng) có *số đỏ* = số loại thưởng đang chờ nhận: Đăng nhập nhận thưởng, Thưởng thăng cấp, Online nhận thưởng, Phúc duyên.",
+    "• Trong khung chọn phần thưởng, mục còn quà ghi *(có thể nhận)*. Nhận xong thì số giảm.",
+    "• Vào game có 1 dòng tin báo còn mấy phần thưởng chưa nhận; đang chơi mà có thưởng mới (sang ngày, lên mốc cấp, đủ giờ phúc duyên) cũng báo.",
+    "• Điện thoại: thêm số đỏ trên thẻ *Giang hồ* và ô *Nhận thưởng* ở Việc cần làm (chạm là mở)."
+   ]
+  },
+  {
+   "id": 65,
+   "ngay": "03/11",
+   "ten": "Hoạt động Săn Nhím Béo Phì",
+   "noi": [
+    "## Săn Nhím Béo Phì",
+    "• Mỗi ngày *5 đợt*: *09:40, 13:40, 15:40, 19:40, 23:40* (giờ Việt Nam), mỗi đợt *15 phút*. Kênh hệ thống báo trước 5 phút.",
+    "• Mỗi đợt *10 con Nhím béo phì*: 5 con quanh *Ba Lăng huyện*, 5 con quanh *Biện Kinh* — chỗ ngẫu nhiên *ngoài khu an toàn* (ngoài cổng thành), *không báo tọa độ*: phải tự đi tìm.",
+    "• Nhím đứng yên, không đánh trả — cấp nào cũng săn được. Máu dùng chung: nhiều người có thể cùng đánh 1 con.",
+    "• Ai ra *đòn cuối cùng* bắt được nhím nhận *1.500.000 kinh nghiệm* + *1 món ngẫu nhiên*: Tiên Thảo Lộ, Bách Quả Lộ, Quế Hoa Tửu, Phi Tốc hoàn, Đại Lực hoàn, Phúc Duyên Lộ; hiếm: *Thủy Tinh* (Lam / Tử / Lục), *Tinh Hồng Bảo Thạch*.",
+    "• Mỗi nhân vật bắt tối đa *10 con / ngày* (đủ rồi đánh không còn tác dụng). Kinh nghiệm không chia tổ đội, không nhân Tiên Thảo Lộ.",
+    "• Lúc có đợt: dòng *Săn Nhím Béo Phì* trên giữa màn hình (còn mấy con, giờ còn, số con mình đã bắt hôm nay). Đang bật tự đánh mà tới gần nhím (ngoài khu an toàn) thì Trợ Thủ tự đánh nhím."
+   ]
+  },
+  {
+   "id": 64,
+   "ngay": "03/11",
+   "ten": "Quái bãi chung mạnh hơn 50%",
+   "noi": [
+    "## Bãi quái chung",
+    "• Quái ở *bản quái chung* nay mạnh hơn *50%*: *máu ×1,5*, *sát thương ×1,5*, *đánh nhanh hơn 50%* (vung đòn và nghỉ giữa 2 đòn đều nhanh hơn) — cả thủ lĩnh, tinh anh.",
+    "• Thưởng giữ như cũ: +10% kinh nghiệm và ngân lượng, tăng ích tổ đội. Bản quái riêng không đổi."
+   ]
+  },
+  {
+   "id": 63,
+   "ngay": "03/11",
+   "ten": "Xem trang bị người ở gần",
+   "noi": [
+    "## Xem trang bị",
+    "• *Ctrl + chuột phải* vào người chơi (điện thoại: *chạm giữ* người chơi) → mục mới *Xem trang bị*: mở khung Trang bị của người đó, chỉ xem.",
+    "• Trỏ (điện thoại: chạm) vào món để xem đủ chi tiết: dòng xanh, ngũ hành, độ bền, yêu cầu — tính theo chính người đó.",
+    "• Chỉ xem được người *đứng cùng bãi* (cùng bản quái chung / riêng) và chỉ đồ *đang mặc* — không thấy túi, rương."
+   ]
+  },
+  {
+   "id": 62,
+   "ngay": "03/11",
+   "ten": "Bảng không nhảy chỗ khi phóng to",
+   "noi": [
+    "## Đổi cỡ cửa sổ game",
+    "• Mở Trợ Thủ ở cửa sổ nhỏ (hoặc giao diện điện thoại) rồi *phóng to*: Trợ Thủ nay tự dán lại *sát mép phải, dưới bản đồ nhỏ* — trước đó nó nằm lệch giữa màn hoặc sát mép trên.",
+    "• Bảng nào bị lòi ra ngoài màn sau khi đổi cỡ thì tự kéo vào trong. Bảng đã tự kéo đi chỗ khác thì giữ chỗ đó."
+   ]
+  },
+  {
+   "id": 61,
+   "ngay": "03/11",
+   "ten": "Treo nhiều cửa sổ đỡ tụt khung",
+   "noi": [
+    "## Treo nhiều cửa sổ trên 1 máy",
+    "• Cửa sổ game *không đang dùng* (không bấm vào) nay chỉ vẽ *20 khung / giây* để nhường máy cho cửa sổ đang dùng — tự đánh, nhặt đồ, về thành vẫn chạy đủ, không chậm đi.",
+    "• Đổi ở *Trợ Thủ → Khác → Cửa sổ không đang dùng*: 20 / 10 khung / giây, hoặc như cửa sổ đang dùng.",
+    "• Dòng FPS góc trái ghi rõ khi cửa sổ đang được giới hạn, hoặc khi trình duyệt tự hãm cửa sổ (ít hơn 30 lần / giây)."
+   ]
+  },
+  {
+   "id": 60,
+   "ngay": "03/11",
+   "ten": "Dòng ghim ở khung chat",
+   "noi": [
+    "## Dòng ghim",
+    "• Quản trị có thể *ghim* 1 dòng ở *đầu khung chat* của mọi người (mã quà, sự kiện mới…) — người vào game sau cũng thấy.",
+    "• Điện thoại: dòng ghim nằm ngay dưới hàng thẻ lọc của khung chat (nút Chat).",
+    "• Bấm *×* để ẩn dòng ghim trên máy mình; khi quản trị ghim tin mới thì dòng ghim hiện lại."
+   ]
+  },
+  {
+   "id": 59,
+   "ngay": "03/11",
+   "ten": "Tăng ích tổ đội: hồi phục",
+   "noi": [
+    "## Tăng ích tổ đội thêm hồi phục",
+    "• Cùng điều kiện như tốc độ tổ đội (ở bãi train, người trong đội đang online đứng cùng bãi, từ 2 người): mỗi người *+2 sinh lực và +2 nội lực mỗi giây* — đội 2 người +4, đủ 8 người *+16 mỗi giây*.",
+    "• Rê chuột vào biểu tượng *Tăng ích tổ đội* trên thanh trạng thái để xem mức hồi đang được."
+   ]
+  },
+  {
+   "id": 58,
+   "ngay": "03/11",
+   "ten": "Tăng ích tổ đội",
+   "noi": [
+    "## Tăng ích tổ đội (chỉ ở bãi train)",
+    "• Chỉ tính người trong đội *đang online, đứng cùng bãi* (cùng bản quái chung / quái riêng), tính cả mình.",
+    "• *Tốc độ di chuyển + tốc độ đánh*: mỗi người +5% — đội 2 người +10%, 4 người +20%, đủ 8 người *+40%*. Chỉ ở bãi train, không có ở thành, thuyền Phong Lăng Độ, Vượt Ải.",
+    "• *Kinh nghiệm* ở *bãi quái chung*: mỗi mốc *2 / 4 / 6 / 8 người* +5% (đội 8 người +20%) — cho người giết quái và cả phần đội chia, cộng thêm vào +10% của bãi quái chung.",
+    "• Thanh trạng thái (góc trái trên) có biểu tượng *Tăng ích tổ đội*: rê chuột vào xem mức đang được.",
+    "• *Ủy thác* không tính tăng ích tổ đội: lúc đang được tăng ích thì không đo tốc độ giết cho ủy thác — ủy thác vẫn theo tốc lúc đánh một mình như cũ.",
+    "## Vòng sáng, bùa lợi",
+    "• Tầm vòng sáng *Nga My* tăng thêm *30%*.",
+    "• Bùa lợi đang có (Côn Lôn *Thanh Phong phù*, *Thiên Thanh Địa Trọc*, *Nhất Khí Tam Thanh*…) nay *người khác cũng thấy* trên người mình, như vòng sáng."
+   ]
+  },
+  {
+   "id": 57,
+   "ngay": "03/11",
+   "ten": "Vòng sáng đồng đội, Trợ Thủ",
+   "noi": [
+    "## Vòng sáng",
+    "• Đứng trong vòng sáng của đồng đội (Nga My, Thiếu Lâm, Võ Đang…) thì *dưới chân mình cũng hiện vòng sáng* đó, người khác cũng thấy.",
+    "• Đổi vòng sáng thì vòng vừa tắt *còn tác dụng thêm một lúc* như client: Phật Tâm Từ Hữu 8 giây, các vòng khác 1 giây.",
+    "## Trợ Thủ → Kỹ năng",
+    "• *Nga My*: chọn tối đa *3 vòng sáng* (Vòng sáng 1, 2, 3). Đang tự đánh thì ô tay phải tự đổi vòng mỗi 0,5 giây — cả 3 vòng đều giữ tác dụng cho mình và đồng đội đứng gần.",
+    "• *Nga My*: dòng *Hồi máu đồng đội khi SL < x %* — đồng đội trong tầm có sinh lực dưới mức đó thì dùng Từ Hàng Phổ Độ lên người đó.",
+    "• Danh sách vòng sáng nay có đủ *Mộng Điệp* và *Phổ Độ Chúng Sinh* (trước bị lẫn vào ô Hồi máu).",
+    "• Mọi phái: *NL < x % đánh [chiêu] … tới khi NL ≥ y %* thì về chiêu đánh chính. Ví dụ Võ Đang đánh Thiên Địa Vô Cực, nội lực dưới 30 % thì đổi sang Nhân Kiếm Hợp Nhất (vũ khí hút nội lực) tới khi đủ 90 % rồi đánh Thiên Địa Vô Cực lại. Chọn *đòn thường* nếu muốn đánh thường để hút nội lực.",
+    "## Theo sau",
+    "• Trợ Thủ theo sau đội trưởng nay *nhặt xong đồ / tiền rồi mới theo tiếp* (vật nằm gần đội trưởng), không bỏ dở giữa đường."
+   ]
+  },
+  {
+   "id": 56,
+   "ngay": "03/11",
+   "ten": "Bãi quái chung +10%",
+   "noi": [
+    "## Bãi quái riêng / bãi quái chung",
+    "• Mỗi dãy cấp *1–10, 10–20 … 190–200*, bãi chính có thêm *bản quái chung*: Dược Vương Cốc, Hoa Sơn, Kiếm Các Tây Bắc, Thục Cương sơn, Thanh Thành sơn, Thiên Tâm động, Hoành Sơn Phái, Lâm Du Quan, Chân núi Trường Bạch, Sa Mạc 1, Sa Mạc 2, Tiến Cúc động, Khoả Lang động, Sa Mạc 3, Trường Bạch sơn Nam, Trường Bạch sơn Bắc, Phong Lăng độ, Mạc Cao Quật, Băng Hà động, Dương Trung động.",
+    "• *Quái riêng*: như mọi bãi — quái của riêng mình.",
+    "• *Quái chung*: mọi người trong bản chung thấy chung một bầy quái, ai cũng đánh được. Quái giết ở đây được *+10% kinh nghiệm và ngân lượng*. Người đánh nhiều nhất nhận trọn con quái, người đánh phụ nhận kinh nghiệm theo phần sát thương.",
+    "• Số quái bản chung: 1 người *65 con* như bãi riêng, mỗi người vào thêm *+10 con*, tối đa *95 con*.",
+    "• Hai bản không thấy nhau: người ở bản riêng không thấy người ở bản chung của cùng bãi.",
+    "## Cách vào",
+    "• *Xa phu*: chọn bãi chính thì hỏi thêm *Quái riêng* hay *Quái chung*. Trong tổ đội: đội trưởng đang ở bãi đó thì vào thẳng bản của đội trưởng.",
+    "• *Trợ Thủ → Đánh quái → Bãi treo máy*: bãi chính có thêm dòng *Quái chung +10%* (chữ xanh lá) — Trợ Thủ về thành xong quay lại đúng bản đó.",
+    "• Thoát game hay dùng Thổ Địa Phù ở bản chung: vào lại / \"Trở lại địa điểm cũ\" vẫn về bản chung. Bản đồ nhỏ ghi *(chung)*.",
+    "• *Ủy thác* lúc thoát game tính như bãi riêng, không có +10%.",
+    "• Lâm Du Quan trước chỉ có quái chung, nay có cả 2 bản."
+   ]
+  },
+  {
+   "id": 55,
+   "ngay": "02/11",
+   "ten": "Sát Thủ lệnh / giản cộng dồn",
+   "noi": [
+    "## Sát Thủ lệnh / Sát thủ giản",
+    "• *Sát thủ giản không còn ngũ hành*: giản cùng cấp là một loại. Giản cũ trong túi / rương tự đổi khi vào game.",
+    "• *Sát Thủ lệnh* và *Sát thủ giản* nay *cộng dồn*, mỗi ô tối đa *9999* (như Mật đồ thần bí). Lệnh vẫn giữ ngũ hành, cộng dồn theo từng hệ. Lệnh / giản đang có trong túi, rương tự dồn lại 1 lần khi vào game.",
+    "• Hợp thành ở Nhiếp Thí Trần: bỏ vào *cả chồng* lệnh cùng cấp (khác hệ cũng được) — cứ *5 lệnh ra 1 giản*, lệnh thừa giữ lại.",
+    "• Vượt Ải lấy giản từ chồng, cấp thấp trước như cũ.",
+    "## Dã Tẩu",
+    "• Nhiệm vụ tìm *Sát thủ giản cấp 90* (từ cấp 100): nộp giản của mình là được, lấy 1 giản trong chồng.",
+    "• Tạm bỏ nhiệm vụ tìm *Huyền tinh* cho tới khi game có Huyền tinh. Ai đang làm nhiệm vụ đó: gặp Dã Tẩu là được đổi nhiệm vụ khác, không mất lượt, không tốn cơ hội hủy."
+   ]
+  },
+  {
+   "id": 54,
+   "ngay": "02/11",
+   "ten": "Chợ Trời — hàng Dã Tẩu",
+   "noi": [
+    "## Sạp Hệ thống",
+    "• Bảng *Chợ Trời* có thêm mục *Dã Tẩu*: món Dã Tẩu hay đòi, chủ sạp là *Hệ thống*. Mỗi món *5 – 8 vạn*, giá cố định, *không thu thuế*, mua bao nhiêu cũng có.",
+    "• Đang làm nhiệm vụ Dã Tẩu loại *mua / tìm / xem vật phẩm*: món đúng yêu cầu đứng *đầu tiên*, ghi *Dã Tẩu: đang cần*. Mua xong gặp Dã Tẩu nộp như thường.",
+    "• Bày sẵn mọi món *Xem vật phẩm* (tăng sinh lực, nội lực, thể lực, sức mạnh, thân pháp, ngoại công, phòng độc / băng / hỏa / lôi, phục hồi, giảm thời gian…): Dã Tẩu xem xong trả lại, *mua 1 lần dùng mãi*. Gõ vào ô tìm, vd \"phong doc\", để lọc.",
+    "• Món mua ở đây ghi *Món Dã Tẩu* — *Trợ Thủ không tự bán, không cất rương*, để trong túi chờ nộp.",
+    "• Món Kỳ Trân Các (Sát Thủ Giản, Huyền tinh) không bán ở sạp này.",
+    "## Sửa",
+    "• Nhiệm vụ *Mua vật phẩm* đòi ngựa: Dã Tẩu nay chỉ đường tới *Mã phu Biện Kinh* (Ba Lăng không còn Mã phu).",
+    "• 3 nhiệm vụ tìm nhẫn / hộ thân phù ghi sai ngũ hành (vd \"Hoàng Ngọc Giới Chỉ (Kim)\" mà cần hệ Mộc): nay ghi đúng hệ cần nộp."
+   ]
+  },
+  {
+   "id": 53,
+   "ngay": "02/11",
+   "ten": "Chợ trời — bày bán",
+   "noi": [
+    "## Bày bán (như client)",
+    "• Mở *Hành trang*, bấm *Định giá* rồi bấm món muốn bán: nhập *giá niêm yết* (số tiền bạn nhận) — món lên sạp (khung *Rao bán* 6 × 10 ô). Bấm món trên sạp của mình để định giá lại, chuột phải để không bán nữa (về hành trang).",
+    "• Bấm *Lời rao*: chữ trên bảng hiệu (1 – 16 chữ). Đứng trong *thôn / thành* (khu vực an toàn), bấm ô *Rao bán*: nhân vật ngồi xuống bày bán, bảng hiệu hiện trên đầu. Từ *cấp 80*.",
+    "• *Đi luyện công hay thoát game, sạp vẫn mở*: một người bán hàng đứng trông sạp thay ở đúng chỗ đó. Quay về ngồi đúng chỗ sạp thì lại là chính nhân vật của bạn.",
+    "• Bán được: tiền vào thẳng hành trang, có dòng báo (vắng mặt thì báo khi vào game). Sạp hết hàng tự đóng.",
+    "## Mua",
+    "• Bấm vào người đang ngồi bày bán hoặc người trông sạp: xem sạp, rê chuột thấy giá, bấm món để mua.",
+    "• Bảng *Chợ Trời*: nút *hộp vàng* ở thanh dưới (giữa nút Ngồi và nút Ngựa — điện thoại: bảng Giang hồ), ở đâu cũng mở được; hoặc gặp *Chủ Chợ Trời* (Ba Lăng huyện — chỗ Mã phu cũ; Biện Kinh). Bảng có mọi món đang bày, chia mục Vũ khí / Phòng cụ / Trang sức / Ngựa / Khác, tìm theo tên hoặc dòng thuộc tính (gõ không dấu cũng được), mua ngay tại bảng.",
+    "• *Thuế chợ 20%*: người mua trả giá niêm yết + 20% (quan phủ thu), người bán nhận đúng giá niêm yết.",
+    "• *Mã phu* không còn ở Ba Lăng huyện — mua ngựa ở *Mã phu Biện Kinh* (Xa phu → Những thành thị đã đi qua → Biện Kinh).",
+    "• Mọi người *tải lại trang (F5)* để nhận bản mới."
+   ]
+  },
+  {
+   "id": 52,
+   "ngay": "02/11",
+   "ten": "Boss 20:00 về thành",
+   "noi": [
+    "## Boss thế giới 20:00",
+    "• Boss Hoàng Kim 20:00 giờ xuất hiện *ngẫu nhiên ở Ba Lăng huyện hoặc Biện Kinh* (mỗi nơi 1/2), ở *bãi trống ngoài cổng thành*: Ba Lăng 4 chỗ (ngoài cổng Bắc / Đông / Nam / Tây), Biện Kinh 2 chỗ (ngoài cổng Tây, quảng trường ngoài cổng Nam). Thông báo ghi rõ chỗ, vd *— ngoài Cổng Nam*.",
+    "• Boss đứng xa cổng, *không vào khu vực an toàn*: đứng trong cổng không bị boss đuổi đánh; chạy vào trong cổng thì boss bỏ, về chỗ.",
+    "• Đang bật tự đánh mà về thành (tự đánh tạm dừng ở thành): *tới gần boss là tự đánh boss* (không đánh mộc nhân), quay vào thành thì thôi.",
+    "## Tổ đội",
+    "• Trợ Thủ *Tự mời người chơi xung quanh* không còn mời người đang đứng *trong thôn / thành* (khu vực an toàn) — hết bị mời liên tục lúc đứng ở thành. Ra ngoài cổng (vd đánh boss) vẫn tự mời như cũ; mời bằng tay vẫn được.",
+    "• Mọi người *tải lại trang (F5)* để nhận bản mới."
+   ]
+  },
+  {
+   "id": 51,
+   "ngay": "02/11",
+   "ten": "Khu vực an toàn trong thôn / thành",
+   "noi": [
+    "• Như client: *trong cổng* Ba Lăng huyện và Biện Kinh là *khu vực an toàn* (trạng thái phi chiến đấu) — không đánh được; *ra khỏi cổng* là trạng thái chiến đấu.",
+    "• Đi qua cổng có báo ở khung chat: *Vào khu vực an toàn* / *Rời khu vực an toàn*.",
+    "• Đang ở trong mà bấm quái ở ngoài: nhân vật tự đi ra khỏi cổng rồi mới đánh. Mộc nhân luyện công Ba Lăng nằm ngoài cổng Nam — vẫn đánh thử chiêu bình thường.",
+    "• Mọi người *tải lại trang (F5)* để nhận bản mới."
+   ]
+  },
+  {
+   "id": 50,
+   "ngay": "02/11",
+   "ten": "Biện Kinh mở đủ bản đồ",
+   "noi": [
+    "• *Biện Kinh* giờ là bản đồ đầy đủ như client (trước chỉ là một góc nhỏ), có *68 NPC* đứng đúng chỗ như máy chủ gốc: Xa phu, Dược điếm, Tạp hóa, 2 Thợ rèn, Mã phu, Chủ tiền trang, Dã Tẩu, Lễ quan, Võ Lâm Truyền Nhân, Vệ binh Thành môn, người đi đường… và *4 Rương chứa đồ*.",
+    "• Đi Biện Kinh: nói chuyện với *Xa phu* → *Những thành thị đã đi qua* → Biện Kinh. Về Ba Lăng cũng bằng Xa phu ở Biện Kinh.",
+    "• Cửa hàng ở Biện Kinh bán cùng hàng với Ba Lăng; Chủ tiền trang đổi Xu như Ba Lăng; Võ Lâm Truyền Nhân mở *Phúc duyên*.",
+    "• Vào bãi / thành giờ chỉ tải hình NPC ở gần chỗ đứng — vào nhanh hơn, đỡ tốn mạng, nhất là trên điện thoại.",
+    "• Mọi người *tải lại trang (F5)* để nhận bản mới."
+   ]
+  },
+  {
+   "id": 49,
+   "ngay": "02/11",
+   "ten": "Cửa sổ hẹp trên máy tính",
+   "noi": [
+    "• Chơi trên máy tính mà kéo cửa sổ trình duyệt *hẹp, dựng dọc* (hẹp hơn khoảng 800 điểm): game tự đổi sang *giao diện điện thoại* — chữ và nút to, dễ đọc. Kéo rộng lại là về giao diện máy tính.",
+    "• Ở giao diện này chuột vẫn bấm NPC để nói chuyện, bấm đồ trên đất để nhặt, bấm đất để đi như trên máy tính. Cần điều khiển mặc định tắt (bật ở Trợ Thủ → Khác).",
+    "• Mọi người *tải lại trang (F5)* để nhận bản mới."
+   ]
+  },
+  {
+   "id": 48,
+   "ngay": "02/11",
+   "ten": "Thẻ Tất cả hiện thông báo",
+   "noi": [
+    "• Khung chat thẻ *Tất cả*: tin chat cùng mọi thông báo của game — nhặt đồ, thưởng online, mảnh Sơn Hà Xã Tắc, tin báo cả máy chủ…",
+    "• Dòng *nhận kinh nghiệm* khi đánh quái và *nhặt tiền* chỉ hiện ở thẻ *Khác* (thẻ Khác vẫn có mọi thông báo như cũ).",
+    "• Mọi người *tải lại trang (F5)* để nhận bản mới."
+   ]
+  },
+  {
+   "id": 47,
+   "ngay": "02/11",
+   "ten": "Mật đồ thần bí chồng tới 9999",
+   "noi": [
+    "• *Mật đồ thần bí* xếp chồng tới *9999 cuốn* một ô (trước 60). Các chồng đang có trong túi tự dồn lại làm một khi vào game.",
+    "• Nộp thuyền phu Phong Lăng Độ vẫn đúng *200 cuốn*: tách ra 200 cuốn (Shift + chuột phải lên chồng) rồi đặt vào ô giao.",
+    "• Thuốc, phù và các món khác vẫn tối đa 60 một chồng.",
+    "• Mọi người *tải lại trang (F5)* để nhận bản mới."
+   ]
+  },
+  {
+   "id": 46,
+   "ngay": "02/11",
+   "ten": "Mượt hơn, bùa cho đồng đội",
+   "noi": [
+    "## Thấy người khác, quái chung mượt hơn",
+    "• Người chơi khác hiện trên máy mình *gần như ngay* (trễ còn khoảng 0,15 giây, trước khoảng 0,5 giây).",
+    "• Bãi quái chung (Lâm Du Quan): quái trên máy mọi người *đứng, chạy, vung đòn như nhau*; đòn kết liễu thấy quái ngã ngay.",
+    "## Tổ đội",
+    "• *Theo sau*: đứng sát đội trưởng, đội trưởng đi là chạy theo ngay. Bật thêm *Đánh cùng mục tiêu*: đánh đúng con đội trưởng đang đánh, đội trưởng chưa đánh thì theo sát (chỉ đánh trả con đang đánh mình).",
+    "• Trợ Thủ → Đánh quái → Tổ đội có ô mới *Bùa lợi cho đồng đội*: dùng bùa lợi đã chọn ở thẻ Kỹ năng mà dùng được lên người khác (Côn Lôn: Thanh Phong phù, Thiên Thanh Địa Trọc, Nhất Khí Tam Thanh; Thiếu Lâm: Bất Động Minh Vương) lên đồng đội đứng gần. Ô *Hồi máu* (Nga My: Từ Hàng Phổ Độ) hồi cho đồng đội máu thấp.",
+    "• Quái chung: người cùng đội đánh chung 1 con nhận phần chia kinh nghiệm của đội như client.",
+    "• Mọi người *tải lại trang (F5)* để nhận bản mới."
+   ]
+  },
+  {
+   "id": 45,
+   "ngay": "02/11",
+   "ten": "Quái chung ở Lâm Du Quan (thử)",
+   "noi": [
+    "## Quái chung — thử ở Lâm Du Quan",
+    "• Ở *Lâm Du Quan*, mọi người trong bãi *thấy chung một đàn quái*, đứng cùng chỗ: ai cũng đánh được, con nào chết là mất với mọi người.",
+    "• Mỗi con quái: người gây *nhiều sát thương nhất* nhận trọn như đánh một mình (kinh nghiệm, tiền, đồ rơi — chỉ người đó thấy và nhặt, chia tổ đội như cũ); người *đánh phụ* nhận kinh nghiệm theo phần sát thương của mình.",
+    "• Bãi đông người thì ra nhiều quái hơn (30 con, thêm 10 con mỗi người, tối đa 65).",
+    "• Các bãi khác vẫn như cũ. Ai đang ở Lâm Du Quan *tải lại trang (F5)* để vào đàn quái chung."
+   ]
+  },
+  {
+   "id": 44,
+   "ngay": "02/11",
+   "ten": "Thưởng thăng cấp, vòng tân thủ",
+   "noi": [
+    "## Thưởng thăng cấp",
+    "• Nút *Nhận thưởng* → *Thưởng thăng cấp*: mốc cấp *10, 20, 30, 40, 50, 60, 80, 100, 120, 150*, mỗi mốc nhận 1 lần — đã qua mốc thì *nhận bù*.",
+    "• Quà: ngân lượng, thuốc, Thổ Địa Phù, Tiên Thảo Lộ, *Huyền Thiên Chùy* (từ cấp 30, nhiều dần từ cấp 60), Phúc Duyên Lộ, Tinh Hồng Bảo Thạch, Thủy Tinh, Mã bài ngựa (cấp 80), Đại Thành Bí Kíp, Bí quyết kỹ năng cấp 120, Võ Lâm Mật Tịch, Tẩy Tủy Kinh và *Xu* (tổng 680 Xu). Bấm *Xem phần thưởng các mốc* để xem từng mốc.",
+    "## Vòng sáng tân thủ",
+    "• Nhân vật *dưới cấp 100* có vòng sáng xanh lá dưới chân: *hồi 50 sinh lực, 50 nội lực mỗi giây*, *tốc độ chạy +30 %*. Tới cấp 100 thì hết.",
+    "## Trợ Thủ",
+    "• Các thanh xổ đổi sang *kiểu khung của game* (chữ vàng, nền tối, viền vàng đồng) — máy tính và điện thoại như nhau."
+   ]
+  },
+  {
+   "id": 43,
+   "ngay": "02/11",
+   "ten": "Thấy người khác đi mượt hơn",
+   "noi": [
+    "• Vị trí, động tác của người chơi khác tới máy mình *ngay khi họ di chuyển* (trước chờ 2 nhịp, lúc nhanh lúc chậm) — hết cảnh người khác đứng khựng rồi nhảy tới.",
+    "• Cả 2 người cùng *tải lại trang* để nhận bản mới."
+   ]
+  },
+  {
+   "id": 42,
+   "ngay": "01/11",
+   "ten": "Biểu tượng bùa, Treo ở",
+   "noi": [
+    "• Bùa *Nhất Khí Tam Thanh*, *Thiên Thanh Địa Trọc* (Côn Lôn) và các bùa khác không có hình trạng thái riêng: hiện *biểu tượng của chiêu* kèm thời gian ở hàng trạng thái góc trên trái.",
+    "• Trợ Thủ → *Treo ở*: danh sách gọn như cũ (bỏ các dòng nhóm cấp), vẫn đủ các bãi Xa phu đi được.",
+    "• Thẻ kênh chat cách đều như client."
+   ]
+  },
+  {
+   "id": 41,
+   "ngay": "01/11",
+   "ten": "iPhone: hết bị phóng to",
+   "noi": [
+    "• *iPhone (Safari, Chrome)*: màn hình không còn bị phóng to (trước bị khi chạm ô Tài khoản / Mật khẩu / tên nhân vật hoặc chụm 2 ngón). Đang bị phóng to thì *tải lại trang*, hoặc chụm 2 ngón thu nhỏ lại.",
+    "• Điện thoại: ở màn chọn nhân vật, *chạm nhân vật đang chọn* (sáng vàng dưới chân) là vào game — như bấm *Vào Trò Chơi*."
+   ]
+  },
+  {
+   "id": 40,
+   "ngay": "01/11",
+   "ten": "Chiêu theo mốc, Trợ Thủ, chat",
+   "noi": [
+    "## Võ công",
+    "• Chiêu của phái mở *theo mốc như client*: chiêu mốc 20 tới cấp 20 mới có, mốc 30 tới cấp 30… Điểm đã cộng vào chiêu chưa tới mốc được *trả lại* khi vào game.",
+    "• *Vô Hình Độc* (Ngũ Độc): trúng *mọi quái trong tầm* vòng sáng, tầm *+30 %*.",
+    "## Trợ Thủ",
+    "• Ở thành thiếu tiền thì *lấy tiền trong rương* (rương không khóa) để mua Thổ Địa Phù, thuốc, sửa đồ. *Thổ Địa Phù mua trước* thuốc.",
+    "• Thuốc sinh lực + nội lực muốn mua quá 60 bình thì chia đều theo tỉ lệ (trước thuốc nội lực không còn chỗ). Mặc định *mua thuốc nội lực* và *về thành khi thuốc nội lực còn ≤ 5 bình*.",
+    "• *Treo ở*: đủ các bãi Xa phu đi được (cả bãi phụ), chia nhóm theo cấp.",
+    "• Quái đứng chỗ không tới được: bỏ qua lâu dần (5 giây, 10 giây… tới 2 phút) — hết cảnh chạy qua chạy lại một góc.",
+    "• *Ẩn tab, thu nhỏ hay cửa sổ khác che game*: game vẫn chạy đều và tự uống thuốc — không còn tự chết.",
+    "## Quái",
+    "• Ngũ hành quái *chia đều 5 hệ* ở mọi bãi. *Thục Cương sơn* ít quái hơn.",
+    "• Quái không còn đứng chồng khít lên nhau.",
+    "• Choáng / chậm / độc do quái gây ra *tối đa 1,5 giây* (ngất giữ như cũ).",
+    "## Khác",
+    "• Chat: thẻ *Tất cả* chỉ còn tin chat, thông báo của game ở thẻ *Khác*; thêm thẻ *Đội ngũ*.",
+    "• Điện thoại: cần điều khiển chạy mượt hơn khi vướng cây / đá; *chỉnh cỡ cần* ở Trợ Thủ → Khác.",
+    "• *Tiền trang*: *100 vạn lượng = 1 Xu*."
+   ]
+  },
+  {
+   "id": 39,
+   "ngay": "01/11",
+   "ten": "Sửa thẻ Thuốc của Trợ Thủ",
+   "noi": [
+    "• *Trợ Thủ → Thuốc* không còn trống ở nhân vật mới tạo — đặt tự uống thuốc, tự dùng lộ / hoàn như bình thường. Đang trong game thì *tải lại trang* để nhận bản sửa."
+   ]
+  },
+  {
+   "id": 38,
+   "ngay": "01/11",
+   "ten": "Mở máy chủ chính thức",
+   "noi": [
+    "• *13:00 ngày 01/11* (giờ Việt Nam) S1 · Đồ Xanh *mở chính thức* — mọi nhân vật làm lại từ đầu, tài khoản giữ nguyên.",
+    "## Trợ Thủ",
+    "• *Bắt đầu treo máy* ở thành: Trợ Thủ bán / sửa / mua thuốc + *Thổ Địa Phù* trước rồi mới đi Xa phu ra bãi. Không mua được phù (túi đầy / thiếu tiền) thì ở lại thành và báo.",
+    "• Về thành làm việc: không còn chạy ra đánh mộc nhân — đi bán / mua, ngồi dưỡng sức rồi tự quay lại bãi. Tự về thành lúc tự đánh đang bật thì tự đánh tạm dừng, ra bãi đánh tiếp.",
+    "• Hết việc ở thành giữa chừng (tắt tự đánh, tự đi Xa phu) không còn làm Trợ Thủ quên tự về thành.",
+    "## Kỳ Trân Các",
+    "• Giá mới: *Đại Thành Bí Kíp 90* 150 Xu, *Bí quyết kỹ năng cấp 120* 150 Xu, *Đại Thành Bí Kíp 120* 300 Xu, *Võ Lâm Mật Tịch* 150 Xu, *Tẩy Tủy Kinh* 150 Xu, *Tinh Hồng Bảo Thạch* 20 Xu, *Lam / Tử / Lục Thủy Tinh* 40 Xu / viên, *Phi Tốc hoàn* và *Đại Lực hoàn* 2 Xu, các loại hoàn khác 1 Xu.",
+    "## Chống gian lận",
+    "• Dùng phần mềm / trình duyệt *tăng tốc game* (Cheat Engine, nút tăng tốc của trình duyệt…) bị máy chủ *ghi nhận* — quản trị sẽ nhắc nhở, cảnh cáo; tái phạm *khóa tài khoản*."
+   ]
+  },
+  {
+   "id": 37,
+   "ngay": "31/10",
+   "ten": "Dã Tẩu, phúc duyên",
+   "noi": [
+    "## Online nhận thưởng",
+    "• Nút *Nhận thưởng* → *Online nhận thưởng*: mỗi ngày online đủ *1 giờ* nhận kinh nghiệm, đủ *2 giờ* nhận *Tiên Thảo Lộ + 20 vạn lượng*, đủ *3 giờ* nhận *1 Huyền Thiên Chùy*.",
+    "## Dã Tẩu",
+    "• Ô *Kinh nghiệm* và ô *Tiền* mỗi nhiệm vụ được *gấp đôi*. Ô Vật phẩm ra các loại hoàn, Bách Quả Lộ, Thiên Sơn Bảo Lộ, Phúc Duyên Lộ, hiếm có Tinh Hồng Bảo Thạch, Thiết La Hán.",
+    "• Cứ 10 nhiệm vụ nhận 1 *Bảo rương thần bí của Dã Tẩu* — dùng 1 Huyền Thiên Chùy để mở: hoàn, lộ, Thủy Tinh, Phúc Duyên Lộ, Thiết La Hán, *1 / 2 / 5 Xu*…",
+    "• Mốc trong ngày: thứ *20* +1 Xu; thứ *30* +30 triệu kinh nghiệm + 20 % kinh nghiệm cấp + 2 Xu; đủ *40* không hủy +100 triệu + 50 % kinh nghiệm cấp + 5 Xu.",
+    "• Quà theo tổng nhiệm vụ (mỗi mốc 1 phần quà): mỗi *100* nhiệm vụ — 10 Xu + 5 Tiên Thảo Lộ; mốc *1000* — 3 viên mỗi loại Thủy Tinh + 150 Xu; *2000* — 20 Tinh Hồng Bảo Thạch + 200 Xu; *3000 / 4000 / 5000* — 1 / 2 / 3 Võ Lâm Mật Tịch + Tẩy Tủy Kinh + 300 / 400 / 600 Xu; *6000 / 7000* — 600 Xu + Hoàng Kim Bảo Hạp; *8000* — Vé số Hoàng Kim (2 món này mở được khi game có trang bị Hoàng Kim).",
+    "## Phúc duyên",
+    "• Nút *Nhận thưởng* → *Phúc duyên*: online đủ 2 giờ đổi được *điểm phúc duyên* (lần đầu tặng 2 điểm, lần đổi thứ 2 trong ngày thêm 2 điểm). *Phúc Duyên Lộ* tiểu / trung / đại +10 / +20 / +50 điểm.",
+    "• Dùng điểm mua ở *Thần bí Thương Nhân Liễu Ất* (Phúc duyên → Giao dịch): Tiên Thảo Lộ, Bách Quả Lộ, Thiên Sơn Bảo Lộ, Phúc Duyên Lộ, Thủy Tinh, Tinh Hồng Bảo Thạch."
+   ]
+  }
+ ]
+}

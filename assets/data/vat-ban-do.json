@@ -1,0 +1,57 @@
+{
+ "format": "vl-s1-vat-ban-do",
+ "version": 1,
+ "built": "2026-11-02T07:08:59.745Z",
+ "from": "/home/jxser_8.1_vinh/server1/maps (file vùng, mục 3)",
+ "maps": {
+  "37": [
+   {
+    "id": 1,
+    "huong": 0,
+    "x": 59368,
+    "y": 94554,
+    "script": "\\script\\中原北区\\汴京\\汴京\\obj\\汴京-储物箱5.lua",
+    "ten": "Rương chứa đồ",
+    "viec": "ruong"
+   },
+   {
+    "id": 1,
+    "huong": 0,
+    "x": 51558,
+    "y": 96352,
+    "script": "\\script\\中原北区\\汴京\\汴京\\obj\\汴京-储物箱4.lua",
+    "ten": "Rương chứa đồ",
+    "viec": "ruong"
+   },
+   {
+    "id": 1,
+    "huong": 0,
+    "x": 55154,
+    "y": 98548,
+    "script": "\\script\\中原北区\\汴京\\汴京\\obj\\汴京-储物箱1.lua",
+    "ten": "Rương chứa đồ",
+    "viec": "ruong"
+   },
+   {
+    "id": 1,
+    "huong": 0,
+    "x": 54194,
+    "y": 102578,
+    "script": "\\script\\中原北区\\汴京\\汴京\\obj\\汴京-储物箱2.lua",
+    "ten": "Rương chứa đồ",
+    "viec": "ruong"
+   }
+  ],
+  "53": [
+   {
+    "id": 1,
+    "huong": 0,
+    "x": 51593,
+    "y": 101357,
+    "script": "\\script\\两湖区\\巴陵县\\obj\\巴陵县-储物箱1.lua",
+    "ten": "Rương chứa đồ",
+    "viec": "ruong"
+   }
+  ]
+ }
+}

@@ -1,0 +1,477 @@
+{
+ "format": "vl-s1-vat-pham",
+ "version": 1,
+ "built": "2026-10-27T11:14:59.258Z",
+ "source": "client settings/buysell.txt, goods.txt, item/004/townportal.txt",
+ "note": "items = vật phẩm không phải trang bị (phu: Thổ Địa Phù — về thành); shops[Sale] = [{ k, gia (lượng), s (ngũ hành món trang bị) }]",
+ "items": {
+  "townportal:1": {
+   "n": "Thổ địa phù",
+   "intro": "Một loại bùa pháp, giúp bạn mau chóng đến nơi muốn đến.",
+   "ic": "item/special/obj_townportal.png",
+   "c": [
+    1,
+    1
+   ],
+   "gia": 500,
+   "phu": 1
+  }
+ },
+ "shops": {
+  "37": [
+   {
+    "k": "meleeweapon:1",
+    "gia": 100,
+    "s": 4
+   },
+   {
+    "k": "meleeweapon:2",
+    "gia": 1200,
+    "s": 4
+   },
+   {
+    "k": "meleeweapon:11",
+    "gia": 100,
+    "s": 3
+   },
+   {
+    "k": "meleeweapon:12",
+    "gia": 1200,
+    "s": 3
+   },
+   {
+    "k": "meleeweapon:21",
+    "gia": 100,
+    "s": 0
+   },
+   {
+    "k": "meleeweapon:22",
+    "gia": 1500,
+    "s": 0
+   },
+   {
+    "k": "meleeweapon:31",
+    "gia": 100,
+    "s": 2
+   },
+   {
+    "k": "meleeweapon:32",
+    "gia": 1500,
+    "s": 2
+   },
+   {
+    "k": "meleeweapon:41",
+    "gia": 100,
+    "s": 0
+   },
+   {
+    "k": "meleeweapon:42",
+    "gia": 1200,
+    "s": 0
+   },
+   {
+    "k": "meleeweapon:51",
+    "gia": 100,
+    "s": 2
+   },
+   {
+    "k": "meleeweapon:52",
+    "gia": 1200,
+    "s": 2
+   },
+   {
+    "k": "rangeweapon:1",
+    "gia": 20,
+    "s": 1
+   },
+   {
+    "k": "rangeweapon:2",
+    "gia": 30,
+    "s": 1
+   },
+   {
+    "k": "rangeweapon:11",
+    "gia": 20,
+    "s": 1
+   },
+   {
+    "k": "rangeweapon:12",
+    "gia": 30,
+    "s": 1
+   },
+   {
+    "k": "rangeweapon:21",
+    "gia": 150,
+    "s": 1
+   },
+   {
+    "k": "rangeweapon:22",
+    "gia": 400,
+    "s": 1
+   }
+  ],
+  "38": [
+   {
+    "k": "townportal:1",
+    "gia": 500
+   },
+   {
+    "k": "armor:21",
+    "gia": 100,
+    "s": 4
+   },
+   {
+    "k": "armor:22",
+    "gia": 500,
+    "s": 4
+   },
+   {
+    "k": "armor:31",
+    "gia": 100,
+    "s": 3
+   },
+   {
+    "k": "armor:32",
+    "gia": 400,
+    "s": 3
+   },
+   {
+    "k": "armor:41",
+    "gia": 400,
+    "s": 3
+   },
+   {
+    "k": "armor:61",
+    "gia": 100,
+    "s": 4
+   },
+   {
+    "k": "armor:91",
+    "gia": 100,
+    "s": 0
+   },
+   {
+    "k": "armor:92",
+    "gia": 500,
+    "s": 0
+   },
+   {
+    "k": "helm:21",
+    "gia": 100,
+    "s": 0
+   },
+   {
+    "k": "helm:22",
+    "gia": 300,
+    "s": 0
+   },
+   {
+    "k": "helm:31",
+    "gia": 120,
+    "s": 3
+   },
+   {
+    "k": "helm:32",
+    "gia": 320,
+    "s": 3
+   },
+   {
+    "k": "helm:41",
+    "gia": 370,
+    "s": 2
+   },
+   {
+    "k": "helm:42",
+    "gia": 610,
+    "s": 2
+   },
+   {
+    "k": "helm:61",
+    "gia": 120,
+    "s": 1
+   },
+   {
+    "k": "helm:62",
+    "gia": 320,
+    "s": 1
+   },
+   {
+    "k": "helm:81",
+    "gia": 100,
+    "s": 2
+   },
+   {
+    "k": "helm:82",
+    "gia": 200,
+    "s": 2
+   },
+   {
+    "k": "armor:101",
+    "gia": 100,
+    "s": 1
+   },
+   {
+    "k": "armor:102",
+    "gia": 400,
+    "s": 1
+   },
+   {
+    "k": "armor:111",
+    "gia": 400,
+    "s": 1
+   },
+   {
+    "k": "armor:112",
+    "gia": 1000,
+    "s": 1
+   },
+   {
+    "k": "armor:131",
+    "gia": 100,
+    "s": 1
+   },
+   {
+    "k": "armor:132",
+    "gia": 100,
+    "s": 1
+   },
+   {
+    "k": "helm:91",
+    "gia": 100,
+    "s": 2
+   },
+   {
+    "k": "helm:92",
+    "gia": 300,
+    "s": 2
+   },
+   {
+    "k": "helm:111",
+    "gia": 370,
+    "s": 3
+   },
+   {
+    "k": "helm:112",
+    "gia": 610,
+    "s": 3
+   },
+   {
+    "k": "helm:121",
+    "gia": 60,
+    "s": 3
+   },
+   {
+    "k": "helm:122",
+    "gia": 160,
+    "s": 3
+   },
+   {
+    "k": "helm:131",
+    "gia": 120,
+    "s": 3
+   }
+  ],
+  "46": [
+   {
+    "k": "horse:1",
+    "gia": 5000
+   },
+   {
+    "k": "horse:2",
+    "gia": 5000
+   },
+   {
+    "k": "horse:3",
+    "gia": 10000
+   },
+   {
+    "k": "horse:4",
+    "gia": 10000
+   },
+   {
+    "k": "horse:5",
+    "gia": 20000
+   },
+   {
+    "k": "horse:6",
+    "gia": 20000
+   },
+   {
+    "k": "horse:7",
+    "gia": 50000
+   },
+   {
+    "k": "horse:8",
+    "gia": 50000
+   },
+   {
+    "k": "horse:9",
+    "gia": 100000
+   },
+   {
+    "k": "horse:10",
+    "gia": 100000
+   },
+   {
+    "k": "horse:11",
+    "gia": 5000
+   },
+   {
+    "k": "horse:12",
+    "gia": 5000
+   },
+   {
+    "k": "horse:13",
+    "gia": 10000
+   },
+   {
+    "k": "horse:14",
+    "gia": 10000
+   },
+   {
+    "k": "horse:15",
+    "gia": 20000
+   },
+   {
+    "k": "horse:16",
+    "gia": 20000
+   },
+   {
+    "k": "horse:17",
+    "gia": 50000
+   },
+   {
+    "k": "horse:18",
+    "gia": 50000
+   },
+   {
+    "k": "horse:19",
+    "gia": 100000
+   },
+   {
+    "k": "horse:20",
+    "gia": 100000
+   },
+   {
+    "k": "horse:21",
+    "gia": 5000
+   },
+   {
+    "k": "horse:22",
+    "gia": 5000
+   },
+   {
+    "k": "horse:23",
+    "gia": 10000
+   },
+   {
+    "k": "horse:24",
+    "gia": 10000
+   },
+   {
+    "k": "horse:25",
+    "gia": 20000
+   },
+   {
+    "k": "horse:26",
+    "gia": 20000
+   },
+   {
+    "k": "horse:27",
+    "gia": 50000
+   },
+   {
+    "k": "horse:28",
+    "gia": 50000
+   },
+   {
+    "k": "horse:29",
+    "gia": 100000
+   },
+   {
+    "k": "horse:30",
+    "gia": 100000
+   },
+   {
+    "k": "horse:31",
+    "gia": 5000
+   },
+   {
+    "k": "horse:32",
+    "gia": 5000
+   },
+   {
+    "k": "horse:33",
+    "gia": 10000
+   },
+   {
+    "k": "horse:34",
+    "gia": 10000
+   },
+   {
+    "k": "horse:35",
+    "gia": 20000
+   },
+   {
+    "k": "horse:36",
+    "gia": 20000
+   },
+   {
+    "k": "horse:37",
+    "gia": 50000
+   },
+   {
+    "k": "horse:38",
+    "gia": 50000
+   },
+   {
+    "k": "horse:39",
+    "gia": 100000
+   },
+   {
+    "k": "horse:40",
+    "gia": 100000
+   },
+   {
+    "k": "horse:41",
+    "gia": 5000
+   },
+   {
+    "k": "horse:42",
+    "gia": 5000
+   },
+   {
+    "k": "horse:43",
+    "gia": 10000
+   },
+   {
+    "k": "horse:44",
+    "gia": 10000
+   },
+   {
+    "k": "horse:45",
+    "gia": 20000
+   },
+   {
+    "k": "horse:46",
+    "gia": 20000
+   },
+   {
+    "k": "horse:47",
+    "gia": 50000
+   },
+   {
+    "k": "horse:48",
+    "gia": 50000
+   },
+   {
+    "k": "horse:49",
+    "gia": 100000
+   },
+   {
+    "k": "horse:50",
+    "gia": 100000
+   }
+  ]
+ }
+}

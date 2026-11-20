@@ -1,0 +1,2766 @@
+{
+  "_ghi_chu": "Cấu hình máy chủ S1 (THIET-KE-S1.md mục 2–4). Sửa xong thì tắt bật lại Chay_Game.bat. Không phát ra ngoài trình duyệt.",
+  "kinhNghiem": 3.5,
+  "_kinhNghiem": "hệ số nhân kinh nghiệm quái (bảng client) — x3,5: người chơi chăm ~cấp 120 sau 1 tháng",
+  "roiDo": {
+    "quaiThuong": 0.01,
+    "trum": 0.2
+  },
+  "_roiDo": "tỉ lệ rơi 1 món mỗi con (trước may mắn)",
+  "noiCong": {
+    "phanTram": 0.2
+  },
+  "_noiCong": "Luật riêng S1 (anh 29/10 — engine không có: Nội công chỉ cộng nội lực; hướng dẫn tân thủ của client cũng ghi vậy): chiêu nội công (không IsPhysical) × (1 + Nội công × phanTram %), cả độc, hiện cả ở lực tay; chiêu ngoại công giữ như engine (Sức mạnh / 5, ám khí Thân pháp / 5). 0,2 = mỗi 5 điểm Nội công +1 % (anh 29/10 lần 2: \"tương tự ngoại công tăng sức mạnh lên lực tay\" — đo: ngang giá trị 1 điểm Sức mạnh). 0 = tắt. src/game/vocong.js noiK",
+  "luyenKyNang": {
+    "moiDon": 4.7,
+    "chuan": 1297106,
+    "dao": 1.25,
+    "donToiDa": 150,
+    "ty120": 1440,
+    "heSoChieu": {
+      "321": 1,
+      "323": 2,
+      "337": 1.2,
+      "339": 1.1,
+      "353": 1.7,
+      "357": 0.6,
+      "362": 0.5,
+      "365": 1.2,
+      "375": 0.4,
+      "380": 1.3
+    }
+  },
+  "quaiVoCong": {
+    "bat": true,
+    "phai": {
+      "0": [
+        "shaolin",
+        "tianwang"
+      ],
+      "1": [
+        "tangmen",
+        "wudu"
+      ],
+      "2": [
+        "emei",
+        "cuiyan"
+      ],
+      "3": [
+        "gaibang",
+        "tianren"
+      ],
+      "4": [
+        "wudang",
+        "kunlun"
+      ]
+    },
+    "chieu1x": {
+      "shaolin": [
+        10,
+        14
+      ],
+      "tianwang": [
+        29,
+        30,
+        34
+      ],
+      "tangmen": [
+        45
+      ],
+      "wudu": [
+        63,
+        65
+      ],
+      "emei": [
+        80,
+        85
+      ],
+      "cuiyan": [
+        99,
+        102
+      ],
+      "gaibang": [
+        119,
+        122
+      ],
+      "tianren": [
+        135,
+        145
+      ],
+      "wudang": [
+        153,
+        155
+      ],
+      "kunlun": [
+        169,
+        179
+      ]
+    },
+    "chieu6x": {
+      "shaolin": [
+        19,
+        11
+      ],
+      "tianwang": [
+        32,
+        41,
+        324
+      ],
+      "tangmen": [
+        58,
+        341
+      ],
+      "wudu": [
+        71,
+        74
+      ],
+      "emei": [
+        88,
+        91
+      ],
+      "cuiyan": [
+        108,
+        111
+      ],
+      "gaibang": [
+        128,
+        125
+      ],
+      "tianren": [
+        148,
+        142
+      ],
+      "wudang": [
+        165,
+        267
+      ],
+      "kunlun": [
+        182,
+        176
+      ]
+    },
+    "capChieu": 5,
+    "giat": 25,
+    "giatHe": [
+      0
+    ],
+    "tanSuat": [
+      [
+        40,
+        25
+      ],
+      [
+        80,
+        50
+      ]
+    ],
+    "cham": 60,
+    "docPct": 50,
+    "choangLoi": [
+      8,
+      18
+    ],
+    "tglcToiDa": 77,
+    "hieuUngToiDa": 27
+  },
+  "_quaiVoCong": "Quái có võ công (anh 29/10 lần 4 — anh duyệt bản mẫu xong, bật cả máy chủ 29/10; bat false = tắt, biến môi trường VL_QUAI_VO_CONG=1 thì bật dù bat false — may-chu/do.js LUAT). Quái thường đánh chiêu 1x, trùm / Boss Sát thủ chiêu 6x (phái nào chưa có chiêu đánh 6x: 5x) của 1 trong 2 phái cùng hệ ngũ hành với con quái (phai, chieu1x, chieu6x — mã chiêu skills.json; bỏ chiêu bẫy / lướt). Cấp chiêu = cấp quái / capChieu (1–20). Sát thương mỗi lần ra chiêu = đòn thường của quái (1 lần / chiêu dù nhiều đạn), theo hệ của chiêu, trừ kháng hệ đó của người chơi; chiêu băng làm chậm cham khung (60 = 3,3 giây — engine defNORMAL_COLD_TIME, thời gian chậm mặc định của băng sát), độc = docPct % đòn rải theo thời gian độc của chiêu, choáng theo dòng stun_p của chiêu (chiêu lôi không có thì choangLoi = [% , khung]). Giật: mỗi đòn trúng giat % (chiêu có skill_dohurt thì theo đó), dài = động tác bị đánh × (100 − Thời gian phục hồi) / 100. Giảm của đồ: Thời gian làm chậm / choáng / trúng độc % (làm chậm tối đa tglcToiDa — engine). Cùng công tắc: Băng sát của người chơi lên quái tính như engine (khung băng của chiêu + Thời gian trì hoãn; anh 31/10: mọi đòn có băng sát — chiêu chủ động, bị động, đòn thường, đồ — làm chậm ít nhất 60 khung (defNORMAL_COLD_TIME) + trì hoãn; đang chậm thì không làm mới). Anh 30/10 lần 2 (\"quái nào đánh cũng ngất người là không đúng, hệ Kim mới có\"; \"quái 1-10-20 đánh skill rất nhanh, khống chế liên tục — giảm tần suất ra chiêu dưới 80\"): giatHe = hệ quái làm giật (thọ thương) — 0 = chỉ quái hệ Kim; tanSuat = [[cấp quái dưới, % số đòn là chiêu], …] — quái thường dưới cấp 40: 25 % đòn là chiêu, dưới 80: 50 %, từ 80: mọi đòn (trùm / Boss Sát thủ: mọi đòn); đòn không ra chiêu = đòn thường (vật lý, không trạng thái) hieuUngToiDa (anh 01/11): chậm / độc / choáng quái gây ra cho nhân vật kéo dài tối đa chừng này nhịp (18 nhịp = 1 giây; 27 = 1,5 giây) — độc ngắn lại thì tổng máu mất giảm theo; ngất (giat) không đổi.",
+  "_luyenKyNang": "Luyện kỹ năng (anh 29/10 lần 2 — như engine: chiêu sách 90 / 120 / 150 có cờ luyện không cộng điểm, lên cấp bằng độ luyện theo bảng client assets/data/luyen-ky-nang.json). moiDon = độ luyện mỗi lần chiêu đánh quái trúng 1 con (engine 20 — đo 29/10: trận S1 trúng 4–25 nghìn lần / giờ nên 20 chỉ ~6,6 giờ là đầy) × tổng bảng của chiêu / chuan (mọi chiêu cần cùng số lần trúng; chuan = trung vị bảng chiêu 90) × heSoChieu[mã] (chiêu chính mỗi phái theo số lần trúng / giờ đo được ở cấp 95 / 115 -> mục tiêu ~30 giờ đánh liên tục cho cấp 1 -> 20; chiêu khác 1); dao = hệ số trên đảo Tẩy Tủy (engine 25 / 20); donToiDa = số lần trúng tối đa mỗi nhịp; ty120 = % kinh nghiệm vừa nhận cộng vào chiêu luyện không đánh (120 — engine Skill120Rate; 1440 % -> ~30 giờ ở bãi cấp 125, 7,6 triệu kinh nghiệm / giờ). Ủy thác không luyện. may-chu/do.js luyen*",
+  "daTau": {
+    "capNhan": 20,
+    "boThuong": [
+      "sach",
+      "sach120",
+      "daiThanh",
+      "matTich",
+      "tayTuy"
+    ],
+    "gioiHan": 40,
+    "mocNgay": {
+      "20": {
+        "xu": 1
+      },
+      "30": {
+        "kn": 30000000,
+        "knCap": 0.2,
+        "xu": 2
+      },
+      "40": {
+        "kn": 100000000,
+        "knCap": 0.5,
+        "xu": 5,
+        "do": [
+          [
+            "ms:1884",
+            3
+          ]
+        ]
+      }
+    },
+    "heSoKn": 2,
+    "heSoTien": 2,
+    "oVatCoDinh": [
+      [
+        "qk:353",
+        0.5
+      ],
+      [
+        "ms:23",
+        0.5
+      ]
+    ],
+    "mocChuoi": [
+      {
+        "moi": 100,
+        "xu": 10,
+        "do": [
+          [
+            "ms:71",
+            5
+          ]
+        ]
+      },
+      {
+        "moi": 1000,
+        "xu": 150,
+        "do": [
+          [
+            "qk:238",
+            3
+          ],
+          [
+            "qk:239",
+            3
+          ],
+          [
+            "qk:240",
+            3
+          ]
+        ]
+      },
+      {
+        "moi": 2000,
+        "xu": 200,
+        "do": [
+          [
+            "qk:353",
+            20
+          ]
+        ]
+      },
+      {
+        "moc": 3000,
+        "xu": 300,
+        "do": [
+          [
+            "ms:26",
+            1
+          ],
+          [
+            "ms:22",
+            1
+          ]
+        ]
+      },
+      {
+        "moc": 4000,
+        "xu": 400,
+        "do": [
+          [
+            "ms:26",
+            2
+          ],
+          [
+            "ms:22",
+            2
+          ]
+        ]
+      },
+      {
+        "moc": 5000,
+        "xu": 600,
+        "do": [
+          [
+            "ms:26",
+            3
+          ],
+          [
+            "ms:22",
+            3
+          ]
+        ]
+      },
+      {
+        "moc": 6000,
+        "xu": 600,
+        "do": [
+          [
+            "ms:69",
+            1
+          ]
+        ]
+      },
+      {
+        "moc": 7000,
+        "xu": 600,
+        "do": [
+          [
+            "ms:69",
+            1
+          ]
+        ]
+      },
+      {
+        "moc": 8000,
+        "do": [
+          [
+            "ms:76",
+            1
+          ]
+        ]
+      }
+    ],
+    "mocTong": {
+      "500": {
+        "kn": 28000000,
+        "tien": 550000,
+        "do": [
+          [
+            "ms:71",
+            1
+          ]
+        ]
+      },
+      "1000": {
+        "kn": 60000000,
+        "tien": 1200000,
+        "do": [
+          [
+            "ms:71",
+            1
+          ],
+          [
+            "qk:238",
+            1
+          ]
+        ]
+      },
+      "1500": {
+        "kn": 98000000,
+        "tien": 1950000,
+        "do": [
+          [
+            "ms:71",
+            1
+          ]
+        ]
+      },
+      "2000": {
+        "kn": 140000000,
+        "tien": 2800000,
+        "do": [
+          [
+            "ms:71",
+            2
+          ],
+          [
+            "qk:239",
+            1
+          ]
+        ]
+      },
+      "2500": {
+        "kn": 188000000,
+        "tien": 3750000,
+        "do": [
+          [
+            "ms:71",
+            2
+          ],
+          [
+            "qk:353",
+            1
+          ]
+        ]
+      },
+      "3000": {
+        "kn": 240000000,
+        "tien": 4800000,
+        "do": [
+          [
+            "ms:71",
+            2
+          ],
+          [
+            "qk:240",
+            1
+          ]
+        ]
+      },
+      "3500": {
+        "kn": 298000000,
+        "tien": 5950000,
+        "do": [
+          [
+            "ms:71",
+            2
+          ]
+        ]
+      },
+      "4000": {
+        "kn": 360000000,
+        "tien": 7200000,
+        "do": [
+          [
+            "ms:71",
+            3
+          ],
+          [
+            "qk:238",
+            2
+          ]
+        ]
+      },
+      "4500": {
+        "kn": 428000000,
+        "tien": 8550000,
+        "do": [
+          [
+            "ms:71",
+            3
+          ]
+        ]
+      },
+      "5000": {
+        "kn": 500000000,
+        "tien": 10000000,
+        "do": [
+          [
+            "ms:71",
+            3
+          ],
+          [
+            "qk:239",
+            2
+          ],
+          [
+            "qk:353",
+            2
+          ]
+        ]
+      },
+      "5500": {
+        "kn": 578000000,
+        "tien": 11550000,
+        "do": [
+          [
+            "ms:71",
+            3
+          ]
+        ]
+      },
+      "6000": {
+        "kn": 660000000,
+        "tien": 13200000,
+        "do": [
+          [
+            "ms:71",
+            4
+          ],
+          [
+            "qk:240",
+            2
+          ]
+        ]
+      },
+      "6500": {
+        "kn": 747000000,
+        "tien": 14950000,
+        "do": [
+          [
+            "ms:71",
+            4
+          ]
+        ]
+      },
+      "7000": {
+        "kn": 840000000,
+        "tien": 16800000,
+        "do": [
+          [
+            "ms:71",
+            4
+          ],
+          [
+            "qk:238",
+            2
+          ]
+        ]
+      },
+      "7500": {
+        "kn": 938000000,
+        "tien": 18750000,
+        "do": [
+          [
+            "ms:71",
+            4
+          ],
+          [
+            "qk:353",
+            3
+          ]
+        ]
+      },
+      "8000": {
+        "kn": 1040000000,
+        "tien": 20800000,
+        "do": [
+          [
+            "ms:71",
+            5
+          ],
+          [
+            "qk:239",
+            3
+          ]
+        ]
+      },
+      "8500": {
+        "kn": 1148000000,
+        "tien": 22950000,
+        "do": [
+          [
+            "ms:71",
+            5
+          ]
+        ]
+      },
+      "9000": {
+        "kn": 1260000000,
+        "tien": 25200000,
+        "do": [
+          [
+            "ms:71",
+            5
+          ],
+          [
+            "qk:240",
+            3
+          ]
+        ]
+      },
+      "9500": {
+        "kn": 1378000000,
+        "tien": 27550000,
+        "do": [
+          [
+            "ms:71",
+            5
+          ]
+        ]
+      },
+      "10000": {
+        "kn": 1500000000,
+        "tien": 30000000,
+        "do": [
+          [
+            "ms:71",
+            6
+          ],
+          [
+            "qk:238",
+            3
+          ],
+          [
+            "qk:353",
+            4
+          ]
+        ]
+      }
+    },
+    "moiBac": 500,
+    "bacToiDa": 20,
+    "khoBac": 4,
+    "thuongBac": 0.05,
+    "xongNhanh": {
+      "shxt": 100,
+      "lenh": "ms:5126"
+    },
+    "huyShxt": 50,
+    "ruong": {
+      "moi": 10,
+      "chuy": 1,
+      "bang": [
+        [
+          [
+            "ms:1",
+            "ms:2",
+            "ms:3",
+            "ms:4",
+            "ms:5",
+            "ms:6",
+            "ms:7",
+            "ms:8",
+            "ms:9",
+            "ms:10"
+          ],
+          1,
+          30
+        ],
+        [
+          "xu",
+          1,
+          10
+        ],
+        [
+          "xu",
+          2,
+          6
+        ],
+        [
+          "xu",
+          5,
+          3
+        ],
+        [
+          "ms:23",
+          1,
+          3
+        ],
+        [
+          "qk:238",
+          1,
+          5
+        ],
+        [
+          "qk:239",
+          1,
+          5
+        ],
+        [
+          "qk:240",
+          1,
+          5
+        ],
+        [
+          "ms:122",
+          1,
+          6
+        ],
+        [
+          "ms:123",
+          1,
+          3
+        ],
+        [
+          "ms:124",
+          1,
+          1
+        ],
+        [
+          "ms:6",
+          1,
+          7
+        ],
+        [
+          "ms:3",
+          1,
+          5
+        ],
+        [
+          "ms:72",
+          1,
+          8
+        ],
+        [
+          "ms:71",
+          1,
+          1
+        ],
+        [
+          "ms:22",
+          1,
+          1
+        ],
+        [
+          "ms:26",
+          1,
+          1
+        ]
+      ]
+    },
+    "choHt": {
+      "bac": [
+        50000,
+        300000,
+        1000000
+      ],
+      "gia": [
+        50000,
+        60000,
+        70000,
+        80000
+      ]
+    },
+    "tamBo": [
+      "ms:147:"
+    ]
+  },
+  "_daTau": "Dã Tẩu (anh 27/10, luật client seasonnpc.lua): nhận chuỗi từ cấp capNhan (anh 29/10: 20). boThuong = loại món (dung.loai trong ky-tran-cac.json) bỏ khỏi bảng thưởng của client (anh 29/10: sách võ công, Võ Lâm Mật Tịch, Tẩy Tủy Kinh không còn ở Dã Tẩu — cả quà mốc). Mỗi ngày tối đa gioiHan nhiệm vụ. Mốc (anh 28/10 — may-chu/da-tau.js): đếm nhiệm vụ đã xong (chọn thưởng xong) trong ngày và từ trước tới nay. mocNgay = quà khi xong đúng N nhiệm vụ trong ngày (30, 40: kinh nghiệm của client — 40 nghĩa là không hủy lần nào); mocTong = quà khi tổng đã xong đúng N (500 … 10000 — SỐ TẠM, anh lên kế hoạch thưởng rồi sửa). Gói quà: kn (kinh nghiệm), tien (lượng), xu, do [[mã món, số]] (mã trong assets/data/ky-tran-cac.json — ms:71 Tiên Thảo Lộ, qk:238/239/240 Lam/Tử/Lục Thủy Tinh, qk:353 Tinh Hồng Bảo Thạch, ms:22 Tẩy Tủy Kinh, ms:26 Võ Lâm Mật Tịch); thêm / bớt mốc bằng cách thêm / xóa dòng. Mốc càng cao càng khó, thưởng càng nhiều: bậc = tổng đã xong / moiBac (tối đa bacToiDa); mỗi khoBac bậc nhiệm vụ khó lên 1 link (trong bậc link của cấp; 0 = tắt), thưởng mỗi nhiệm vụ × (1 + bậc × thuongBac) (0 = tắt). Cấp 90 cần ~21,9 triệu kinh nghiệm/cấp, cấp 120 ~100 triệu, cấp 150 ~800 triệu. Anh 31/10 khuya: gói quà thêm knCap = phần kinh nghiệm lên cấp của cấp lúc nhận (mốc 30: 30 triệu + 20 %, mốc 40: 100 triệu + 50 % — để từ cấp 120 trở lên không tụt). ruong = Bảo rương thần bí của Dã Tẩu như client (seasonnpc.lua: mỗi moi nhiệm vụ tổng 1 rương ms:2374; mở cần chuy Huyền Thiên Chùy ms:2348 — client 6, S1 1 vì chùy chỉ có từ Online nhận thưởng mốc 3 giờ); bang [[mã | [mã…] (bốc 1 trong nhóm), số, %]] = bảng client activitysys awardtable 71 (Hoa Hồng 27, Pháo hoa 25, Phi Phong 8, Phi Tốc 7, Phúc Duyên Lộ tiểu 6 / trung 3 / đại 1, Lam / Tử / Lục Thủy Tinh 5, Đại Lực 5, Tiên Thảo Lộ 1, Tẩy Tủy Kinh 1, Võ Lâm Mật Tịch 1) — món S1 chưa có đổi sang hoàn / lộ: Hoa Hồng + Pháo hoa -> 1 hoàn ngẫu nhiên (10 loại ms:1–10), Phi Phong -> Thiên Sơn Bảo Lộ, Phúc Duyên Lộ tiểu / trung / đại -> Bách Quả Lộ / Quế Hoa Tửu / Tiên Thảo Lộ. Anh 31/10 khuya lần 2: heSoKn / heSoTien = hệ số ô Kinh nghiệm / ô Tiền mỗi nhiệm vụ (cả kinh nghiệm / tiền của Thử vận) — anh: x2 là được; mocNgay thêm Xu (20: 1 Xu, 30: +2 Xu, 40: +5 Xu); mocChuoi = quà theo tổng nhiệm vụ của client (tl_counttasklinknum(1), tới 8000 đếm lại — thay bảng award_link) mỗi mốc 1 gói (anh chốt — như client): { moc: N } đúng N trước, không có thì { moi: N } khớp có N lớn nhất (1000 chỉ nhận gói 1000, 2000 chỉ gói 2000, các số tròn trăm khác gói mỗi 100); gói { kn, knCap, tien, xu, do }; ms:69 Hoàng Kim Bảo Hạp (1 món ngẫu nhiên bộ An Bang / Định Quốc) và ms:76 Vé số Hoàng Kim (1 Hoàng Kim môn phái của phái đang chơi) nhận được nhưng chưa mở được tới khi game có trang bị Hoàng Kim; oVatCoDinh [[mã, %]] = món ô Vật phẩm có tỉ lệ cố định (bốc trước, trượt thì chọn theo giá trị như client trong các món còn lại); ruong.bang thêm [xu, số, %] = Xu, Thiết La Hán, Phúc Duyên Lộ tiểu / trung / đại 6 / 3 / 1 như client (bỏ Bách Quả / Quế Hoa / Tiên Thảo Lộ thay thế). Anh 02/11 khuya: choHt = giá sạp Hệ thống ở thẻ Dã Tẩu của bảng Chợ Trời (món Dã Tẩu hay đòi — may-chu/da-tau.js choHt): giá trị nhiệm vụ của client (TaskValue2) ≤ bac[i] thì giá gia[i] lượng, lớn hơn bac cuối thì gia cuối (5 / 6 / 7 / 8 vạn), không thu thuế. tamBo = khóa món (đầu khóa) mà nhiệm vụ Tìm vật phẩm đòi thì tạm không giao (anh 02/11 khuya: Huyền tinh ms:147: — bỏ \"cho tới khi update\"; xóa dòng là giao lại như client); ai đang làm nhiệm vụ đó thì nói chuyện với Dã Tẩu là đổi nhiệm vụ khác, không mất lượt. Anh 10/11: xongNhanh = hoàn thành ngay nhiệm vụ đang làm (hội thoại Dã Tẩu): nộp shxt mảnh Sơn Hà Xã Tắc (anh 10/11: 100 — không mất chuỗi; nhiệm vụ loại 6 nộp mảnh thì không được) — huyShxt = số mảnh mua 1 cơ hội hủy khi hết cơ hội (client 100, anh 10/11: 50); Trợ Thủ tự làm khi kẹt không hủy bằng mảnh, không hủy mất chuỗi, đủ mảnh thì nộp mảnh xong ngay hoặc 1 lenh (ms:5126 Lệnh bài làm NV Dã Tẩu — món client script/global/gm/dataulenhbai.lua; chuột phải trong túi cũng được, ở đâu cũng dùng được; bán ở Kỳ Trân Các)",
+  "quaiChung": {
+    "bai": [
+      140,
+      2,
+      3,
+      92,
+      21,
+      42,
+      56,
+      319,
+      320,
+      225,
+      226,
+      93,
+      75,
+      227,
+      321,
+      322,
+      336,
+      340,
+      201,
+      205
+    ],
+    "soQuai": [
+      10,
+      30
+    ],
+    "thuong": 1.1,
+    "stGiay": 500000,
+    "xoaSau": 60,
+    "manh": {
+      "mau": 1.5,
+      "satThuong": 1.5,
+      "tocDanh": 1.5
+    }
+  },
+  "_quaiChung": "Quái chung ở bãi train (anh 02/11 — làm thử Lâm Du Quan 319; anh 03/11: mỗi dãy cấp 1–10 … 190–200 có bãi quái riêng + bãi quái chung, quái chung +10% ngân lượng và exp): bai = mã các bãi có thêm bản quái chung (bãi chính của 20 dãy cấp — cùng bản thấy chung 1 đàn quái, ai cũng đánh được; người chơi chọn bản riêng / chung lúc đi Xa phu, Trợ Thủ; bỏ mã khỏi danh sách + khởi động lại máy chủ là bãi đó chỉ còn quái riêng); soQuai = [thêm mỗi người, thêm tối đa] — 1 người bằng số quái bản riêng của bãi (canBang.soQuai: 65 -> 75 -> 85 -> 95); thuong = hệ số kinh nghiệm + tiền quái giết ở bản chung (ủy thác không có); stGiay = sát thương tối đa mỗi người / giây máy chủ nhận; xoaSau = giây bãi không còn ai thì bỏ đàn quái. Thưởng: người đánh nhiều nhất nhận trọn (kinh nghiệm, tiền, đồ — chia đội như cũ), người đánh phụ nhận kinh nghiệm theo phần sát thương. manh (anh 03/11 \"bãi quái chung quái mạnh hơn 50% bao gồm cả tần suất tấn công\"): quái bản chung × mau máu (máy chủ nhân lúc chủ bãi sinh — may-chu/quai-chung.js qcSinh, cả thủ lĩnh / tinh anh), × satThuong sát thương, × tocDanh tần suất đánh (vung đòn + chờ giữa 2 đòn ÷ tocDanh, hình vung đòn chạy nhanh theo — src/game/quaichung.js, world.js updateMob); thưởng không đổi. may-chu/quai-chung.js + src/game/quaichung.js",
+  "tangIchDoi": {
+    "moc": [
+      2,
+      4,
+      6,
+      8
+    ],
+    "kn": 5,
+    "toc": 5,
+    "hoi": 2
+  },
+  "_tangIchDoi": "Tăng ích tổ đội (anh 03/11; anh 06/11 \"buff chỉ có thể cộng ở bãi quái chung\": cả tốc độ lẫn hồi phục chỉ ở bản quái chung — bản riêng không có, vòng sáng / bùa / hồi máu của người khác ở bãi train cũng vậy — src/game/world.js chiaBuff, may-chu/do.js coTangIch): chỉ đếm người trong đội đang online, đứng cùng bãi (cùng bản quái chung / riêng), tính cả mình. Kinh nghiệm: ở bản quái chung mỗi mốc moc (2 / 4 / 6 / 8 người) +kn % kinh nghiệm cho người giết + phần đội chia (cộng với thuong của quaiChung: đội 4 người = +10 % + 10 %) — may-chu/do.js tangIchKn. Tốc độ: ở bãi train (chính / phụ — không thuyền, Vượt Ải, thành) có từ 2 người cùng bãi thì mỗi người +toc % tốc độ di chuyển + tốc độ đánh (ngoại công lẫn nội công) — đội 8 người +40 % (src/game/world.js tangIchDoi); cùng điều kiện, mỗi người hồi thêm hoi sinh lực + hoi nội lực mỗi giây (anh 03/11 \"mỗi giây hồi phục sinh lực nội lực 2 điểm 1 người, tối đa 8 người thì tăng 16 điểm\"). Thanh trạng thái có biểu tượng Tăng ích tổ đội ghi mức đang được. Ủy thác không tính. null = tắt",
+  "phanThan": {
+    "bat": true,
+    "phi": 120,
+    "mon": "ms:196",
+    "chia": 0.1,
+    "toiDa": 2,
+    "thueToiDa": 10,
+    "gioThue": 12,
+    "goi": [
+      [
+        12,
+        120
+      ],
+      [
+        24,
+        360
+      ]
+    ],
+    "capHon": 30,
+    "goiCach": 10
+  },
+  "_phanThan": "Phân Thân (anh 05/11 — may-chu/phan-than.js + src/game/phanthan.js; KHÔNG phải hệ Đồng hành của client): thuê phân thân của người chơi khác trên bảng xếp hạng (không tài khoản quản trị, không cùng tài khoản) có cấp ≤ cấp mình + capHon; phí phi món mon (ms:196 Mật đồ thần bí) mỗi phân thân mỗi ngày (giờ Việt Nam), người bị sao chép nhận chia (10 %) vào túi ở nhịp kế của họ; ra trận (đang theo) cùng lúc tối đa toiDa phân thân, thuê cùng lúc tối đa thueToiDa phân thân khác nhau (0 = không giới hạn), tài khoản quản trị không giới hạn cả 2 (anh 18/11); gọi ra / cất đi mỗi phân thân cách nhau goiCach giây; gói thuê goi = [[giờ, phí Mật đồ]] (anh 12/11: 12 giờ 120, cả ngày 360 — không giới hạn lượt thuê trong ngày, thuê lại người đang thuê = gia hạn cộng thêm giờ), tính từ lúc thuê, cả lúc thoát game, 0 giờ không làm mất phân thân đang thuê (anh 10/11); phi / gioThue chỉ dùng khi không có goi; gọi ra / cất đi cách nhau ≥ goiCach giây. Phân thân: 100 % chỉ số bản chụp lúc thuê, đi theo, vòng sáng / bùa lợi / hồi máu cho người thuê, đánh quái (cả bản quái chung, Boss Sát thủ); quái phân thân giết: người thuê nhận đủ kinh nghiệm, không tiền, không đồ (Boss Sát thủ phân thân hạ: rơi đồ cho người thuê — anh 12/11); ủy thác không tính, lúc có phân thân không đo tốc độ ủy thác. bat false = tắt",
+  "thuongCap": {
+    "bat": true,
+    "moc": [
+      {
+        "cap": 10,
+        "tien": 100000,
+        "do": [
+          [
+            "potion:2",
+            30
+          ],
+          [
+            "potion:7",
+            20
+          ],
+          [
+            "townportal:1",
+            5
+          ]
+        ]
+      },
+      {
+        "cap": 20,
+        "tien": 200000,
+        "xu": 5,
+        "do": [
+          [
+            "ms:71",
+            2
+          ],
+          [
+            "ms:1427",
+            1
+          ]
+        ]
+      },
+      {
+        "cap": 30,
+        "tien": 300000,
+        "xu": 10,
+        "do": [
+          [
+            "ms:71",
+            3
+          ],
+          [
+            "ms:2348",
+            1
+          ]
+        ]
+      },
+      {
+        "cap": 40,
+        "tien": 500000,
+        "xu": 15,
+        "do": [
+          [
+            "ms:73",
+            1
+          ],
+          [
+            "ms:122",
+            1
+          ],
+          [
+            "ms:2348",
+            2
+          ]
+        ]
+      },
+      {
+        "cap": 50,
+        "tien": 800000,
+        "xu": 20,
+        "do": [
+          [
+            "ms:1181",
+            1
+          ],
+          [
+            "ms:1665",
+            1
+          ],
+          [
+            "qk:353",
+            1
+          ]
+        ]
+      },
+      {
+        "cap": 60,
+        "tien": 1000000,
+        "xu": 30,
+        "do": [
+          [
+            "qk:353",
+            2
+          ],
+          [
+            "ms:123",
+            1
+          ],
+          [
+            "ms:2348",
+            3
+          ]
+        ],
+        "chon": [
+          [
+            "qk:238",
+            1
+          ],
+          [
+            "qk:239",
+            1
+          ],
+          [
+            "qk:240",
+            1
+          ]
+        ]
+      },
+      {
+        "cap": 80,
+        "tien": 2000000,
+        "xu": 50,
+        "do": [
+          [
+            "qk:238",
+            1
+          ],
+          [
+            "qk:239",
+            1
+          ],
+          [
+            "qk:240",
+            1
+          ],
+          [
+            "qk:353",
+            3
+          ],
+          [
+            "ms:2348",
+            4
+          ]
+        ],
+        "chon": [
+          [
+            "ms:2328",
+            1
+          ],
+          [
+            "ms:2329",
+            1
+          ],
+          [
+            "ms:2330",
+            1
+          ]
+        ]
+      },
+      {
+        "cap": 100,
+        "tien": 5000000,
+        "xu": 100,
+        "do": [
+          [
+            "ms:2424",
+            1
+          ],
+          [
+            "qk:353",
+            5
+          ],
+          [
+            "ms:124",
+            1
+          ],
+          [
+            "ms:2348",
+            5
+          ]
+        ]
+      },
+      {
+        "cap": 120,
+        "tien": 10000000,
+        "xu": 150,
+        "do": [
+          [
+            "ms:1125",
+            1
+          ],
+          [
+            "ms:26",
+            1
+          ],
+          [
+            "ms:2348",
+            7
+          ],
+          [
+            "ms:1670",
+            1
+          ]
+        ]
+      },
+      {
+        "cap": 150,
+        "tien": 20000000,
+        "xu": 300,
+        "do": [
+          [
+            "ms:2425",
+            1
+          ],
+          [
+            "ms:26",
+            1
+          ],
+          [
+            "ms:22",
+            1
+          ],
+          [
+            "ms:2348",
+            10
+          ]
+        ]
+      }
+    ]
+  },
+  "_thuongCap": "Thưởng thăng cấp (anh 02/11 — phác đồ anh duyệt + Huyền Thiên Chùy tăng dần từ mốc 60): Nhận thưởng → Thưởng thăng cấp, mỗi mốc nhận 1 lần mỗi nhân vật, đủ cấp là nhận (đã qua mốc nhận bù). moc = [{ cap, tien (lượng), xu, do: [[mã, số]], chon: [[mã, số], …] (bốc ngẫu nhiên 1 món) }] — mã món xem assets/data/ky-tran-cac.json / thuoc.json. Thuốc chỉ phát tới đủ số mang tối đa. may-chu/thuong-cap.js. Sửa xong khởi động lại máy chủ",
+  "tanThu": {
+    "capDuoi": 100,
+    "hoiSinhLuc": 50,
+    "hoiNoiLuc": 50,
+    "tocChay": 30,
+    "vong": 147
+  },
+  "_tanThu": "Vòng sáng tân thủ (anh 02/11): nhân vật dưới capDuoi cấp tự có — hồi hoiSinhLuc sinh lực + hoiNoiLuc nội lực mỗi giây, tốc độ chạy +tocChay %; vong = hình trạng thái client (147 vòng xanh lá — anh chọn mẫu A; phải có trong assets/web/vocong/vocong.json st — cong-cu/dung-vo-cong.mjs). src/game/world.js refreshStats / vocong.js vcStateList. Sửa xong khởi động lại máy chủ",
+  "thuongOnline": {
+    "bat": true,
+    "moc": [
+      {
+        "gio": 1,
+        "knCap": 0.1
+      },
+      {
+        "gio": 2,
+        "tien": 200000,
+        "do": [
+          [
+            "ms:71",
+            1
+          ]
+        ]
+      },
+      {
+        "gio": 3,
+        "do": [
+          [
+            "ms:2348",
+            1
+          ]
+        ]
+      }
+    ]
+  },
+  "phucDuyen": {
+    "bat": true,
+    "batDau": 2,
+    "moiDiem": 3600,
+    "toiThieu": 7200,
+    "suyGiam": 14400,
+    "lan2Them": 2,
+    "toiDaMoiLan": 100
+  },
+  "_phucDuyen": "Phúc duyên (anh 31/10 khuya — may-chu/phuc-duyen.js, theo client script\\global\\fuyuan.lua + 路人_武林盟传人.lua): Nhận thưởng -> Phúc duyên (Võ Lâm Minh Truyền Nhân). Lần đầu mở công năng +batDau điểm; thời gian online (đếm như Online nhận thưởng) đổi điểm: cần tích lũy ≥ toiThieu giây, moiDiem giây = 1 điểm tới suyGiam giây, sau đó mỗi 2 × moiDiem giây = 1 điểm; lần đổi thứ 2 trong ngày +lan2Them; mỗi lần tối đa toiDaMoiLan. Phúc Duyên Lộ +10 / +20 / +50. Tiêu ở cửa hàng Thần bí Thương Nhân Liễu Ất (giá phúc duyên của client — ky-tran-cac.json phucDuyen)",
+  "_thuongOnline": "Online nhận thưởng (anh 31/10 khuya — may-chu/online.js; khung + câu theo client script\\bonus_onlinetime\\func_onlineaward.lua): mỗi ngày (giờ Việt Nam) mỗi nhân vật online đủ gio giờ thì nhận 1 lần (Nhận thưởng -> Online nhận thưởng). Anh: mốc 1 giờ kinh nghiệm (knCap 0,1 = 10 % kinh nghiệm lên cấp của cấp đang có — SỐ TẠM, anh chưa nói số), mốc 2 giờ Tiên Thảo Lộ (1 giờ) + 20 vạn lượng, mốc 3 giờ 1 Huyền Thiên Chùy (mở Bảo rương thần bí của Dã Tẩu). Mỗi mốc { gio, kn?, knCap?, tien?, xu?, do?: [[mã, số]] }; bat false = tắt. Chỉ tính lúc đang trong game (ủy thác không tính)",
+  "quaiDacBiet": {
+    "tinhAnhMoi": 50,
+    "thuLinhMoi": 250,
+    "tinhAnhRoiDo": 0.1
+  },
+  "_quaiDacBiet": "anh 27/10: tinh anh (tên xanh) ra sau mỗi tinhAnhMoi con, thủ lĩnh (trùm bãi, tên cam) sau mỗi thuLinhMoi con. Chỉ số + bảng rơi đặc biệt của tinh anh theo client (assets/data/roi-dac-biet.json — máu x20, sát thương x2, kinh nghiệm x10, 9–16 lượt rơi: Thần Bí Lộ Chí, Thủy Tinh…). tinhAnhRoiDo = tỉ lệ ra 1 trang bị mỗi lượt của tinh anh (TẠM — client ~90 % mỗi lượt, quá nhiều so với đồ rơi của game)",
+  "doKho": {
+    "tang": {
+      "mau": 0.1,
+      "satThuong": 0.05,
+      "chinhXac": 0.05,
+      "neTranh": 0.05
+    },
+    "nhay": 1.3,
+    "tuCap": 100,
+    "thuLinh": 1500000,
+    "tinhAnh": 800000,
+    "satThu": 3000000,
+    "satThuHeSo": {
+      "satThuong": 2,
+      "chinhXac": 3,
+      "neTranh": 1.8
+    }
+  },
+  "_doKho": "anh 28/10 (bảng chỉ số quái: \"map sau quái mạnh và nhiều máu hơn map trước\"; \"boss sát thủ trên cấp 90 thấp nhất 3 triệu máu, thủ lĩnh 1.5 triệu, tinh anh 800k\") — may-chu/do.js tính 1 lần lúc bật máy chủ, gửi trình duyệt trong luat (canBang.bai, satThu.dat): (1) bảng client nhảy xuống giữa khoảng cấp của bãi hơn nhay lần (Sa Mạc 2: cấp 100 còn theo công thức bãi 90–100, máu gấp 3) -> quái ra từ cấp sau bước nhảy (capQuai); (2) bãi chính + phụ xếp theo cấp (trừ Phong Lăng Độ bờ Bắc + thuyền — giữ khó như cũ): trung bình 1 con quái thường của bãi phải ≥ con mạnh nhất của nhóm bãi cấp trước × (1 + tang) cho máu, sát thương, chính xác, né tránh — thiếu thì nâng hệ số của bãi (chỉ nâng); (3) bãi từ cấp tuCap: thủ lĩnh / tinh anh máu đặt sẵn = thuLinh / tinhAnh ở bãi đầu tiên (Sa Mạc 2), bãi sau nhân theo máu quái thường của bãi; bờ Bắc như bờ Nam; (4) Boss Sát thủ bậc từ tuCap (bậc S1 thêm, mẫu client không theo cấp): máu = satThu ở bậc đầu, bậc sau nhân theo máu quái thường cùng cấp; sát thương / chính xác / né tránh = quái thường cùng cấp × satThuHeSo (≈ bậc 90 của client so với quái Sa Mạc 1). Sửa xong tắt bật lại Chay_Game.bat, xem số ở bảng Chỉ số quái S1 (cong-cu/dung-bang-quai.cjs).",
+  "phongLangDo": {
+    "gio": [
+      0,
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      18,
+      20,
+      22
+    ],
+    "baoDanh": 10,
+    "dauLinh": [
+      25,
+      30,
+      35
+    ],
+    "capBo": 39,
+    "toiDa": 100,
+    "thuyTac": 30,
+    "dotThuyTac": [
+      10,
+      15,
+      20,
+      25,
+      30,
+      35
+    ],
+    "songToiDa": 45,
+    "bacKinhNghiem": 1.2,
+    "thuongDauLinh": 150000,
+    "veNamGia": 200,
+    "lenhBai": "qk:489",
+    "matDo": "ms:196",
+    "matDoCan": 200
+  },
+  "_phongLangDo": "anh 27/10 (may-chu/phong-lang-do.js — luật script client fengling_ferry): giờ chẵn (giờ Việt Nam) mở báo danh baoDanh phút ở 3 Thuyền phu bờ Nam; vé 1 Lệnh bài PLD hoặc đúng matDoCan Mật đồ thần bí; mỗi thuyền toiDa người; thuyền chạy -> mỗi phút trong dotThuyTac 1 đợt thuyTac Thủy tặc (anh 27/10: \"đánh xong hết đứng nhìn thì không hay\" — client chỉ 1 đợt 30 con; trên thuyền sống tối đa songToiDa con), đầu lĩnh ở các phút dauLinh (người hạ +thuongDauLinh kinh nghiệm — số client), phút capBo cập bờ Bắc. Bờ Bắc chỉ tới bằng thuyền, kinh nghiệm × bacKinhNghiem (anh: +20 %), không dùng Thổ Địa Phù; Thuyền phu bờ Bắc đưa về bờ Nam veNamGia lượng. Quái trên thuyền cùng cấp bãi 336 (TẠM — client cấp 95 / 85)",
+  "satThu": {
+    "moiNgay": 8,
+    "gop": 5,
+    "luot": 8,
+    "toiThieuGiay": 5,
+    "hoiSinh": 120,
+    "boChung": 60,
+    "mau": {
+      "20": 0.5,
+      "30": 0.5,
+      "80": 0.45
+    }
+  },
+  "tayTuy": {
+    "capToiThieu": 50,
+    "mienPhi": 1,
+    "bt": 6
+  },
+  "_tayTuy": "anh 28/10 (may-chu/tay-tuy.js — luật client script\\missions\\clearskill\\clearhole.lua + 梦境\\npc\\路人_叛僧.lua): Xa phu Ba Lăng -> Đi đảo Tẩy Tủy (cấp ≥ capToiThieu, đã vào phái). Mỗi nhân vật mienPhi lần miễn phí (tẩy cả kỹ năng + tiềm năng, tính lúc vào đảo); sau đó 1 bộ Thủy Tinh — Lam + Tử + Lục mỗi loại 1 viên (anh 28/10) = chỉ tẩy kỹ năng, bt viên Tinh Hồng Bảo Thạch = chỉ tẩy tiềm năng, cả hai = tẩy cả hai. Trên đảo nói chuyện Thích Minh tẩy bao nhiêu lần cũng được (đúng loại đã trả), rời đảo về Ba Lăng; tẩy kỹ năng giữ cấp sách võ công / Đại Thành đã học. Đảo có Cọc gỗ / Bao cát / Mộc nhân (3000 / 10000 / 30000 sinh lực, đánh vỡ 5 giây sau mọc lại), Dược phiến bán thuốc, rương chứa đồ; không dùng Thổ Địa Phù.",
+  "roiDacBiet": {
+    "boKhoiBangClient": [
+      "qk:489",
+      "qk:353",
+      "qk:238",
+      "qk:239",
+      "qk:240",
+      "ms:71",
+      "ms:72",
+      "ms:73",
+      "ms:22",
+      "ms:26",
+      "biKip"
+    ],
+    "thuLinh": {
+      "qk:353": 0.002,
+      "qk:238": 0.002,
+      "qk:239": 0.002,
+      "qk:240": 0.002,
+      "ms:71": 0.0005,
+      "ms:72": 0.0005,
+      "ms:73": 0.0005,
+      "biKip": 0.00001
+    },
+    "satThu": {
+      "qk:353": 0.002,
+      "qk:238": 0.002,
+      "qk:239": 0.002,
+      "qk:240": 0.002,
+      "ms:71": 0.0005,
+      "ms:72": 0.0005,
+      "ms:73": 0.0005,
+      "ms:26": 0.0001,
+      "ms:22": 0.0001,
+      "biKip": 0.0005
+    },
+    "satThuTangMoiBac": 0.05
+  },
+  "_roiDacBiet": "anh 28/10 lần 7: món đặc biệt của bảng client (assets/data/roi-dac-biet.json — quái thường, thủ lĩnh, tinh anh; assets/data/sat-thu.json — Boss Sát thủ) bỏ các món trong boKhoiBangClient (biKip = mọi sách võ công 90): Lệnh bài Phong Lăng Độ không rơi từ quái; Bảo thạch (Tinh Hồng — qk:353), Thủy Tinh (Lam / Tử / Lục — qk:238–240), Tiên Thảo Lộ / Thiên Sơn Bảo Lộ / Bách Quả Lộ (ms:71 / 72 / 73), Võ Lâm Mật Tịch (ms:26), Tẩy Tủy Kinh (ms:22), bí kíp chỉ rơi từ thủ lĩnh + Boss Sát thủ theo bảng thuLinh / satThu: tỉ lệ MỖI CON cho từng món (anh: bảo thạch, thủy tinh 0,2 %; các loại lộ 0,05 %; Võ Lâm Mật Tịch, Tẩy Tủy Kinh 0,01 % ở Boss Sát thủ; bí kíp 0,05 % ở Boss Sát thủ, 0,001 % ở thủ lĩnh — biKip là tỉ lệ ra 1 cuốn bất kỳ trong các sách võ công 90). Boss Sát thủ bậc càng cao tỉ lệ càng cao: × (1 + satThuTangMoiBac × số bậc trên bậc 20) — bậc 90 × 1,35, bậc 200 × 1,9",
+  "_satThu": "anh 27/10 (may-chu/sat-thu.js — luật script client task/tollgate/killer: nieshichen.lua, kill_level.lua): Nhiếp Thí Trần ở Ba Lăng giao nhiệm vụ theo bậc cấp 20/30/…/90 (chọn 1 trong 20 boss); mỗi ngày hạ tối đa moiNgay boss; hạ boss -> 1 Sát Thủ lệnh (cấp bậc, hệ boss) + kinh nghiệm bậc 60–90 (60/80/100/140 nghìn) + luot lượt bảng rơi bosstask_lev<bậc>.ini; gop lệnh cùng cấp hợp thành 1 Sát thủ giản. Boss riêng từng người, đứng ở chỗ cố định trong bãi S1 cùng cấp (assets/data/sat-thu.json); máu / sát thương = client × hệ số canBang của bãi đó như quái thường. Máy chủ chỉ nhận giết sau toiThieuGiay giây kể từ lúc nhận nhiệm vụ. Anh 03/11 (\"đưa boss sát thủ lên bãi chung hết\" — chọn \"chỉ khi có người nhận nhiệm vụ\"): boss chỉ ra ở BẢN QUÁI CHUNG của bãi (72 boss bãi phụ dời về bãi chung cùng dãy cấp — cong-cu/doi-sat-thu-bai-chung.mjs), máy chủ sinh khi trong bản chung có người đang nhận nhiệm vụ boss đó (may-chu/quai-chung.js satBai), ai cũng thấy / đánh, hệ ngẫu nhiên mỗi lần sinh; chết thì hoiSinh giây sau mới sinh lại (nếu vẫn còn người cần); không còn ai cần quá boChung giây (và 30 giây không ai đánh) thì bỏ. Thưởng: người đang nhận đúng boss đó có đánh lúc boss chết xong nhiệm vụ (cả khi không đánh nhiều nhất, cả đồng đội), người khác không được gì. mau = hệ số máu boss theo bậc (đo 27/10 nhân vật mẫu 10 phái cấp bậc + 5, đồ xanh 2 dòng: thời gian hạ trung vị với chỉ số client bậc 20 ~6 phút, 30 ~6, 40 ~2,5, 50 ~1, 60 ~1, 70 ~2,4, 80 ~6,7, 90 ~3 — kháng boss 80–85 % mọi hệ như client; chỉ giảm bậc quá lâu về ~3 phút, bậc khác giữ client).",
+  "vuotAi": {
+    "luot": 4,
+    "gian": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "tien": [
+      500000,
+      1000000,
+      2000000,
+      4000000
+    ],
+    "doiTruong": 1.2,
+    "caoCap": 2,
+    "kinhNghiem": 1,
+    "treGiay": 60,
+    "mau": {
+      "1": 0.25,
+      "2": 0.15
+    },
+    "mauDat": {
+      "1": {
+        "quai": [
+          60000,
+          100000
+        ],
+        "boss": [
+          1000000,
+          2000000
+        ]
+      },
+      "2": {
+        "quai": [
+          120000,
+          200000
+        ],
+        "boss": [
+          2000000,
+          4000000
+        ]
+      }
+    },
+    "chuanBi": 60,
+    "nhin": 0,
+    "keo": 180,
+    "thuoc": {
+      "k": "potion:15",
+      "n": [
+        1,
+        3
+      ],
+      "tiLe": 0.08
+    },
+    "leBao": {
+      "k": "ms:1392",
+      "roi": 0.38,
+      "kn": 5000000,
+      "xu": {
+        "1": 70,
+        "2": 22,
+        "3": 8
+      },
+      "tiLeXu": 0.05,
+      "ttl": "ms:71",
+      "tiLeTtl": 0.05
+    },
+    "ruongXanh": 2,
+    "toiThieu": 3,
+    "heSo": {
+      "goc": 2,
+      "them": 0.5
+    },
+    "xuDoi": 0.05,
+    "xuSo": 3,
+    "thuongAi": {
+      "goc": 500000,
+      "them": 100000,
+      "cuoi": 10000000,
+      "soCap": 0.1,
+      "moiNguoi": 0.1
+    }
+  },
+  "bossTheGioi": {
+    "bat": true,
+    "gio": [
+      "20:00"
+    ],
+    "song": 120,
+    "mau": 50000000,
+    "so": 1,
+    "thamGia": 2,
+    "mauNguoi": 1000000,
+    "stNguoi": 3,
+    "xuTl": 3,
+    "vong": {
+      "r": 500,
+      "hs": 0.5,
+      "nhip": [
+        [
+          10,
+          0.5
+        ],
+        [
+          25,
+          1
+        ],
+        [
+          50,
+          2
+        ],
+        [
+          100,
+          3
+        ]
+      ]
+    },
+    "stGiay": 50000,
+    "kn": 30000000,
+    "knIt": 2000000,
+    "nguong": 1,
+    "hang": [
+      {
+        "den": 1,
+        "mon": [
+          [
+            "ms:1181",
+            1
+          ],
+          [
+            "ms:1884",
+            2
+          ]
+        ],
+        "hiem": 1
+      },
+      {
+        "den": 2,
+        "mon": [
+          [
+            "ms:71",
+            3
+          ],
+          [
+            "ms:1884",
+            2
+          ]
+        ],
+        "mot": [
+          [
+            "ms:73",
+            1
+          ],
+          [
+            "ms:125",
+            1
+          ]
+        ],
+        "hiem": 1
+      },
+      {
+        "den": 3,
+        "mon": [
+          [
+            "ms:1884",
+            2
+          ]
+        ],
+        "mot": [
+          [
+            "ms:71",
+            1
+          ],
+          [
+            "ms:73",
+            1
+          ],
+          [
+            "ms:125",
+            1
+          ],
+          [
+            "ms:72",
+            1
+          ]
+        ],
+        "hiem": 1
+      },
+      {
+        "den": 10,
+        "mot": [
+          [
+            "ms:71",
+            1
+          ],
+          [
+            "ms:73",
+            1
+          ],
+          [
+            "ms:125",
+            1
+          ],
+          [
+            "ms:72",
+            1
+          ]
+        ]
+      }
+    ],
+    "kich": {
+      "kn": 5000000,
+      "mot": [
+        [
+          "ms:71",
+          1
+        ],
+        [
+          "ms:73",
+          1
+        ],
+        [
+          "ms:125",
+          1
+        ],
+        [
+          "ms:72",
+          1
+        ]
+      ],
+      "hiem": 1,
+      "ma": 1
+    },
+    "hiem": [
+      [
+        "qk:238",
+        1,
+        20
+      ],
+      [
+        "qk:239",
+        1,
+        20
+      ],
+      [
+        "qk:240",
+        1,
+        20
+      ],
+      [
+        "qk:353",
+        1,
+        20
+      ],
+      [
+        "ms:26",
+        1,
+        5
+      ],
+      [
+        "ms:22",
+        1,
+        5
+      ],
+      [
+        "biKip",
+        1,
+        3
+      ],
+      [
+        "ms:23",
+        1,
+        30
+      ]
+    ],
+    "danhMa": 3,
+    "nhin": 450,
+    "duoi": 600,
+    "vung": 900,
+    "cho": [
+      {
+        "bai": 53,
+        "x": 9108,
+        "y": 2586,
+        "X": 211,
+        "Y": 191,
+        "noi": "ngoài Cổng Bắc"
+      },
+      {
+        "bai": 53,
+        "x": 5460,
+        "y": 1986,
+        "X": 192,
+        "Y": 188,
+        "noi": "ngoài Cổng Tây"
+      },
+      {
+        "bai": 53,
+        "x": 9204,
+        "y": 5490,
+        "X": 211,
+        "Y": 206,
+        "noi": "ngoài Cổng Đông"
+      },
+      {
+        "bai": 53,
+        "x": 4356,
+        "y": 5322,
+        "X": 186,
+        "Y": 205,
+        "noi": "ngoài Cổng Nam"
+      },
+      {
+        "bai": 37,
+        "x": 10932,
+        "y": 8106,
+        "X": 192,
+        "Y": 184,
+        "noi": "ngoài Cổng Tây"
+      },
+      {
+        "bai": 37,
+        "x": 11508,
+        "y": 11730,
+        "X": 195,
+        "Y": 203,
+        "noi": "ngoài Cổng Nam"
+      }
+    ]
+  },
+  "_bossTheGioi": "anh 31/10 tối: lịch BẬT, 20:00 giờ Việt Nam mỗi ngày, mỗi lần 1 boss ngẫu nhiên trong 16 boss (chỗ đứng ngẫu nhiên 1 trong 3 chỗ ở Sa Mạc 1) — \"bật lịch boss thế giới: 20h tối hằng ngày, xuất hiện ngẫu nhiên 1 boss\". Trước đó: anh 31/10 — quái chung bước 1 (may-chu/boss-tg.js, kênh tức thời may-chu/ws.js; boss = Boss Hoàng Kim của client, assets/data/boss-tg.json — cong-cu/dung-boss-tg.mjs: 16 boss cấp 95 ở Sa Mạc 1). Máu chung ở máy chủ, mỗi máy tự vẽ boss; máy chủ chọn 1 mục tiêu chung, mọi máy cho boss đuổi người đó (chỉ máy người đó trừ máu). TẠM — chỉnh sau khi thử: bat (tắt = không gọi theo lịch, quản trị vẫn gọi được ở công cụ thử, thẻ Boss TG — lần đầu lên VPS để tắt cho anh thử trước), gio = giờ Việt Nam boss xuất hiện, song = phút sống (client 120), mau = máu chung, stGiay = sát thương nhận tối đa mỗi giây mỗi người (chặn gửi số láo, dồn tối đa 3 giây), kn = tổng kinh nghiệm chia theo % sát thương (client: người hạ 10 triệu + người đứng quanh 8 triệu), knIt = ít nhất cho người đạt nguong % sát thương, quà xếp hạng hang = [{ den: hạng tối đa, mon: [[món, số]] chắc chắn, mot: [[món, số]] bốc 1, hiem: 1 = xét đồ hiếm }] (bậc đầu tiên có hạng ≤ den; anh 31/10 tối: hạng 1 = 1 Tiên Thảo Lộ đặc biệt 8 giờ, hạng 2 = 3 Tiên Thảo Lộ + 1 Bách Quả Lộ hoặc Quế Hoa Tửu; hạng 3–10 em đặt TẠM 1 trong Tiên Thảo Lộ / Bách Quả Lộ / Quế Hoa Tửu / Thiên Sơn Bảo Lộ, hạng 1–3 xét đồ hiếm), người ra đòn kết liễu thêm quà kích sát kich = { kn, mon / mot, hiem, ma }; đồ hiếm hiem [món, số, %] xét riêng từng món (Thủy Tinh, Tinh Hồng Bảo Thạch, Võ Lâm Mật Tịch, Tẩy Tủy Kinh, biKip = 1 sách võ công 90 ngẫu nhiên mọi phái, Thiết La Hán ms:23 — anh 31/10 tối: \"có tỉ lệ ra võ lâm mật tịch, tẩy tủy kinh, bí kíp võ công, thiết la hán\", tỉ lệ TẠM anh điều chỉnh) + danhMa % 1 Mã bài danh mã (trong quà kích sát khi kich.ma = 1) (Xích Thố / Đích Lô / Tuyệt Ảnh / Ô Vân Đạp Tuyết / Chiếu Dạ — ngựa 30 ngày của Kỳ Trân Các). Chỗ đứng (anh 02/11 — \"giờ đã có Biện Kinh và Ba Lăng, đưa boss hoàng kim 20:00 về ngẫu nhiên ở 2 map đó, vị trí tùy em chọn\"): cho = [{ bai, x, y (điểm bản đồ web), X, Y (tọa độ hiện như client), noi (chữ thêm vào câu báo) }] — bốc bản đồ trước (mỗi bản đồ cùng cơ hội) rồi 1 chỗ của bản đồ đó; bỏ cho thì về 3 chỗ Sa Mạc 1 của boss-tg.json. 6 chỗ em chọn ngoài cổng (scratchpad cho-boss.mjs): ô đất trống, cách ô khu an toàn gần nhất trên 1.000 điểm (hơn vung — người đứng trong cổng không bao giờ bị boss nhắm / đuổi), Ba Lăng 4 cổng (cổng Nam cách 5 mộc nhân S1 trên 1.400), Biện Kinh cổng Tây + quảng trường đá ngoài cổng Nam (cổng Bắc / Đông chỉ đường rừng hẹp, xa). Mục tiêu (đơn vị tọa độ bãi): nhin = chưa ai đánh thì nhắm người đứng gần nhất trong tầm này quanh chỗ boss, duoi = tầm boss đuổi tới (người ngoài tầm mà 3 giây không đánh thì thôi nhắm), vung = ngoài vùng này boss bỏ hẳn. Anh 13/11 (lượt 86 — \"boss thế giới thêm cơ chế mới\"): mau 50 triệu gốc, mỗi người tham gia (lần đầu có sát thương được tính) máu tối đa + máu còn cùng tăng mauNguoi (1 triệu); sát thương boss tăng stNguoi % (3) mỗi người tham gia; so = số boss mỗi khung giờ (mỗi con 1 chỗ trong cho, xoay vòng Ba Lăng / Biện Kinh — F10 Lịch hoạt động cũng chỉnh được); vong = sát thương vùng chủ độc (không vẽ vòng): người đứng trong r (500 — anh 13/11 lượt 87 nâng từ 260: chiêu xa nhất các phái ~384, đứng đánh boss là dính) quanh boss trúng độc hs × đòn thường của boss, trừ kháng độc, nhip = [[≤ % máu, giây]] — 100 %: 3 giây, ≤ 50 %: 2, ≤ 25 %: 1, ≤ 10 %: 0,5; đòn chủ động của boss = võ công 90 nội / ngoại của phái nó (phái theo Skill1–4 của mẫu client — Đường Bất Nhiễm Đường Môn, Chung Linh Tú Thúy Yên…); boss miễn choáng; thamGia = số Bảo rương đồ xanh mỗi người tham gia (2), xuTl = % mỗi người tham gia được 1 Xu (3). Tin hệ thống: boss bị phát hiện bởi người đánh đầu tiên, ai kích sát, ai may mắn được Xu. Nguyên Soái Tống Kim giờ có máu riêng (tongKim.mauSoai).",
+  "sanNhim": {
+    "bat": true,
+    "gio": [
+      "09:40",
+      "13:40",
+      "15:40",
+      "19:40",
+      "23:40"
+    ],
+    "phut": 20,
+    "baoTruoc": 5,
+    "so": {
+      "37": 15,
+      "53": 10
+    },
+    "tpl": 12,
+    "ten": "Nhím béo phì",
+    "lv": 10,
+    "mau": 5000000,
+    "stGiay": 300000,
+    "gan": 1200,
+    "cach": 1500,
+    "kn": 1500000,
+    "phatKn": 500000,
+    "phatXu": 50,
+    "thamKn": 250000,
+    "thamXu": 10,
+    "ngay": 10,
+    "hiemTl": 10,
+    "mon": [
+      [
+        "ms:71",
+        1
+      ],
+      [
+        "ms:73",
+        1
+      ],
+      [
+        "ms:125",
+        1
+      ],
+      [
+        "ms:6",
+        1
+      ],
+      [
+        "ms:3",
+        1
+      ],
+      [
+        "ms:122",
+        1
+      ]
+    ],
+    "hiem": [
+      [
+        "qk:238",
+        1
+      ],
+      [
+        "qk:239",
+        1
+      ],
+      [
+        "qk:240",
+        1
+      ],
+      [
+        "qk:353",
+        1
+      ]
+    ]
+  },
+  "_sanNhim": "Săn Nhím Béo Phì (anh 03/11 — may-chu/san-nhim.js, src/game/sannhim.js; tham khảo hoạt động trong ảnh anh gửi). bat = theo lịch (tắt: quản trị vẫn mở được ở /api/san-nhim), gio = giờ Việt Nam mở đợt (anh chọn 09:40, 13:40, 15:40, 19:40, 23:40), phut = phút mỗi đợt (15), baoTruoc = phút báo trước, so = số con mỗi đợt theo mã bãi (53 Ba Lăng huyện, 37 Biện Kinh — chỗ ngẫu nhiên ngoài khu an toàn trong assets/data/san-nhim.json, node cong-cu/dung-san-nhim.mjs; không báo tọa độ), tpl / lv = mẫu quái client (12 Nhím) + cấp (né tránh, kháng — cấp 10: né 10, kháng ~5 %: đòn nào cũng trúng, cấp nào cũng săn được; cấp 50 né 250: Nga My cấp 93 trượt 6/10 đòn), mau = máu chung mỗi con (TẠM 15000 — thử 03/11: Nga My cấp 93 đòn thường ~150 / đòn), stGiay = sát thương nhận tối đa mỗi giây mỗi người (chặn gửi số láo, dồn 3 giây), gan = người đánh phải đứng cách nhím trong tầm này (điểm bản đồ — mốc vị trí gần nhất), cach = các con cùng bãi cách nhau ít nhất, kn = kinh nghiệm cho người ra đòn kết liễu (anh: 1,5 triệu, cố định — không chia đội, không nhân Tiên Thảo Lộ), + 1 món: hiemTl % bốc trong hiem (anh: Thủy Tinh Lam / Tử / Lục + Tinh Hồng Bảo Thạch), còn lại bốc trong mon (Tiên Thảo Lộ, Bách Quả Lộ, Quế Hoa Tửu, Phi Tốc hoàn, Đại Lực hoàn, Phúc Duyên Lộ tiểu), ngay = mỗi nhân vật bắt tối đa bấy nhiêu con / ngày (đủ rồi đánh không trừ máu). Nhím đứng yên, không đánh trả, cấp nào cũng đánh. Anh 13/11 (lượt 86): so 10 con Ba Lăng + 15 con Biện Kinh, mau 5 triệu mỗi con, phut 20 (sống 20 phút), stGiay 300000 (như boss thế giới), cach 1500 (rải rác — thiếu chỗ thì nới dần); tên đánh số \"Nhím béo phì N\"; người đánh trúng đầu tiên (phát hiện) + phatKn kinh nghiệm, phatXu % được 1 Xu; mọi người tham gia lúc nhím bị bắt + thamKn kinh nghiệm, thamXu % được 1 Xu (người kết liễu vẫn kn + 1 món như cũ); tin hệ thống mỗi con: phát hiện bởi ai, do ai kích sát, ai may mắn được Xu.",
+  "phuQuy": {
+    "bat": true,
+    "mon": "ms:2402",
+    "gia": 1,
+    "cap": 60,
+    "toiDa": 10,
+    "kn": 200000,
+    "quay": "22:10",
+    "hetNhan": "17:10",
+    "baiNpc": "Biện Kinh 220/190",
+    "thuong": {
+      "kn": 10000000,
+      "mon": [
+        [
+          "ms:71",
+          1
+        ]
+      ],
+      "toiDa": 10
+    },
+    "dacBiet": {
+      "kn": 30000000,
+      "mon": [
+        [
+          "ms:1181",
+          1
+        ]
+      ],
+      "toiDa": 1
+    }
+  },
+  "_phuQuy": "Phú Quý Cẩm Hạp (anh 03/11 — may-chu/phu-quy.js, theo bài anh gửi + script máy chủ event\\expansion\\201006\\fuguijinhe): Thần Tài (Biện Kinh 220/190 — assets/data/npc-them.json) bán Phú quý cẩm hạp (mon, ms:2402) gia Xu một hộp; cấp ≥ cap, đứng trong thôn / thành, chuột phải hộp -> nhập số 10–99, nhận kn kinh nghiệm; mỗi nhân vật mỗi đợt tối đa toiDa hộp. Đợt: chọn trước quay (giờ Việt Nam) thuộc đợt hôm nay, từ quay thuộc đợt ngày mai. Đúng quay máy chủ bốc 10 số khác nhau 10–99 (9 thường + 1 đặc biệt), báo cả máy chủ. Nhận ở Thần Tài từ quay tới hetNhan hôm sau: mỗi lần chọn trúng số thường thuong.kn kinh nghiệm + thuong.mon (tối đa thuong.toiDa lần / đợt), trúng số đặc biệt dacBiet.kn + dacBiet.mon (tối đa dacBiet.toiDa). Script gốc: cấp 50, 20 hộp, 6 triệu / hộp, số thường 20 triệu, số đặc biệt 200 triệu + Túi May Mắn. bat = false: tắt (Thần Tài báo tạm dừng).",
+  "taiKhoan": {
+    "toiDaMoiNguoi": 2
+  },
+  "tenCam": {
+    "chua": [
+      "admin",
+      "proauto",
+      "freeioo",
+      "chongdongbang",
+      "địt",
+      "lồn",
+      "cặc",
+      "buồi",
+      "đéo",
+      "đụmá",
+      "đụmẹ",
+      "ditme",
+      "dume",
+      "duma",
+      "dmm",
+      "dcm",
+      "dkm",
+      "vcl",
+      "vkl"
+    ],
+    "tu": [
+      "đụ",
+      "đĩ",
+      "dit",
+      "lon",
+      "cac",
+      "buoi",
+      "deo"
+    ],
+    "dauCuoi": [
+      "gm"
+    ]
+  },
+  "_tenCam": "Tên nhân vật cấm (anh 10/11 — may-chu/api.js tenCam; tài khoản quản trị không bị chặn): chua = có trong tên (bỏ dấu cách / chấm / gạch), tu = đúng 1 từ, dauCuoi = đầu hoặc cuối 1 từ (GMHuy, Huy_GM bị chặn; Sigma vẫn đặt được). Từ có dấu so với tên giữ dấu; từ không dấu so với tên bỏ dấu + đổi số giống chữ (Adm1n, L0n). Thêm từ rồi khởi động lại máy chủ.",
+  "_taiKhoan": "Tạo tài khoản ở F10 (anh 10/11): ô người chơi (tên Zalo / số điện thoại) — toiDaMoiNguoi > 0 thì bắt buộc nhập và không tạo quá số đó cho cùng 1 người (S1: 0 = không giới hạn vì đã có người 3–4 tài khoản thử; S2: 2).",
+  "ruongThanBi": {
+    "bat": true,
+    "gio": "20:10",
+    "so": 3,
+    "capMo": 120,
+    "song": 120,
+    "gan": 300,
+    "vuaCap": true,
+    "thuong": [
+      [
+        "kn",
+        10000000,
+        20
+      ],
+      [
+        "kn",
+        15000000,
+        15
+      ],
+      [
+        "kn",
+        20000000,
+        10
+      ],
+      [
+        "kn",
+        30000000,
+        5
+      ],
+      [
+        "mon",
+        "ms:11",
+        10
+      ],
+      [
+        "mon",
+        "ms:20",
+        10
+      ],
+      [
+        "mon",
+        "ms:15",
+        3
+      ],
+      [
+        "mon",
+        [
+          "ms:122",
+          "ms:123",
+          "ms:124"
+        ],
+        10
+      ],
+      [
+        "mon",
+        "ms:71",
+        7
+      ],
+      [
+        "mon",
+        "ms:125",
+        7
+      ],
+      [
+        "xu",
+        10,
+        2.5
+      ],
+      [
+        "xu",
+        25,
+        0.5
+      ]
+    ]
+  },
+  "_ruongThanBi": "Rương Thần Bí (anh 03/11 — may-chu/ruong-tb.js, theo bài anh gửi): đúng gio (giờ Việt Nam) mỗi ngày ra so rương ở bãi ngẫu nhiên từ cấp 90 trở lên (anh chọn — assets/data/ruong-tb.json, cong-cu/dung-ruong-tb.mjs; không báo tọa độ, báo tên bản đồ); ai trong bãi cũng thấy; đứng gần (≤ gan) bấm mở trước thì được 1 phần thưởng bốc theo trọng số thuong = [loại, giá trị, trọng số] (\"kn\" kinh nghiệm, \"mon\" món — danh sách thì bốc 1, \"xu\"; tỉ lệ em đặt tạm, anh chọn; 50 / 100 tiền đồng của bài = 10 / 25 Xu theo anh). Bài yêu cầu người trong bang hội — game chưa có bang hội nên tạm yêu cầu cấp ≥ capMo (anh: 120); có bang hội thì bắt buộc vào bang. Không ai mở sau song phút thì rương biến mất. vuaCap = chỉ ra ở bãi người đủ cấp mở rương vào được (bãi train mở theo cấp: cấp ≥ cấp thấp nhất của bãi; mốc = cấp cao nhất của người đang chơi, ít nhất capMo) — false: mọi bãi từ cấp 90 kể cả bãi chưa ai vào được.",
+  "minhChu": {
+    "bat": true,
+    "cap": 120,
+    "ruongXanh": 1,
+    "giet": {
+      "can": 500,
+      "duoi": 50,
+      "kn": 20000000,
+      "bao": 50
+    },
+    "thu": {
+      "kn": 15000000,
+      "mon": "ms:2571"
+    },
+    "hai": {
+      "can": 3,
+      "kn": 15000000,
+      "giay": 3,
+      "hoi": 60,
+      "gan": 250
+    },
+    "ve": {
+      "ten": "Hộ Vệ Hoa Viên",
+      "tpl": 700,
+      "lv": 100,
+      "mau": 1000000,
+      "hoi": 300,
+      "hoiCum": true,
+      "thay": 280,
+      "stGiay": 150000,
+      "gan": 1200
+    }
+  },
+  "_minhChu": "Nhiệm vụ Võ Lâm Minh Chủ hằng ngày (anh 03/11 — may-chu/minh-chu.js; bài anh gửi + script máy chủ activitysys\\config\\32): Hắc Bạch Sứ Giả ở Biện Kinh và Ba Lăng huyện (assets/data/minh-chu.json, cong-cu/dung-minh-chu.mjs); cấp ≥ cap; mỗi loại 1 lần mỗi ngày (ngày Việt Nam). giet = Tiêu Diệt Ác Bá: hạ can con 1 loại quái thường ở bãi train có cấp thấp nhất trong [cấp − duoi, cấp] (anh: 500 con, thấp hơn tối đa 50 cấp), đồng đội cùng bãi hạ cũng tính, báo tiến độ mỗi bao con, thưởng kn kinh nghiệm. thu = Giao Thư Tuyệt Mật: nhận mon (Thư của Long Nhi) trao cho Tiểu Chiêu (thuyền Phong Lăng Độ) / Phụng Phụng (ải Vượt Ải), thưởng kn. hai = Thu Thập Nguyên Liệu: hái can cây cùng loại (2 loại ở Ba Lăng, 2 loại ở Biện Kinh), mỗi lần giay giây (thanh Đang thu thập, đi / đánh là hỏng), cây vừa hái hoi giây sau mới hái lại được, đứng cách cây ≤ gan; thưởng kn. Thưởng theo bài anh gửi (20 / 15 / 15 triệu). ve = quái canh cây (anh 03/11 lượt 2: cây ngoài thành, mỗi cụm 2 con, máu mau, không rơi đồ, không kinh nghiệm; hạ hết quái canh của cụm mới hái được; chết thì hoi giây sau sống lại — hoiCum: tính từ lúc con cuối của cụm chết, cả cụm sống lại cùng lúc, con chết trước nằm chờ; false = từng con): ten / tpl (mẫu quái client — hình) / lv; thay = tầm thấy người lại gần (đánh trả khi bị đánh); stGiay = sát thương tối đa máy chủ nhận mỗi giây của 1 người; gan = đứng cách quái ≤ gan mới tính.",
+  "tuLam": {
+    "daTau": {
+      "xu": 10
+    },
+    "satThu": {
+      "xu": 5
+    }
+  },
+  "_tuLam": "Trợ Thủ → Tiện ích → Nhiệm vụ ngày (anh 03/11 — may-chu/tu-lam.js, src/game/tulam.js): tự làm Dã Tẩu / tự săn Boss Sát thủ. Mở khóa theo ngày Việt Nam: daTau.xu Xu (anh: hoàn thành 40 nhiệm vụ Dã Tẩu 10 Xu), satThu.xu Xu (sát thủ toàn bộ trong ngày 5 Xu); mở rồi dùng cả ngày, ngắt quãng vẫn còn. Sửa xong khởi động lại máy chủ",
+  "phongHoa": {
+    "bat": true,
+    "gio": "19:00",
+    "baoTruoc": 5,
+    "baoDanh": 5,
+    "danh": 20,
+    "chuSoai": 14,
+    "cap": 90,
+    "phi": 1000000,
+    "diem": 10,
+    "dot": 30,
+    "song": [
+      40,
+      8,
+      120
+    ],
+    "tiLe": [
+      90,
+      20,
+      10
+    ],
+    "chuTuong": [
+      3,
+      3
+    ],
+    "capGoc": 95,
+    "khangMax": 50,
+    "manh": {
+      "th": [
+        3,
+        1.5
+      ],
+      "dt": [
+        15,
+        2.5
+      ],
+      "tp": [
+        30,
+        3.5
+      ],
+      "ct": [
+        80,
+        5
+      ],
+      "cs": [
+        150,
+        6
+      ],
+      "xe": [
+        40,
+        0
+      ],
+      "tb": [
+        300,
+        6
+      ],
+      "ve": [
+        3,
+        1.5
+      ],
+      "tq": [
+        20,
+        2.5
+      ]
+    },
+    "thuong": {
+      "duoi": 500000,
+      "tren": 1000000,
+      "toiDa": 10000000,
+      "nhan": 2,
+      "ruongXanh": 3
+    },
+    "roi": {
+      "loai": [
+        "dt",
+        "tp",
+        "ct",
+        "cs",
+        "xe",
+        "tb"
+      ],
+      "ds": [
+        [
+          0.005,
+          [
+            "qk:238",
+            "qk:239",
+            "qk:240",
+            "qk:353"
+          ]
+        ],
+        [
+          0.01,
+          [
+            "ms:23"
+          ]
+        ]
+      ],
+      "xu": [
+        0.001,
+        1,
+        2
+      ]
+    },
+    "bua": {
+      "bat": true,
+      "heSo": 2,
+      "tiLe": [
+        0.0005,
+        0.001,
+        0.002,
+        0.01,
+        0.02
+      ],
+      "lan": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "manh": {}
+    },
+    "giaiDoan": [
+      {
+        "tu": 0,
+        "ten": "Tiền quân",
+        "song": 1,
+        "tiLe": [
+          90,
+          20,
+          10
+        ],
+        "toc": 1,
+        "tuong": 0
+      },
+      {
+        "tu": 5,
+        "ten": "Trung quân",
+        "song": 1.25,
+        "tiLe": [
+          80,
+          25,
+          15
+        ],
+        "toc": 1.1,
+        "tuong": 1
+      },
+      {
+        "tu": 10,
+        "ten": "Đại quân",
+        "song": 1.5,
+        "tiLe": [
+          70,
+          30,
+          20
+        ],
+        "toc": 1.2,
+        "tuong": 2
+      }
+    ],
+    "xe": [
+      [
+        2,
+        2,
+        0.8
+      ],
+      [
+        6,
+        3,
+        0.9
+      ],
+      [
+        10,
+        3,
+        1
+      ],
+      [
+        14,
+        4,
+        1.1
+      ],
+      [
+        17,
+        4,
+        1.25
+      ]
+    ],
+    "tocSoai": 0.5,
+    "chieu": {
+      "st": {
+        "tp": 1.5,
+        "ct": 2,
+        "cs": 2.5,
+        "tb": 2.5
+      },
+      "so": {
+        "tp": 1,
+        "ct": 2
+      }
+    }
+  },
+  "_phongHoa": "Phong Hỏa Liên Thành (anh 04/11 — may-chu/phong-hoa.js, src/game/phonghoa.js; kịch bản client script/missions/newcitydefence). Bùa (anh 04/11 lượt 24 — client npcdeath.lua dropItem): hạ quân hạng r (Tiểu hiệu 1, Đội trưởng 2, Tiên phong 3, Chủ tướng 4, Chủ soái 5; chiến xa / Thần binh không) bốc bua.lan[r] lần, mỗi lần trúng (18 × bua.tiLe[r] × bua.heSo) thì rơi 1 trong 18 bùa (ngang nhau) cho người nhận trọn — nhặt là dùng ngay, trạng thái 30 giây – 1 phút (may-chu/do.js nhatBua, bảng hiệu quả assets/data/ky-tran-cac.json bua — cong-cu/dung-ky-tran-cac.js); bua.manh = { hiệu quả: nhân trị số } (mặc định 1); heSo 2 = gấp đôi client; bat false = tắt. Mở hằng ngày gio (giờ Việt Nam): báo danh baoDanh phút ở Vệ binh thành môn Biện Kinh (cấp ≥ cap, phí phi lượng — 1 lần mỗi trận), đánh danh phút, Chủ soái ra ở phút chuSoai (đóng báo danh, thôi lính thường). Trận 20 phút (anh 04/11 lượt 25 — báo danh 5, đánh 20, có cao trào): 3 đợt quân giaiDoan (từ phút tu của trận: Tiền quân / Trung quân / Đại quân) — mỗi dot giây bổ sung lính tới (song[0] + song[1] × số người) × đợt.song (tối đa song[2]) theo tỉ lệ đợt.tiLe Tiểu hiệu / Đội trưởng / Tiên phong, hành quân đợt.toc × tốc độ chạy; vào mỗi đợt chuTuong[0] + số người / chuTuong[1] + đợt.tuong Chủ tướng; chiến xa theo lịch xe [phút, số xe, tốc độ hành quân]; Chủ soái hành quân tocSoai × tốc độ chạy; báo còn 3 / 1 phút (trận quản trị thử ngắn hơn thì lịch co theo tỉ lệ). Quân hạng cao ra chiêu (anh 04/11 lượt 25): Tiên phong 1 chiêu 3x / 4x, Chủ tướng 2 chiêu 5x – 7x của 2 phái cùng hệ ngũ hành, Chủ soái / Thần binh chiêu 9x của mẫu client; sát thương mỗi chiêu = đòn thường × chieu.st[loại], chieu.so = số chiêu mỗi con (bảng chiêu ở may-chu/phong-hoa.js CHIEU — thêm chieu.tp / ct / mau ở đây thì đè); Tiểu hiệu / Đội trưởng / xe đánh thường. Cấp quân = cấp trung bình người trong trận; máu / sát thương = quái thường bãi chính cùng cấp × manh[loại] = [máu, sát thương] (th Tiểu hiệu, dt Đội trưởng, tp Tiên phong, ct Chủ tướng, cs Chủ soái, xe, tb Thần binh, ve Vệ binh, tq Tướng quân); kháng tối đa khangMax %. Thua: 3 tướng quân chết / diem về 0 (mỗi xe tới cổng −1). Thắng (hết giờ / hạ đủ 10 Chủ soái): người còn trong trận thêm nhan × (toiDa nếu kinh nghiệm gốc client kiếm trong trận ≥ tren, floor(tổng / 100 nghìn) triệu nếu ≥ duoi). Rơi thêm (anh 04/11): hạ quân loại roi.loai (Đội trưởng, Tiên phong, Chủ tướng, Chủ soái, xe, Thần binh — bỏ Tiểu hiệu) thì người đánh nhiều nhất bốc từng dòng roi.ds [tỉ lệ, [món]] (0,5 % Thủy Tinh / Tinh Hồng Bảo Thạch, 1 % Thiết La Hán — rơi xuống đất, riêng người đó nhặt) + roi.xu [tỉ lệ, ít nhất, nhiều nhất] Xu vào thẳng. Trong trận không khởi động lại máy chủ (trận chỉ ở bộ nhớ).",
+  "muaLai": {
+    "phut": 5,
+    "heSo": 50,
+    "toiDa": 30
+  },
+  "_muaLai": "Mua lại đồ đã bán cho NPC (anh 13/11 lượt 88 — may-chu/do.js giuMuaLai / act muaLai; nút Mua lại ở khung cửa hàng — src/game/windows.js): món bán ở cửa hàng hoặc Trợ Thủ tự bán ở thành giữ phut phút (5), giá mua lại = số tiền đã nhận × heSo (50), giữ tối đa toiDa món (30, mới nhất trước). Món về túi đúng như lúc bán.",
+  "tongKim": {
+    "bat": true,
+    "soBot": 10,
+    "soBotMax": 60,
+    "tri": 3,
+    "lechCap": 10,
+    "hoiSinh": 8,
+    "hoanGiay": 180,
+    "stGiay": 600000,
+    "stBot": 300000,
+    "stBinh": 2000000,
+    "hoiGiay": 0.35,
+    "R": 220,
+    "pk": 75,
+    "lienTram": [
+      3,
+      150
+    ],
+    "chuc": [
+      1000,
+      3000,
+      6000,
+      10000
+    ],
+    "heSoSt": 0.4,
+    "gio": [
+      "10:50",
+      "12:50",
+      "16:50",
+      "22:00"
+    ],
+    "baoTruoc": 5,
+    "baoDanh": 5,
+    "danh": 30,
+    "soai1": 15,
+    "soai2": 20,
+    "vaoMuon": 15,
+    "vaoTuDo": true,
+    "giaThuocCo": 1,
+    "mauSoai": 20000000,
+    "cap": 80,
+    "phi": 3000,
+    "giuKq": 120,
+    "raSau": 30,
+    "chucMau": [
+      0,
+      20,
+      30,
+      40,
+      50
+    ],
+    "chucThu": [
+      0,
+      0,
+      5,
+      10,
+      15
+    ],
+    "diemBinh": [
+      5,
+      30,
+      150,
+      250,
+      500,
+      1000
+    ],
+    "binh": {
+      "so": 30,
+      "hoi": 45,
+      "dot": [
+        10,
+        6,
+        4,
+        2
+      ],
+      "dotTu": 1,
+      "dotDen": 20,
+      "capGoc": 95,
+      "lech": -5,
+      "capMin": 95,
+      "capMax": 200,
+      "mauHs": [
+        1,
+        2,
+        6,
+        10,
+        20,
+        80
+      ],
+      "stHs": [
+        1,
+        1.3,
+        1.8,
+        2.5,
+        3.5,
+        6
+      ],
+      "khang": [
+        0,
+        5,
+        10,
+        15,
+        30,
+        243
+      ],
+      "khangMax": 50
+    },
+    "thuong": {
+      "diemMin": 100,
+      "thang": 1200,
+      "thua": 600,
+      "ht": [
+        2,
+        0
+      ],
+      "htMoc": 3000,
+      "htThem": 1,
+      "htSoai": 2,
+      "htMon": "qk:507",
+      "khoa": 0,
+      "knHs": 1.4,
+      "knToiDa": 20000000,
+      "hcMon": "ms:1773",
+      "hcDiem": 1000,
+      "hcNgay": 2,
+      "hcKn": [
+        [
+          2000000,
+          30
+        ],
+        [
+          3000000,
+          40
+        ],
+        [
+          5000000,
+          30
+        ]
+      ],
+      "roiGiu": 120
+    },
+    "thienTu": {
+      "thu": [
+        2,
+        4,
+        6
+      ],
+      "heSo": 2
+    },
+    "quanNhu": [
+      [
+        "qk:507",
+        5000
+      ],
+      [
+        "ms:156",
+        3000
+      ],
+      [
+        "ms:157",
+        2000
+      ],
+      [
+        "ms:215",
+        400
+      ],
+      [
+        "ms:216",
+        200
+      ],
+      [
+        "ms:217",
+        100
+      ],
+      [
+        "ms:186",
+        300
+      ],
+      [
+        "ms:187",
+        300
+      ],
+      [
+        "ms:191",
+        400
+      ],
+      [
+        "ms:178",
+        600
+      ],
+      [
+        "ms:181",
+        600
+      ],
+      [
+        "ms:190",
+        600
+      ],
+      [
+        "ms:179",
+        600
+      ],
+      [
+        "ms:180",
+        600
+      ],
+      [
+        "ms:9101",
+        600
+      ],
+      [
+        "ms:9102",
+        600
+      ],
+      [
+        "ms:182",
+        600
+      ],
+      [
+        "ms:183",
+        600
+      ],
+      [
+        "ms:184",
+        600
+      ],
+      [
+        "ms:185",
+        600
+      ]
+    ],
+    "duc": {
+      "can": 100,
+      "mon": "qk:195"
+    }
+  },
+  "_tongKim": "Tống Kim (may-chu/tong-kim.js; THIET-KE-TONG-KIM.md). TRẬN THEO LỊCH (đợt 2 — anh 06/11): mỗi ngày các giờ gio (giờ Việt Nam; GM đổi ở F10 → Lịch hoạt động, lưu du-lieu/lich-hd.json đè các số ở đây), báo trước baoTruoc phút; báo danh baoDanh phút ở Mộ binh quan Biện Kinh (cấp ≥ cap, ủng hộ phi lượng 1 lần mỗi trận mỗi nhân vật — vào lại không mất phí; 2 phe lệch tối đa 1 người thật; vào muộn tới phút vaoMuon của trận) rồi đánh danh phút ở chiến trường 380 Xung phong — anh 06/11 chọn (bai của assets/data/tong-kim.json). Khai chiến: mỗi phe soBot bot + quân NPC (binh: so Tống binh / Kim binh mỗi phe, chết hoi giây sau ra lại; dot = số Hiệu úy / Thống lĩnh / Phó tướng / Đại tướng mỗi phe ra dần từ phút dotTu tới dotDen, không ra lại; cấp quân = cấp bot của trận + lech + bậc trong [capMin, capMax]; máu / sát thương = quái thường bãi chính cùng cấp × mauHs / stHs theo bậc (Tống binh … Nguyên Soái) — riêng máu Nguyên Soái = máu boss thế giới bossTheGioi.mau (anh 06/11 \"máu nguyên soái để = máu boss thế giới\" — mauHs[5] không dùng), chính xác / né tránh = mẫu client × hệ số cấp so với capGoc; khang = kháng vật lý mẫu client, tối đa khangMax; stBinh = sát thương tối đa mỗi giây 1 con quân). Nguyên Soái: phút soai1 phe ít điểm (bằng điểm: cả 2), phút soai2 phe kia. Phe hạ Nguyên Soái địch trước thắng — trận kết thúc ngay (anh 06/11 \"sau khi kill nguyên soái, có thể kết thúc luôn\"), không ai hạ được thì hết giờ phe nhiều điểm hơn thắng, bằng điểm thì Tống. Điểm hạ quân diemBinh (bậc 0–5); chức theo mốc chuc: sinh lực + chucMau %, phòng thủ + chucThu % (Binh sĩ … Đại tướng). Thưởng cuối trận (thuong — người đã báo danh, còn trong trận hoặc rời chưa quá roiGiu giây, điểm trận ≥ diemMin): điểm Tống Kim = điểm trận + thang / thua; Nhạc Vương Hồn Thạch htMon = ht[thắng, thua] (anh 06/11: thắng 2 / thua 0) + htThem nếu từ htMoc điểm + htSoai cho người đánh Nguyên Soái địch nhiều nhất (khoa 0 = không khóa bảo hiểm); kinh nghiệm = min(knToiDa, điểm trận × (700 + ⌊(cấp − 40) / 5⌋ × 100) × knHs) cộng thẳng; Huân công bài hcMon (thắng, từ hcDiem điểm, tối đa hcNgay cái mỗi ngày, hết hạn 24:00 ngày hôm sau — dùng nhận kinh nghiệm hcKn [số, tỉ lệ]). Thiên Tử (Đêm Huy Hoàng): trận giờ muộn nhất trong ngày vào các ngày thienTu.thu (0 = Chủ nhật) — điểm Tống Kim + kinh nghiệm × heSo. giuKq = giây giữ bảng kết quả, raSau = giây sau khi xong thì đưa người về Biện Kinh (anh 06/11: 30). Quân Nhu quan (Biện Kinh): quanNhu = [[món, giá điểm Tống Kim]] (không bán khi trận đang đánh); duc = đúc can viên Hồn Thạch thành 1 món mon (Nhạc Vương Kiếm). Sửa xong khởi động lại máy chủ. BÃI THỬ (đợt 1 — anh 05/11; quản trị mở ở công cụ Thử Tống Kim — /api/tong-kim-qt, không theo bat): 1 phòng ở bãi quản trị chọn, người thật ở bãi đó tự vào (phe lệch tối đa 1 người), mỗi phe soBot bot. bat = bật lịch trận; soBot = số bot mỗi phe mặc định (quản trị đổi được, tối đa soBotMax — anh 06/11: 60); tri = mức thông minh bot 1–3; cấp bot = cấp cao nhất máy chủ (không tính tài khoản quản trị) ± lechCap; hoiSinh = giây bot bị hạ ra trận lại; stGiay / stBot = sát thương tối đa mỗi giây của 1 người / 1 bot (dồn tối đa 3 giây — chặn gửi bậy); hoiGiay = mỗi giây bot hồi tối đa chừng này phần sinh lực tối đa (thuốc, Nga My); R = bán kính doanh trại mỗi phe; pk = điểm hạ người / bot × hệ số chức (client RANK_PKBONUS: 1 + (chức bị hạ − chức kẻ hạ) / 5); lienTram = [số mạng, điểm thêm] liên trảm (client TAB_SERIESKILL); chuc = mốc điểm Hiệu úy / Thống lĩnh / Phó tướng / Đại tướng; heSoSt = hệ số sát thương PK trong trận — mọi đòn người / bot đánh người / bot nhân hệ số này (client 1; 0,4 cho mỗi mạng đánh vài giây) — mặc định của phòng, quản trị đổi được từng phòng (0,01–2 — anh 06/11 \"hệ số sát thương thêm mức 0.01\"). Anh 13/11 (lượt 86): vaoTuDo = báo danh / vào trận suốt trận tới lúc hết giờ (\"k giới hạn thời gian vào tống kim\" — tắt thì như cũ tới phút vaoMuon); giaThuocCo = giá mỗi bình thuốc mua ở Quân y trong trận (1 lượng — \"máu tống kim giờ mua đồng giá 1 đồng\"; 0 = giá ngoài × giaThuoc); mauSoai = máu Nguyên Soái (20 triệu — boss thế giới lên 50 triệu nên tách riêng; 0 = theo bossTheGioi.mau). HOAN (anh 17/11): hoanGiay = giây tối đa của mọi loại hoàn (hoàn Tống Kim + hoàn Kỳ Trân Các có chỉ số: Phi Tốc, Đại Lực, Kích Công…) khi đang trong trận; trọng thương thì mất hết, phải dùng lại. Chiến cổ / Lệnh Bài giữ nguyên.",
+  "choTroi": {
+    "thue": 20,
+    "thueMua": 10,
+    "thueBan": 10,
+    "cap": 80,
+    "qc": 16,
+    "cach": 40
+  },
+  "_choTroi": "Chợ trời — bày bán kiểu client (anh 02/11: sạp Rao bán + bảng Chợ Trời, thuế 20 %; may-chu/cho-troi.js). thue = tổng thuế suất %; anh 18/11 \"thuế này do cả ng mua và ng bán cùng chịu\": thueMua % cộng vào giá người mua trả, thueBan % trừ vào tiền người bán nhận (thiếu thì mỗi bên thue / 2); trước 18/11 thue % cộng hết vào giá người mua trả (client: Giá niêm yết (thu nhập) của người bán, Giá bán (gồm thuế) của người mua — settings\taxrates.ini gốc 6 % tân thủ thôn, 10 % thành thị); cap = cấp tối thiểu được bày bán (anh 02/11: 80 — client MinPlayerLevelAllowed 10); qc = số chữ tối đa của lời rao; cach = 2 sạp cách nhau ít nhất 2 × chừng này (điểm bản đồ, trục dọc × 2). Sửa xong khởi động lại máy chủ",
+  "_vuotAi": "anh 28/10 (may-chu/vuot-ai.js — luật script client missions/challengeoftime): Nhiếp Thí Trần -> Thử luyện sát thủ -> Tham gia khiêu chiến. Bậc theo cấp: Sơ cấp 50–89 (giản cấp 20–80), Cao cấp 90+ (giản cấp 90). Mỗi ngày luot lần; lần thứ i nộp gian[i] Sát Thủ Giản + tien[i] lượng (anh: 1 2 4 8 giản, tiền gấp đôi mỗi lần từ 50 vạn). 28 đám quái trong 30 phút (assets/data/vuot-ai.json — cong-cu/dung-vuot-ai.mjs); thưởng mỗi đám + xong ải theo phút như client, × doiTruong (1 người = đội trưởng) × caoCap (bậc cao) × kinhNghiem; treGiay = giây cho phép báo giết trễ sau hết giờ. mau = hệ số máu quái theo bậc (1 sơ / 2 cao — ải client làm cho đội 8 người): TẠM 0,25 / 0,15 cho quái thường của ải ≈ quái bãi luyện công cùng cấp sau canBang (cấp 75: 12–18 nghìn × 0,25 ≈ 3–4,5 nghìn như Lâm Du Quan 3,2 nghìn; cấp 95: 50–80 nghìn × 0,15 ≈ 7,5–12 nghìn như Sa Mạc 1 11,4 nghìn) — tiểu boss sơ / cao 50 / 90 nghìn, Nhiếp Thí Trần 150 / 255 nghìn. Đo lại bằng công cụ thử (thẻ Vượt Ải) với nhân vật có đồ thật. Anh 28/10 (sau lần thử đầu): chuanBi = giây chờ từ lúc vào tới lúc ra quái (30 phút tính từ lúc ra quái); hết mỗi đám nghỉ 5 giây (trình duyệt); quái ải đứng theo đội hình, chỉ lao vào khi người chơi tới gần nhin điểm hoặc bị đánh, kéo theo con cùng đám đứng trong keo điểm quanh nó, đã lao vào thì không bỏ về chỗ cũ. Anh 31/10 (thử tổ đội: \"quái có vẻ đứng yên, nhìn khá là đơ, nên cho quái trong phạm vi thấy và chủ động tấn công\"): nhin = 0 -> tầm nhìn VisionRadius của client (npcs.txt: quái ải 500, tiểu boss / Nhiếp Thí Trần 1200 -> 375 / 900 điểm bản đồ web; bản 28/10 ép 160). KHÔNG rơi trang bị: mỗi con quái ải hạ được tỉ lệ thuoc.tiLe rơi thuoc.n bình Ngũ Hoa Ngọc Lộ Hoàn (potion:15 — anh 28/10 lần 2: 1 bình, tỉ lệ vừa để nhặt tiếp tế; 617 con × 8 % ≈ 49 bình / lần); hạ boss của ải (17 con / lần) tỉ lệ leBao.roi rơi 1 Hộp lễ vật vượt ải (ms:1392 — 0,38 × 17 ≈ 6,5 hộp / lần, thường 5–8). Mở hộp: tiLeXu ra Xu (anh 28/10 lần 7: 1 / 2 / 3 Xu theo trọng số xu), tiLeTtl ra 1 Tiên Thảo Lộ 1 giờ (ttl), còn lại kn kinh nghiệm (anh 28/10 lần 2: 5 triệu). Anh 28/10 lần 7: mỗi con quái ải tiLe 8 % rơi ngẫu nhiên thuoc.n = [1, 3] bình Ngũ Hoa; Cao cấp nhận cả Sát Thủ Giản cấp 100–200. Anh 28/10 (bảng chỉ số quái): mauDat[bậc] = máu đặt sẵn thay hệ số mau (xóa mauDat thì dùng lại mau) — quai [đám 1, đám 26]: quái thường tăng dần theo đám; boss [thấp, cao]: tiểu boss tăng dần theo đám (đám 4 thấp … đám 25), Nhiếp Thí Trần = cao, 8 sát thủ đám cuối = thấp. Sơ cấp quái 60–100 nghìn, boss 1–2 triệu (anh); cao cấp gấp đôi (em đặt — người chơi cao cấp có đồ + kỹ năng mạnh hơn nhiều; anh sửa số). Nhóm quái bảng client không có sát thương thường (client đánh bằng võ công quái — chưa có) lấy sát thương của tiểu boss cùng ải, cùng cấp (src/game/main.js sinhDot). Anh 16/11: tổ đội tối thiểu toiThieu người (không còn đi 1 người); quái + boss máu và sát thương × heSo.goc ở toiThieu người, mỗi người thêm + heSo.them (thay mauThem); xong trọn ải cả đội 1 lần quay xuDoi × (số người − 1), trúng thì mỗi người còn trong ải nhận xuSo Xu — sửa xong khởi động lại máy chủ. Anh 17/11 (\"Vượt Ải dân tình chê lên chê xuống do thưởng cùi\"): thuongAi = thưởng kinh nghiệm THÊM mỗi người (cộng vào kinh nghiệm đám của client): qua ải nhỏ thứ i (đám 1–27) goc + them × (i − 1) (500 nghìn, 600 nghìn … 3,1 triệu), qua ải cuối (đám 28) cuoi (10 triệu); sơ cấp (cấp 50–89) × soCap (0,1); mỗi người quá toiThieu (3) × (1 + moiNguoi × số người thêm) — số người lúc vào ải; đội trưởng × doiTruong (1,2); không × caoCap. Mỗi ải: 1 dòng \"[Vượt Ải] Qua ải N/28 …\" ở kênh Khác cho người trong ải; ải cuối: báo cả máy chủ (kênh Khác) kèm số kinh nghiệm. 0 = tắt phần thưởng thêm. Sửa xong khởi động lại máy chủ.",
+  "soDong": {
+    "quaiThuong": [
+      75,
+      15,
+      7,
+      2.5,
+      0.4,
+      0.09,
+      0.01
+    ],
+    "trum": [
+      0,
+      55,
+      30,
+      12,
+      2.5,
+      0.48,
+      0.02
+    ]
+  },
+  "_soDong": "tỉ lệ (%) ra 0, 1, 2 … 6 dòng; 0 dòng = đồ trắng",
+  "capDo": {
+    "chiaDuoi": 20,
+    "chiaTren": 10
+  },
+  "_capDo": "cấp đồ 1–10 của món rơi = ngẫu nhiên trong [cấp quái / chiaDuoi, cấp quái / chiaTren] (bảng rơi thường của client); trùm lấy mức cao",
+  "capDong": {
+    "cong": 3
+  },
+  "_capDong": "cấp mỗi dòng xanh trong [1, cấp đồ + cong] (tối đa 10): đồ cấp 7–10 mới ra được dòng cấp 10 (anh 25/10). Cấp nào trong khoảng đó: dongXanh",
+  "dongXanh": {
+    "tamLech": -0.5,
+    "tuCap": 6,
+    "luiCapCao": 0.9,
+    "sigmaTren": 1.1,
+    "sigmaDuoi": 2.5,
+    "muGiaTri": 2.7,
+    "mayManGiaTri": 0.5
+  },
+  "_dongXanh": "anh 28/10 lần 7 \"đồ có khoảng min max mà drop dòng max và cận max khá nhiều — chia sao cho đồ ra được có giá trị, vui khi ra món ngon\": cấp mỗi dòng theo hình chuông lệch quanh tâm = cấp đồ − tamLech − (cấp đồ − tuCap, nếu dương) × luiCapCao; trên tâm hẹp (sigmaTren), dưới tâm rộng (sigmaDuoi); số trong khoảng của dòng lệch về thấp: thấp + (cao − thấp + 1) × ngẫu nhiên^muGiaTri. Mô phỏng 28/10: đồ cấp 7–10 trung bình ~47–49 % mức cao nhất của thuộc tính (bản trước ~50 %), dòng ≥ 90 % mức cao nhất ~1,5–2 % (trước ~11 %), chạm mức cao nhất ~1,7 % (trước ~5,7 %); đồ cấp 3–5 trung bình yếu đi 8–26 %. Tăng muGiaTri / luiCapCao = dòng ngon hiếm hơn. Anh 31/10 (may mắn: \"chỉ số có thể roll cao hơn mức trung bình 1 tí\"): đồ rơi từ quái — số mũ muGiaTri chia cho 1 + may mắn (tối đa mayManToiDa) / 100 × mayManGiaTri (60 may mắn: trung bình ~27 % -> ~33 % khoảng của dòng); may mắn vẫn tăng tỉ lệ rơi như cũ",
+  "loaiDo": {
+    "0": 7,
+    "1": 7,
+    "2": 14,
+    "3": 10,
+    "4": 10,
+    "5": 10,
+    "6": 10,
+    "7": 12,
+    "8": 10,
+    "9": 10
+  },
+  "_loaiDo": "trọng số loại món rơi (mã loại items.json: 0 vũ khí cận chiến, 1 tầm xa, 2 áo, 7 mũ, 5 giày, 6 đai, 8 hộ uyển, 3 nhẫn, 4 dây chuyền, 9 ngọc bội) — anh 09/11: cận chiến = tầm xa = 7 (trước 10 / 4, tổng vẫn 100); dùng cho quái rơi và Bảo rương đồ xanh (do.js)",
+  "tien": {
+    "moc": [
+      {
+        "den": 100,
+        "tiLe": 0.05,
+        "toiDa": 1000
+      },
+      {
+        "den": 150,
+        "tiLe": 0.08,
+        "toiDa": 1800
+      },
+      {
+        "den": 200,
+        "tiLe": 0.15,
+        "toiDa": 3500
+      }
+    ],
+    "thapNhat": 0.5,
+    "trum": 50
+  },
+  "_tien": "anh 28/10 lần 7: quái thường rơi tiền theo mốc cấp quái — tới cấp den: tỉ lệ tiLe, 1 đống tiền tối đa toiDa lượng (cấp 1–100: 5 %, ≤ 1000; 101–150: 8 %, ≤ 1800; 151–200: 15 %, ≤ 3500). Số mỗi đống = toiDa × cấp quái / den × ngẫu nhiên [thapNhat, 1] -> bãi nhỏ rơi ít, bãi to rơi nhiều, cấp den mới chạm toiDa; không nhân hệ số tiền của bãi (canBang). Trùm + tinh anh như cũ: cấp quái × trum × hệ số tiền của bãi",
+  "giaBan": 20,
+  "_giaBan": "bán đồ cho NPC: giaBan × cấp quái đã rơi ra món × (1 + 2 × số dòng)",
+  "mayManToiDa": 60,
+  "thongBaoTuDong": 5,
+  "_thongBaoTuDong": "món có từ chừng này dòng trở lên thì báo cả máy chủ",
+  "ruongXanh": {
+    "k": "ms:1884",
+    "soDong": [
+      0,
+      0,
+      0,
+      70,
+      22,
+      7,
+      1
+    ],
+    "oTrong": 6,
+    "viemDe": 3
+  },
+  "_ruongXanh": "Bảo rương đồ xanh (anh 04/11 — may-chu/do.js monRuongXanh, dungVat ruongXanh; món ms:1884 = Lam Bảo Rương của client đổi tên ở cong-cu/dung-ky-tran-cac.js): mở ra 1 món trang bị xanh; soDong = tỉ lệ (%) ra 0…6 dòng (anh chọn cột Vừa: 3 dòng 70, 4 dòng 22, 5 dòng 7, 6 dòng 1); loại món theo loaiDo, ngũ hành ngẫu nhiên, cấp món = cấp nhân vật / capDo.chiaTren (như trùm bãi cùng cấp rơi), dòng gieo như đồ rơi (dongXanh, may mắn người mở); từ thongBaoTuDong dòng thì báo cả máy chủ + nhật ký quản trị. Nguồn (anh 04/11): xong trọn Vượt Ải mỗi người vuotAi.ruongXanh (2); Dã Tẩu đạt 40 nhiệm vụ trong ngày daTau.mocNgay.40.do (3); Boss thế giới top 1–3 sát thương bossTheGioi.hang (2 mỗi hạng); Phong Hỏa thắng trận + đạt mức thưởng cao nhất phongHoa.thuong.ruongXanh (3); Võ Lâm Minh Chủ mỗi nhiệm vụ trả xong minhChu.ruongXanh (1 — anh 04/11 lượt 24); cửa hàng phúc duyên 50 điểm (assets/data/ky-tran-cac.json phucDuyen); viemDe = Viêm Đế hạ Lương Mi Nhi mỗi người (chưa dùng — Viêm Đế chưa làm). Không bán ở Kỳ Trân Các; rương và món mở ra giao dịch / bán chợ trời như đồ thường. Rương thưởng Vượt Ải / Phong Hỏa / Minh Chủ vào h.rxCho, nhịp sau tự vào túi (túi đầy thì chờ, báo 1 lần). Anh 04/11 lần 2 (túi gần đầy: mở đi mở lại tới khi ra món ít ô — bug): cần ít nhất oTrong (6) ô trống mới mở; mở là chốt món — không vừa chỗ thì món vào h.rxMon chờ, dọn túi là tự vào",
+  "gietToiDa": {
+    "dau": 120,
+    "moiGiay": 2
+  },
+  "thuoc": {
+    "chongToiDa": 60,
+    "muaToiDa": 60,
+    "banLai": 0.5,
+    "mangToiDa": 60,
+    "chongRieng": {
+      "ms:196": 9999,
+      "ms:399": 9999,
+      "ms:399:*": 9999,
+      "ms:400:*": 9999,
+      "qk:507": 50,
+      "ms:156": 50,
+      "ms:157": 50,
+      "ms:178": 50,
+      "ms:181": 50,
+      "ms:186": 50,
+      "ms:187": 50,
+      "ms:190": 50,
+      "ms:191": 50,
+      "ms:215": 10,
+      "ms:216": 10,
+      "ms:217": 10
+    }
+  },
+  "_thuoc": "thuốc (anh chốt 25/10): 1 ô xếp chồng tối đa chongToiDa bình; mỗi lần mua tối đa muaToiDa bình (mọi loại); bán lại cho NPC = giá mua × banLai mỗi bình; mang trong túi tối đa mangToiDa bình TỔNG mọi loại (anh 25/10: vd 30 máu + 30 nội lực) — mua / nhặt / Trợ Thủ mua đều không vượt. Giá mua + tác dụng: assets/data/thuoc.json (giá client). chongRieng: món xếp chồng tới số riêng thay cho chongToiDa (anh 02/11: Mật đồ thần bí ms:196 tối đa 9999; khuya: Sát Thủ lệnh ms:399:* / Sát thủ giản ms:400:* tối đa 9999 — khóa kết thúc * = mọi món có khóa bắt đầu như vậy; anh 06/11 Tống Kim như client: Nhạc Vương Hồn Thạch qk:507, các hoàn Tống Kim, Chiến cổ, Lệnh Bài 50, Càn Khôn Tạo Hóa Đan 10)",
+  "trenDat": {
+    "giay": 133,
+    "toiDa": 100
+  },
+  "vaoBai": {
+    "thieuCap": 0
+  },
+  "voCong": {
+    "moPhai": [
+      "*"
+    ]
+  },
+  "uyThac": {
+    "tiLe": 0.7,
+    "gioNgay": 12,
+    "mucDinh": 300,
+    "vangGiay": 90
+  },
+  "_dangNhap": "Đăng nhập nhận thưởng (anh 27/10 — khung client loginprize, luật script client event/prize/loginprize.lua): mỗi nhân vật đếm ngày đăng nhập liên tục (mốc ngày: gio giờ sáng giờ Việt Nam; bỏ 1 ngày thì về ngày 1); mỗi tài khoản nhận 1 lần / ngày; qua 42 ngày: trả phiTiep xu để nhận tiếp thưởng ngày 42, hoặc nhận lại từ ngày 1. xu = số Xu thưởng ngày 1–42 (client thưởng kinh nghiệm — đổi 1 xu mỗi 1 triệu kinh nghiệm của bảng client, anh chốt 27/10; phần thưởng khác thêm sau). Sửa xong bật lại Chay_Game.bat",
+  "_ruong": "Rương mở rộng (anh 27/10: \"mở rộng rương = xu, 50/100/200, còn lại như client\"): mua ở Thẩm Cửu Ba Lăng, mỗi lần thêm 1 rương 60 ô (không cất tiền như client), tối đa 3 rương; moRong = giá Xu lần 1, 2, 3. Mua rương mở rộng thì dùng được mật mã rương: khóa thì không mặc / tháo đồ, không lấy đồ / tiền ra khỏi rương. Sửa xong bật lại Chay_Game.bat",
+  "ruong": {
+    "moRong": [
+      50,
+      100,
+      200
+    ]
+  },
+  "_tienTrang": "Tiền trang Ba Lăng (anh 27/10: \"đổi tiền vạn ra xu, 500 vạn 1 xu trước, tỉ lệ điều chỉnh sau\"; anh 01/11: \"đổi 100 vạn được 1 xu\"): luongMotXu = số lượng ngân lượng đổi 1 Xu (100 vạn = 1.000.000), chỉ đổi chiều ngân lượng -> Xu. Sửa xong bật lại Chay_Game.bat; anh tối 11/11: \"đổi giới hạn đổi xu từ 100v/1 => 50v/1 xu\" -> 500.000. Anh 14/11: 'cho đổi xu sang tiền vạn, 1 xu = 25 vạn, mỗi tài khoản giới hạn 10 xu / ngày' -> luongBanXu = ngân lượng nhận khi đổi 1 Xu ra (250.000 = 25 vạn; phải nhỏ hơn luongMotXu, không thì máy chủ tạm ngừng chiều này), banXuNgay = số Xu mỗi tài khoản đổi ra mỗi ngày (giờ Việt Nam, đếm chung các nhân vật)",
+  "tienTrang": {
+    "luongMotXu": 500000
+  },
+  "_kyNangPhai": "Thông số kỹ năng từng phái (anh 11/11 tối: \"chỉnh thông số của kĩ năng các phái, lẽ ra admin đều có thể thao tác\" — F10 → Cấu hình → Kỹ năng phái): phai = { <mã phái>: % sát thương võ công của phái }, chieu = { <mã chiêu>: % sát thương của chiêu } — 100 = như client, bỏ trống = 100. Nhân vào sát thương chiêu cùng chỗ nhân Nội công (src/game/vocong.js kyK — cả độc, lực tay ở bảng Thuộc tính, phân thân, bot Tống Kim). Mã phái: shaolin tianwang tangmen wudu emei cuiyan gaibang tianren wudang kunlun. Trình duyệt nhận qua LUAT.kyNangPhai: sửa xong khởi động lại máy chủ + bắt cả máy chủ F5",
+  "kyNangPhai": {
+    "phai": {},
+    "chieu": {}
+  },
+  "dangNhap": {
+    "gio": 5,
+    "phiTiep": 5,
+    "xu": [
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      10,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      20,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      30,
+      7,
+      7,
+      7,
+      8,
+      8,
+      8,
+      40,
+      9,
+      9,
+      9,
+      10,
+      10,
+      10,
+      50,
+      11,
+      11,
+      11,
+      12,
+      12,
+      12,
+      60
+    ]
+  },
+  "_uyThac": "ủy thác = cày khi tắt máy (THIET-KE-S1.md mục 5, anh 27/10): nhân vật đang tự đánh mà máy chủ không nhận nhịp quá vangGiay giây (đóng trang, tắt máy…) -> lúc vào lại máy chủ cày thay ở bãi đó: tốc độ = tốc độ giết đo 30 phút chơi gần nhất ở bãi (chưa đo được thì mucDinh quái / giờ) × tiLe; tối đa gioNgay giờ mỗi ngày (giờ Việt Nam); không tốn thuốc, không chết, đồ không hao; đồ + tiền qua bộ lọc nhặt / bán của Trợ Thủ",
+  "doBen": {
+    "haoMon": 1,
+    "vuKhi": {
+      "ben": [
+        20,
+        25,
+        30,
+        35,
+        40,
+        45,
+        50,
+        55,
+        60,
+        65
+      ],
+      "gia": [
+        50,
+        200,
+        400,
+        500,
+        2500,
+        3500,
+        4500,
+        6000,
+        8000,
+        10000
+      ]
+    }
+  },
+  "_doBen": "độ bền trang bị (anh 26/10 'sửa đồ'): haoMon = hệ số hao mòn so với client (1 = như client: bị đánh trúng mũ / áo / đai / bao tay mỗi món mất 1 điểm xác suất 1/320, giày 1/2560 mỗi lần sang vùng bản đồ; vũ khí, trang sức, ngựa không có độ bền), 0 = tắt hao mòn. vuKhi (anh 26/10 'vũ khí thêm độ bền, quan trọng nhất'): bảng vũ khí client 8.1 không có độ bền lẫn giá -> độ bền tối đa (ben) + giá gốc để tính giá sửa (gia) theo cấp đồ 1–10, TẠM lấy bằng áo cùng cấp đồ (độ bền / giá trung vị bảng áo client); vũ khí hao 1/256 mỗi đòn như client abraderate.ini [Attack] (treo máy 870–4.060 đòn / giờ). Đo 26/10: treo máy bị đánh trúng 10–1.210 lần / giờ tuỳ phái -> mũ / áo mất 0–4 điểm / giờ. Độ bền 0: món không còn tác dụng tới khi sửa (cửa hàng, nút Sửa; Trợ Thủ tự sửa ở thành)",
+  "_voCong": "phái đã mở võ công trong trận (25/10 mở 2 phái mẫu Thiếu Lâm + Nga My; 26/10 anh bảo làm các phái tiếp theo -> mở cả 10 phái). Khóa phái: shaolin tianwang tangmen wudu emei cuiyan gaibang tianren wudang kunlun; [\"*\"] = cả 10 phái. Phái chưa mở: học chiêu được, đánh vẫn đòn thường",
+  "_vaoBai": "bãi train (chính / phụ) chỉ vào được khi cấp ≥ cấp thấp nhất của bãi − thieuCap (anh 25/10: đủ cấp mới lên bãi sau) — 0: Hoa Sơn (10–20) cần cấp 10; 2: cần cấp 8. Máy chủ không tính quái giết ở bãi chưa đủ cấp; thành / thôn vào lúc nào cũng được",
+  "_trenDat": "đồ + tiền rơi nằm trên đất (anh 25/10: phải đi tới nhặt): nằm chừng này giây rồi mất (client LifeTime 2400 vòng ≈ 133 giây), mỗi nhân vật tối đa toiDa vật",
+  "_gietToiDa": "chống báo giết quái giả: tối đa 120 con dồn, hồi 2 con mỗi giây (tài khoản quản trị không bị giới hạn)",
+  "canBang": {
+    "_ghi_chu": "Cân bằng theo tốc độ giết thật (anh 26/10, src/game/do-toc-do.js đo 10 phái × mọi bãi). Mỗi bãi: mau = hệ số máu quái, satThuong = hệ số sát thương quái (trình duyệt), kinhNghiem = nhân thêm vào kinhNghiem chung, tien = nhân tiền rơi (máy chủ), chiSo = mã quái lấy chỉ số thay (quái client lỗi số). trum = trùm bãi lấy chỉ số quái thường đầu tiên của bãi cùng cấp × hệ số này. Nhịp lên cấp mục tiêu: THIET-KE-S1.md mục 2. Anh 30/10 lần 2 (\"bãi sau phải nhiều exp hơn bãi trước, không thể cấp 79 đánh quái map 70 lại nhiều hơn 80 đánh quái 80\" — chọn cách giữ nhịp): mọi con quái thường của 1 bãi cùng 1 mức kinh nghiệm (may-chu/do.js knBai — TB bảng client của bãi trên các cấp bãi ra quái, không theo cấp từng con), kinhNghiem chỉnh để mỗi bãi ≥ bãi cao nhất của dải 10 cấp ngay dưới × 1,02 — chỉ nâng, không hạ. Sửa xong tắt bật lại Chay_Game.bat",
+    "trum": {
+      "mau": 6,
+      "satThuong": 1.5,
+      "kinhNghiem": 8
+    },
+    "_soQuai": "Số quái cùng lúc mỗi bãi (anh 27/10 'map hơi ít quái' -> chọn 65 như máy chủ gốc: 55–85 con trên đúng mảnh bản đồ bãi dùng; trước là 16). Giữ kinh nghiệm / tiền mỗi con (anh chọn lên cấp nhanh hơn): đo 10 phái × 20 bãi chính giết 642 -> ~1.000 con/giờ (+56 %), kinh nghiệm/giờ +51 %, tiền +39 %, tiền thuốc +32 %, không chết. Riêng 1 bãi: thêm soQuai vào bai[mã].",
+    "soQuai": 65,
+    "bai": {
+      "2": {
+        "_ten": "Hoa Sơn 10-20",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 1,
+        "tien": 1.58
+      },
+      "3": {
+        "_ten": "Kiếm Các Tây Bắc 20-30",
+        "mau": 0.6,
+        "satThuong": 1,
+        "kinhNghiem": 1,
+        "tien": 1
+      },
+      "7": {
+        "_ten": "Tần Lăng 20-30",
+        "mau": 0.6,
+        "satThuong": 1,
+        "kinhNghiem": 1,
+        "tien": 1
+      },
+      "19": {
+        "_ten": "Kiếm Các Tây Nam 20-30",
+        "mau": 0.6,
+        "satThuong": 1,
+        "kinhNghiem": 1,
+        "tien": 1
+      },
+      "21": {
+        "_ten": "Thanh Thành sơn 40-50",
+        "mau": 0.4,
+        "satThuong": 1,
+        "kinhNghiem": 2.06,
+        "tien": 1.3
+      },
+      "41": {
+        "_ten": "Phục Ngưu Sơn Tây 40-50",
+        "mau": 0.4,
+        "satThuong": 1,
+        "kinhNghiem": 1.18,
+        "tien": 1.3
+      },
+      "42": {
+        "_ten": "Thiên Tâm động 50-60",
+        "mau": 0.25,
+        "satThuong": 1,
+        "kinhNghiem": 2.68,
+        "tien": 2.04
+      },
+      "43": {
+        "_ten": "Kiếm Các Trung Nguyên 20-30",
+        "mau": 0.6,
+        "satThuong": 1,
+        "kinhNghiem": 1,
+        "tien": 1
+      },
+      "56": {
+        "_ten": "Hoành Sơn Phái 60-70",
+        "mau": 0.25,
+        "satThuong": 1,
+        "kinhNghiem": 2.3,
+        "tien": 2.36
+      },
+      "68": {
+        "_ten": "Thanh Loa đảo 60-70",
+        "mau": 0.2,
+        "satThuong": 1,
+        "kinhNghiem": 2.3,
+        "tien": 3.13
+      },
+      "70": {
+        "_ten": "Vũ Lăng sơn 20-30",
+        "mau": 0.6,
+        "satThuong": 1,
+        "kinhNghiem": 1,
+        "tien": 1
+      },
+      "74": {
+        "_ten": "Miêu Lĩnh 30-40",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 1.53,
+        "tien": 2.3
+      },
+      "75": {
+        "_ten": "Khoả Lang động 120-130",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 1.56,
+        "tien": 1
+      },
+      "90": {
+        "_ten": "Phục Ngưu Sơn Đông 30-40",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 1.28,
+        "tien": 2.4
+      },
+      "92": {
+        "_ten": "Thục Cương sơn 30-40 (anh 01/11 \"tần suất quái đông quá\": 45 con thay 65; anh 11/11 khung bản đồ mới — vùng client 121–127 × 100–106, quái trên đường vòng như máy chủ gốc, chỗ đi được 16.389 ô thay 4.416 ô rừng kín, 45 con quá thưa (2,7 con / 1000 ô — thưa nhất các bãi): về 65 như các bãi khác)",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 1,
+        "tien": 1.79,
+        "soQuai": 65
+      },
+      "93": {
+        "_ten": "Tiến Cúc động 110-120",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 1.66,
+        "tien": 1.09
+      },
+      "122": {
+        "_ten": "Hoàng Hà Nguyên Đầu 40-50",
+        "mau": 0.4,
+        "satThuong": 1,
+        "kinhNghiem": 1.85,
+        "tien": 1.3
+      },
+      "123": {
+        "_ten": "Lão Hổ động 80-90",
+        "mau": 0.4,
+        "satThuong": 1,
+        "kinhNghiem": 1.94,
+        "tien": 1.96
+      },
+      "140": {
+        "_ten": "Dược Vương Cốc 1-10",
+        "mau": 0.55,
+        "satThuong": 1,
+        "kinhNghiem": 1,
+        "tien": 1
+      },
+      "145": {
+        "_ten": "Tuyết Báo động tầng 1 30-40",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 1,
+        "tien": 1.79
+      },
+      "167": {
+        "_ten": "Điểm Thương sơn 40-50 (anh 11/11 \"lỗi map, quái đứng sai\": quái về con đường như client — map.json giu, 55 con thay 65)",
+        "mau": 0.4,
+        "satThuong": 1,
+        "kinhNghiem": 1.72,
+        "tien": 1.3,
+        "soQuai": 55
+      },
+      "179": {
+        "_ten": "La Tiêu sơn 20-30",
+        "mau": 0.6,
+        "satThuong": 1,
+        "kinhNghiem": 1.03,
+        "tien": 1
+      },
+      "193": {
+        "_ten": "Vũ Di sơn 30-40",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 1.09,
+        "tien": 1.79
+      },
+      "195": {
+        "_ten": "Nhạn Đãng sơn 10-20",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 1,
+        "tien": 1.58
+      },
+      "201": {
+        "_ten": "Băng Hà động 180-190",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 2.37,
+        "tien": 1
+      },
+      "205": {
+        "_ten": "Dương Trung động 190-200",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 2.3,
+        "tien": 1
+      },
+      "224": {
+        "_ten": "Sa mạc địa biểu 70-80",
+        "mau": 0.2,
+        "satThuong": 1,
+        "kinhNghiem": 2.12,
+        "tien": 1.98
+      },
+      "225": {
+        "_ten": "Sa Mạc 1 90-100",
+        "mau": 0.35,
+        "satThuong": 1,
+        "kinhNghiem": 1.79,
+        "tien": 1.73
+      },
+      "226": {
+        "_ten": "Sa Mạc 2 100-110",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 1.77,
+        "tien": 1.63
+      },
+      "227": {
+        "_ten": "Sa Mạc 3 130-140",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 1.48,
+        "tien": 1
+      },
+      "319": {
+        "_ten": "Lâm Du Quan 70-80",
+        "mau": 0.25,
+        "satThuong": 1,
+        "kinhNghiem": 3.11,
+        "tien": 1.98
+      },
+      "320": {
+        "_ten": "Chân núi Trường Bạch 80-90",
+        "mau": 0.75,
+        "satThuong": 1,
+        "kinhNghiem": 2.85,
+        "tien": 1.96
+      },
+      "321": {
+        "_ten": "Trường Bạch sơn Nam 140-150",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 2.55,
+        "tien": 1.42
+      },
+      "322": {
+        "_ten": "Trường Bạch sơn Bắc 150-160",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 3.97,
+        "tien": 1.56
+      },
+      "336": {
+        "_ten": "Phong Lăng độ 160-170",
+        "mau": 0.9,
+        "satThuong": 0.5,
+        "kinhNghiem": 6.31,
+        "tien": 1.32
+      },
+      "340": {
+        "_ten": "Mạc Cao Quật 170-180",
+        "mau": 1,
+        "satThuong": 1,
+        "kinhNghiem": 5.37,
+        "tien": 1
+      },
+      "341": {
+        "_ten": "Mạc Bắc Thảo Nguyên 60-70",
+        "mau": 0.25,
+        "satThuong": 1,
+        "kinhNghiem": 2.3,
+        "tien": 2.36,
+        "chiSo": 24
+      },
+      "342": {
+        "_ten": "Vi sơn đảo 60-70",
+        "mau": 0.25,
+        "satThuong": 1,
+        "kinhNghiem": 2.3,
+        "tien": 2.36,
+        "chiSo": 24
+      }
+    }
+  }
+}
