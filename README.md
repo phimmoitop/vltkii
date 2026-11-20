@@ -9,7 +9,7 @@ Required environment variables:
 - `GOOGLE_APPS_SCRIPT_URL`: deployed Apps Script `/exec` URL.
 - `GOOGLE_APPS_SCRIPT_TOKEN`: secret shared with Apps Script Script Property
   `VLTK_TOKEN`.
-- `VL_DANG_KY=1`: enable public account registration through socket RPC.
+- `VL_DANG_KY=0`: disable public account registration; registration is open by default.
 - `VL_WS_ORIGIN_ALLOW`: comma-separated allowed browser origins if the client
   is hosted on a different domain from the Render service.
 
@@ -29,7 +29,7 @@ the GitHub server repository. Apps Script reads and writes the `Account` tab;
 deploy its changes separately from Node.
 New registrations are regular accounts; the first account is not promoted to
 admin. Signup works with an empty `Account` sheet when the header row is
-present and `VL_DANG_KY=1` is set.
+present; set `VL_DANG_KY=0` only to close registration.
 
 ## Socket protocol
 
