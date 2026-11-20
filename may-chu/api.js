@@ -580,13 +580,11 @@ async function xuLyApi(req, res, p) {
     if (p === "/api/dang-nhap" && m === "POST") return dangNhap(req, res, body);
     if (p === "/api/dang-ky" && m === "POST") {
       if (process.env.VL_DANG_KY !== "1") return loi(res, 403, "Máy chủ hiện không mở đăng ký");
-      if (!D.dsTk().length) return loi(res, 503, "Máy chủ chưa được tạo tài khoản quản trị");
       const ten = D.tenTk(body.ten), mk = String(body.mk || "");
       if (!/^[a-z0-9_]{3,20}$/.test(ten)) return loi(res, 400, "Tên tài khoản 3–20 ký tự: chữ thường không dấu, số, dấu _");
       if (mk.length < 6 || mk.length > 64) return loi(res, 400, "Mật khẩu cần từ 6 đến 64 ký tự");
       try {
-        const tkMoi = D.taoTk(ten, mk, false, false);
-        tkMoi.batDoiMk = 1; D.ghiTk(tkMoi);
+        const tkMoi = D.taoTk(ten, mk, false);
         return guiJson(res, 201, { ok: 1, ten: tkMoi.ten });
       } catch (e) { return loi(res, 409, e.message); }
     }

@@ -9,26 +9,27 @@ Required environment variables:
 - `GOOGLE_APPS_SCRIPT_URL`: deployed Apps Script `/exec` URL.
 - `GOOGLE_APPS_SCRIPT_TOKEN`: secret shared with Apps Script Script Property
   `VLTK_TOKEN`.
-- `VL_ADMIN_USER` and `VL_ADMIN_PASSWORD`: used only to create the first admin
-  if the loaded snapshot has no accounts.
 - `VL_DANG_KY=1`: enable public account registration through socket RPC.
 - `VL_WS_ORIGIN_ALLOW`: comma-separated allowed browser origins if the client
   is hosted on a different domain from the Render service.
 
 ## Data lifecycle
 
-On boot, the server downloads the snapshot before loading the game modules.
-All mutable `du-lieu` reads/writes are redirected to an in-memory filesystem;
-account, character, inventory, equipment, guild, event, and auxiliary module
-state live in RAM while the process runs. Fixed game rules and tables remain
-JSON files in `assets/`. The server snapshots RAM to Apps Script every five
-minutes and flushes again after closing WebSocket connections on `SIGTERM` or
-`SIGINT`.
+On boot, the server requests `action=load`, receives rows from the `Account`
+tab, and converts each row into the existing in-memory account and character
+shape before loading the game modules. Mutable `du-lieu` reads and writes are
+redirected to an in-memory filesystem. The current Account columns do not yet
+represent inventory, equipment, or all activity state; those tables must be
+implemented before the complete game state can be safely round-tripped.
+Fixed game rules and tables remain JSON files in `assets/`.
 
-Apps Script is a separate Google deployment. Its source is kept outside this
-folder at `../apps-script/Code.gs` in the workspace and is intentionally not
-copied to the GitHub server repository. It stores chunked rows in the
-spreadsheet tab `VLTK_DATA` with columns `path`, `part`, `content`.
+Apps Script is a separate Google deployment. Its source is at
+`../apps-script/Code.gs` in the workspace and is intentionally not copied to
+the GitHub server repository. Apps Script reads and writes the `Account` tab;
+deploy its changes separately from Node.
+New registrations are regular accounts; the first account is not promoted to
+admin. Signup works with an empty `Account` sheet when the header row is
+present and `VL_DANG_KY=1` is set.
 
 ## Socket protocol
 

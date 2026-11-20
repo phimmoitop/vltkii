@@ -47,13 +47,13 @@ function dungMk(tk, mk) {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
-// tài khoản đầu tiên của máy chủ là quản trị
-function taoTk(ten, mk, admin, choQuanTriDauTien = true) {
+// Tạo tài khoản; tài khoản mới không tự được cấp quyền quản trị.
+function taoTk(ten, mk, admin = false) {
   ten = tenTk(ten);
   if (!TEN_RE.test(ten)) throw new Error("Tên tài khoản 3–20 ký tự: chữ thường không dấu, số, dấu _");
   if (String(mk || "").length < 4) throw new Error("Mật khẩu cần ít nhất 4 ký tự");
   if (docTk(ten)) throw new Error(`Tài khoản ${ten} đã có`);
-  const tk = { v: 1, ten, bam: bam(mk), admin: !!admin || (!!choQuanTriDauTien && dsTk().length === 0), phien: null, nv: Array(SLOT_N).fill(null), tao: Date.now(), vao: null };
+  const tk = { v: 1, ten, bam: bam(mk), admin: !!admin, phien: null, nv: Array(SLOT_N).fill(null), tao: Date.now(), vao: null };
   ghiTk(tk);
   return tk;
 }
