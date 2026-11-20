@@ -10,7 +10,6 @@ const GAS_URL = String(process.env.GOOGLE_APPS_SCRIPT_URL || "").trim();
 const GAS_TOKEN = String(process.env.GOOGLE_APPS_SCRIPT_TOKEN || "");
 const FLUSH_MS = 5 * 60 * 1000;
 const CHUNK_CHARS = 40000;
-const ACCOUNT_FIELDS = ["id", "username", "password", "character", "sex", "he", "lv", "phai", "bang", "rank", "exp", "gold", "xu", "tiemnang", "skillskill9x", "time", "login"];
 let store, game, timer, saving = Promise.resolve(), stopping = false;
 
 async function gas(action, payload) {
@@ -62,10 +61,15 @@ function accountsToFiles(accounts) {
     if (!String(row.password || "").startsWith("scrypt$")) throw new Error(`Account ${username}: cột password phải chứa hash scrypt, không phải mật khẩu thô`);
     if (files[`tai-khoan/${username}.json`]) throw new Error(`Username bị trùng trong Account: ${username}`);
     let skills = {};
-    if (row.skillskill9x !== "" && row.skillskill9x != null) {
-      try { const parsed = typeof row.skillskill9x === "string" ? JSON.parse(row.skillskill9x) : row.skillskill9x; if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) skills = parsed; }
-      catch { throw new Error(`Account ${username}: skillskill9x phải là JSON object kỹ năng`); }
+    if (row.skill !== "" && row.skill != null) {
+      try {
+        const parsed = typeof row.skill === "string" ? JSON.parse(row.skill) : row.skill;
+        if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("not object");
+        skills = parsed;
+      } catch { throw new Error(`Account ${username}: cột skill phải là JSON object kỹ năng`); }
     }
+    let skill9x = row.skill9x == null || row.skill9x === "" ? "" : row.skill9x;
+    if (typeof skill9x === "string") { try { skill9x = JSON.parse(skill9x); } catch {} }
     const created = asTime(row.time, Date.now());
     const lastLogin = asTime(row.login, null);
     const hero = row.character ? {
@@ -73,7 +77,7 @@ function accountsToFiles(accounts) {
       series: row.he === "" ? null : asNumber(row.he, row.he), fac: row.phai === "" ? null : asNumber(row.phai, row.phai),
       camp: row.bang || "", rank: row.rank || "", lvl: Math.max(1, asNumber(row.lv, 1)),
       exp: asNumber(row.exp), gold: asNumber(row.gold), xu: asNumber(row.xu),
-      tiemNangThem: asNumber(row.tiemnang), skills, bag: [], equip: {}, looks: {},
+      tiemNangThem: asNumber(row.tiemnang), skills, skill9x, bag: [], equip: {}, looks: {},
       created, last: lastLogin || created,
     } : null;
     const account = {
@@ -103,7 +107,8 @@ function accountsFromRam(accounts) {
       gold: h && h.gold || 0,
       xu: h && h.xu || 0,
       tiemnang: h && h.tiemNangThem || 0,
-      skillskill9x: h ? JSON.stringify(h.skills || {}) : "",
+      skill: h ? JSON.stringify(h.skills || {}) : "",
+      skill9x: h && h.skill9x != null ? (typeof h.skill9x === "object" ? JSON.stringify(h.skill9x) : h.skill9x) : "",
       time: account.tao || "",
       login: account.vao || "",
     };
