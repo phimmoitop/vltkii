@@ -232,6 +232,45 @@ const nvCua = (h) => ({ lvl: h.lvl, exp: h.exp, gold: h.gold, xu: h.xu | 0, lead
 // nâng hero.skills tới skMin — không ghi đè các điểm kỹ năng trình duyệt vừa cộng mà chưa lưu
 const knCua = (h) => ({ books: h.books || [], skMin: h.skMin || {}, kyNangThem: h.kyNangThem | 0, tiemNangThem: h.tiemNangThem | 0, mt: h.mt | 0, tt: h.tt | 0 });
 const oCua = (tk, b) => { const o = b.o | 0, h = o >= 0 && o < D.SLOT_N && tk.nv[o]; if (!h) throw Object.assign(new Error("Ô này không có nhân vật"), { code: 404 }); return h; };
+const SKILL_MOC = new Map();
+for (const f of SK.factions || []) for (const [tier, ids] of Object.entries(f.tiers || {})) for (const id of ids) SKILL_MOC.set(+id, +tier >= 20 ? +tier - 10 : +tier);
+const SKILL_NEED = {
+  332: [93, 89, 86, 92, 282], 351: [347, 303, 343, 345, 349], 390: [67, 70, 64, 356, 72],
+  391: [136, 137, 140, 364, 143], 394: [392, 174, 393, 175, 90], 1110: [45, 351],
+};
+function tangKyNang(res, tk, o, body) {
+  const h = tk.nv[o], id = Number(body.id);
+  if (!h) return loi(res, 404, "Ô này không có nhân vật");
+  if (!Number.isInteger(id) || id < 1 || !SK.skills[id]) return loi(res, 400, "Mã kỹ năng không hợp lệ");
+  const f = (SK.factions || []).find((x) => x.id === h.fac);
+  if (!f) return loi(res, 400, "Nhân vật chưa nhập môn phái");
+  const tierSkill = Object.values(f.tiers || {}).some((ids) => ids.includes(id));
+  const bookSkill = Object.values(f.books || {}).some((ids) => ids.includes(id)) && (h.books || []).includes(id);
+  if (!tierSkill && !bookSkill) return loi(res, 400, "Kỹ năng này chưa được học hoặc không thuộc môn phái hiện tại");
+  if (DO.laLuyen(id)) return loi(res, 400, "Kỹ năng luyện tăng cấp bằng độ luyện, không cộng điểm");
+  const current = (h.skills || {})[id] | 0;
+  if (body.from != null && (body.from | 0) !== current) {
+    if ((body.from | 0) + 1 === current) return guiJson(res, 200, { ok: 1, id, level: current, skPts: h.skPts | 0 }); // lần gửi trước đã tới RAM nhưng phản hồi bị đứt
+    return loi(res, 409, "Cấp kỹ năng đã thay đổi; hãy tải lại bảng kỹ năng");
+  }
+  if (id !== 1110 && current > 19) return loi(res, 400, "Cấp tu luyện của bạn đã tới đỉnh rồi, không thể nâng cao hơn nữa.");
+  const needs = SKILL_NEED[id] || [];
+  for (const needId of needs) {
+    const level = ((h.skills || {})[needId] | 0), name = (((SK.skills[needId] || {}).n) || ("chiêu " + needId)).trim();
+    if (level < 5) return loi(res, 400, `Võ công cơ bản của [${name}] bạn quá thấp, hạn chế [${SK.skills[id].n.trim()}] luyện cấp.`);
+    if (current <= 15 && level < current + 5) return loi(res, 400, `Võ công cơ bản của [${name}] bạn quá thấp, hạn chế [${SK.skills[id].n.trim()}] tăng cấp.`);
+    if (current > 15) break;
+  }
+  const lvl = h.lvl || 1, min = (h.skMin || {})[id] | 0;
+  const cap = Math.max(min, lvl < (SKILL_MOC.get(id) || 0) ? 0 : Math.min(SK.skills[id].max || 20, lvl - (SK.skills[id].req || 0) + 1));
+  if (current >= cap) return loi(res, 400, "Kỹ năng chưa đủ điều kiện tăng cấp theo cấp nhân vật");
+  if (DO.diemDaDung(h) >= lvl - 1 + (h.mt | 0)) return loi(res, 400, "Không còn điểm kỹ năng để cộng");
+  h.skills = h.skills || {};
+  h.skills[id] = current + 1;
+  h.skPts = Math.max(0, lvl - 1 + (h.mt | 0) - DO.diemDaDung(h));
+  D.ghiTk(tk); // cập nhật Map tài khoản trong RAM ngay; snapshot lưu riêng theo lịch
+  return guiJson(res, 200, { ok: 1, id, level: h.skills[id], skPts: h.skPts });
+}
 
 // batDoiMk: phải đổi mật khẩu đăng nhập trước khi vào game (tài khoản quản trị tạo / đặt lại — may-chu/bao-mat.js); truoc: lần đăng nhập trước { luc, ip }
 // (vào game hiện 1 dòng để người chơi tự thấy có ai vào lén); co2: đã có mật khẩu cấp 2
@@ -943,6 +982,8 @@ async function xuLyApi(req, res, p) {
       if (m === "PUT") return luuNv(res, tk, o, body);
       if (m === "DELETE") return xoaNv(res, tk, o);
     }
+    const sk = /^\/api\/nv\/(\d)\/skill$/.exec(p);
+    if (sk && +sk[1] < D.SLOT_N && m === "POST") return tangKyNang(res, tk, +sk[1], body);
     return loi(res, 404, "Không có API này");
   } catch (e) {
     // mã lỗi của API là số (400, 404, 413…); lỗi hệ thống có mã chữ (ECONNRESET: người chơi ngắt kết nối giữa lúc gửi — docBody; ENOENT…) — trước
