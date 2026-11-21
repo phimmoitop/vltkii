@@ -12,7 +12,7 @@ const FLUSH_MS = 5 * 60 * 1000;
 const CHUNK_CHARS = 40000;
 const SKILL_PACK = require("./assets/web/skill/skills.json");
 const SKILL_9X = new Set((SKILL_PACK.factions || []).flatMap((f) => Object.entries(f.books || {}).filter(([tier]) => +tier >= 90).flatMap(([, ids]) => ids.map(Number))));
-let store, game, timer, saving = Promise.resolve(), stopping = false;
+let store, game, timer, saving = Promise.resolve(), stopping = false, HAS_TIEMNANGTHEM_COLUMN = false;
 
 function parseSkillCell(value, username, column) {
   if (value == null || value === "") return {};
@@ -74,6 +74,25 @@ function skillCells(skills) {
   return { skill: encode(normal), skill9x: encode(high) };
 }
 
+function parsePotentialCell(value, username) {
+  const empty = { attr: { str: 0, vit: 0, dex: 0, eng: 0 }, legacyBonus: 0 };
+  if (value == null || value === "") return empty;
+  // The old Account format stored the unspent bonus pool as a single number.
+  if (typeof value === "number" || /^\d+$/.test(String(value).trim())) return { ...empty, legacyBonus: asNumber(value) };
+  let text = String(value).trim().replace(/^\(|\)$/g, ""), legacyBonus = 0;
+  const bonus = text.match(/;bonus=(\d+)$/i);
+  if (bonus) { legacyBonus = Number(bonus[1]); text = text.slice(0, bonus.index); }
+  const match = text.match(/^(\d+)\s*-\s*(\d+)\s*-\s*(\d+)\s*-\s*(\d+)$/);
+  if (!match) throw new Error(`Account ${username}: cột tiemnang cần dạng (sức mạnh-sinh khí-thân pháp-nội công)`);
+  const [str, vit, dex, eng] = match.slice(1).map(Number);
+  return { attr: { str, vit, dex, eng }, legacyBonus };
+}
+
+function potentialCell(attr, legacyBonus = 0) {
+  if (!attr || typeof attr !== "object") return "";
+  return `(${attr.str | 0}-${attr.vit | 0}-${attr.dex | 0}-${attr.eng | 0}${legacyBonus > 0 ? `;bonus=${legacyBonus | 0}` : ""})`;
+}
+
 async function gas(action, payload) {
   if (!GAS_URL || !GAS_TOKEN) throw new Error("Thiếu GOOGLE_APPS_SCRIPT_URL hoặc GOOGLE_APPS_SCRIPT_TOKEN");
   const url = new URL(GAS_URL);
@@ -123,6 +142,8 @@ function accountsToFiles(accounts) {
     if (!String(row.password || "").startsWith("scrypt$")) throw new Error(`Account ${username}: cột password phải chứa hash scrypt, không phải mật khẩu thô`);
     if (files[`tai-khoan/${username}.json`]) throw new Error(`Username bị trùng trong Account: ${username}`);
     const skills = { ...parseSkillCell(row.skill, username, "skill"), ...parseSkillCell(row.skill9x, username, "skill9x") };
+    const potential = parsePotentialCell(row.tiemnang, username);
+    const potentialBonus = row.tiemnangthem == null || row.tiemnangthem === "" ? potential.legacyBonus : asNumber(row.tiemnangthem);
     const created = asTime(row.time, Date.now());
     const lastLogin = asTime(row.login, null);
     const facSheet = row.phai === "" || row.phai == null ? null : asNumber(row.phai, NaN);
@@ -133,7 +154,7 @@ function accountsToFiles(accounts) {
       series: row.he === "" ? null : asNumber(row.he, row.he), fac: facSheet == null ? null : (facSheet === 0 ? 0 : facSheet - 1), // 0 cũ = Thiếu Lâm, được nhận để tự chuyển thành 1 ở lần snapshot kế tiếp
       camp: row.bang || "", rank: row.rank || "", lvl: Math.max(1, asNumber(row.lv, 1)),
       exp: asNumber(row.exp), gold: asNumber(row.gold), xu: asNumber(row.xu),
-      tiemNangThem: asNumber(row.tiemnang), skills, bag: [], equip: {}, looks: {},
+      attr: potential.attr, tiemNangThem: potentialBonus, skills, bag: [], equip: {}, looks: {},
       created, last: lastLogin || created,
     } : null;
     const account = {
@@ -163,7 +184,8 @@ function accountsFromRam(accounts) {
       exp: h && h.exp || 0,
       gold: h && h.gold || 0,
       xu: h && h.xu || 0,
-      tiemnang: h && h.tiemNangThem || 0,
+      tiemnang: potentialCell(h && h.attr, !HAS_TIEMNANGTHEM_COLUMN && h ? h.tiemNangThem : 0),
+      tiemnangthem: HAS_TIEMNANGTHEM_COLUMN && h ? h.tiemNangThem || 0 : "",
       skill: skill.skill,
       skill9x: skill.skill9x,
       time: account.tao || "",
@@ -177,7 +199,13 @@ async function flush(reason) {
     const D = require("./may-chu/du-lieu");
     D.ghiTaiKhoanRaDia(); // serialize account Map to the virtual filesystem
     const accounts = accountsFromRam(D.dsTk());
-    await gas("save", accounts);
+    const saved = await gas("save", accounts);
+    const hadTiemNangThem = HAS_TIEMNANGTHEM_COLUMN;
+    if (Array.isArray(saved.columns)) HAS_TIEMNANGTHEM_COLUMN = saved.columns.includes("tiemnangthem");
+    // A newly deployed Apps Script may create the optional bonus column in
+    // this save. Immediately write once more so the temporary legacy suffix
+    // is replaced by the clean four-stat tuple plus its separate bonus value.
+    if (!hadTiemNangThem && HAS_TIEMNANGTHEM_COLUMN) await gas("save", accountsFromRam(D.dsTk()));
     console.log(`Đã lưu ${accounts.length} tài khoản lên tab Account · ${reason}`);
   });
   return saving;
@@ -199,6 +227,7 @@ async function start() {
   if (!GAS_URL || !GAS_TOKEN) throw new Error("Cần GOOGLE_APPS_SCRIPT_URL và GOOGLE_APPS_SCRIPT_TOKEN");
   console.log('Đang nạp bảng "Account" từ Google Sheets...');
   const loaded = await gas("load");
+  HAS_TIEMNANGTHEM_COLUMN = Array.isArray(loaded.columns) && loaded.columns.includes("tiemnangthem");
   const initial = accountsToFiles(loaded.accounts);
   if (!initial || typeof initial !== "object" || Array.isArray(initial)) throw new Error("Snapshot Sheets không hợp lệ");
 

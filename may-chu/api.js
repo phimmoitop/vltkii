@@ -271,6 +271,26 @@ function tangKyNang(res, tk, o, body) {
   D.ghiTk(tk); // cập nhật Map tài khoản trong RAM ngay; snapshot lưu riêng theo lịch
   return guiJson(res, 200, { ok: 1, id, level: h.skills[id], skPts: h.skPts });
 }
+function tangTiemNang(res, tk, o, body) {
+  const h = tk.nv[o], stat = String(body.stat || ""), amount = Number(body.amount == null ? 1 : body.amount);
+  if (!h) return loi(res, 404, "Ô này không có nhân vật");
+  if (!ATTR.includes(stat)) return loi(res, 400, "Chỉ số tiềm năng không hợp lệ");
+  if (!Number.isInteger(amount) || amount < 1 || amount > 1000) return loi(res, 400, "Số điểm cộng không hợp lệ");
+  h.attr = h.attr && typeof h.attr === "object" ? h.attr : { str: 0, dex: 0, vit: 0, eng: 0 };
+  const current = h.attr[stat] | 0;
+  if (body.from != null && (body.from | 0) !== current) {
+    if ((body.from | 0) + amount === current) return guiJson(res, 200, { ok: 1, stat, value: current, pts: h.pts | 0 });
+    return loi(res, 409, "Chỉ số đã thay đổi; hãy mở lại bảng nhân vật");
+  }
+  const used = ATTR.reduce((sum, key) => sum + (h.attr[key] | 0), 0);
+  const total = 5 * Math.max(0, (h.lvl | 0) - 1) + (h.tiemNangThem | 0);
+  const remaining = Math.max(0, total - used);
+  if (amount > remaining) return loi(res, 400, remaining ? `Chỉ còn ${remaining} điểm tiềm năng` : "Không còn điểm tiềm năng để cộng");
+  h.attr[stat] = current + amount;
+  h.pts = remaining - amount;
+  D.ghiTk(tk); // cộng chỉ số vào tài khoản RAM; không gửi toàn bộ nhân vật từ trình duyệt
+  return guiJson(res, 200, { ok: 1, stat, value: h.attr[stat], pts: h.pts });
+}
 
 // batDoiMk: phải đổi mật khẩu đăng nhập trước khi vào game (tài khoản quản trị tạo / đặt lại — may-chu/bao-mat.js); truoc: lần đăng nhập trước { luc, ip }
 // (vào game hiện 1 dòng để người chơi tự thấy có ai vào lén); co2: đã có mật khẩu cấp 2
@@ -984,6 +1004,8 @@ async function xuLyApi(req, res, p) {
     }
     const sk = /^\/api\/nv\/(\d)\/skill$/.exec(p);
     if (sk && +sk[1] < D.SLOT_N && m === "POST") return tangKyNang(res, tk, +sk[1], body);
+    const tn = /^\/api\/nv\/(\d)\/attribute$/.exec(p);
+    if (tn && +tn[1] < D.SLOT_N && m === "POST") return tangTiemNang(res, tk, +tn[1], body);
     return loi(res, 404, "Không có API này");
   } catch (e) {
     // mã lỗi của API là số (400, 404, 413…); lỗi hệ thống có mã chữ (ECONNRESET: người chơi ngắt kết nối giữa lúc gửi — docBody; ENOENT…) — trước
