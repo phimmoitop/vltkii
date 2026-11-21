@@ -86,6 +86,7 @@ const TD = require("./to-doi"); // tổ đội (anh 28/10 lần 4)
 const GD = require("./giao-dich"); // giao dịch (anh 30/10)
 const CHO = require("./cho-troi"); // chợ trời — bày bán (anh 02/11)
 const DO = require("./do");
+const SK = require("../assets/web/skill/skills.json");
 const XH = require("./xep-hang");
 const DTau = require("./da-tau"); // Dã Tẩu (anh 27/10)
 const PLD = require("./phong-lang-do"); // Phong Lăng Độ (anh 27/10)
@@ -630,6 +631,16 @@ async function xuLyApi(req, res, p) {
     // (đã ghi cờ); cửa hàng, rương chứa đồ, Trợ Thủ ở thành, Tự làm kẹt: chỉ ghi
     NG.chan(tk, p, m, body);
     if (p === "/api/toi" && m === "GET") return guiJson(res, 200, thongTin(tk));
+    if (p === "/api/nhap-phai" && m === "POST") {
+      const h = oCua(tk, body), f = (SK.factions || []).find((x) => x.key === String(body.key || ""));
+      if (!f) return loi(res, 400, "Môn phái không hợp lệ");
+      if (h.fac != null) return guiJson(res, 200, { fac: h.fac, facKey: h.facKey || f.key });
+      if ((h.lvl | 0) < 10) return loi(res, 400, "Cần đạt cấp 10 mới có thể nhập môn");
+      h.fac = f.id; h.facKey = f.key; h.skills = h.skills || {};
+      D.ghiTk(tk);
+      if (typeof globalThis.VLTK_SHEETS_FLUSH === "function") globalThis.VLTK_SHEETS_FLUSH("nhập môn phái").catch((e) => console.error("Lưu môn phái lên Google Sheets lỗi:", e.message));
+      return guiJson(res, 200, { fac: h.fac, facKey: h.facKey });
+    }
     if (p === "/api/nhip" && m === "POST") return nhip(res, tk, body, trang);
     if (p === "/api/chat" && m === "POST") return guiJson(res, 200, TG.chat(tk, body));
     // tổ đội (may-chu/to-doi.js): { o, viec, ten?, id? } -> { doi, msg }

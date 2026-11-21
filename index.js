@@ -149,6 +149,7 @@ async function start() {
   process.env.VL_MANAGED_SHUTDOWN = "1";
   store = install(DATA_ROOT, initial);
   const D = require("./may-chu/du-lieu");
+  globalThis.VLTK_SHEETS_FLUSH = (reason) => flush(reason || "requested");
   if (!D.dsTk().length) console.log('Tab "Account" chưa có tài khoản; RAM khởi tạo trống.');
 
   // Importing the API initializes all game rules, fixed JSON tables, guild
