@@ -10,7 +10,47 @@ const GAS_URL = String(process.env.GOOGLE_APPS_SCRIPT_URL || "").trim();
 const GAS_TOKEN = String(process.env.GOOGLE_APPS_SCRIPT_TOKEN || "");
 const FLUSH_MS = 5 * 60 * 1000;
 const CHUNK_CHARS = 40000;
+const SKILL_PACK = require("./assets/web/skill/skills.json");
+const SKILL_9X = new Set((SKILL_PACK.factions || []).flatMap((f) => Object.entries(f.books || {}).filter(([tier]) => +tier >= 90).flatMap(([, ids]) => ids.map(Number))));
 let store, game, timer, saving = Promise.resolve(), stopping = false;
+
+function parseSkillCell(value, username, column) {
+  if (value == null || value === "") return {};
+  let parsed = value;
+  if (typeof value === "string") {
+    const text = value.trim();
+    if (!text) return {};
+    if (text.startsWith("{")) {
+      try { parsed = JSON.parse(text); } catch { throw new Error(`Account ${username}: cột ${column} không phải JSON kỹ năng hợp lệ`); }
+    } else {
+      parsed = {};
+      for (const pair of text.split(",")) {
+        const m = pair.trim().match(/^(\d+)\s*-\s*(\d+)$/);
+        if (!m || +m[2] < 1) throw new Error(`Account ${username}: cột ${column} cần dạng id-cấp, id-cấp`);
+        parsed[m[1]] = +m[2];
+      }
+    }
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error(`Account ${username}: cột ${column} cần là danh sách kỹ năng`);
+  const skills = {};
+  for (const [id, level] of Object.entries(parsed)) {
+    const lv = Number(level);
+    if (!/^\d+$/.test(id) || !Number.isInteger(lv) || lv < 1) throw new Error(`Account ${username}: cột ${column} chứa id/cấp kỹ năng không hợp lệ`);
+    skills[id] = lv;
+  }
+  return skills;
+}
+
+function skillCells(skills) {
+  const normal = [], high = [];
+  for (const [id, value] of Object.entries(skills || {})) {
+    const level = Number(value), key = Number(id);
+    if (!Number.isInteger(key) || key < 0 || !Number.isInteger(level) || level < 1) continue;
+    (SKILL_9X.has(key) ? high : normal).push([key, level]);
+  }
+  const encode = (rows) => rows.sort((a, b) => a[0] - b[0]).map(([id, level]) => `${id}-${level}`).join(", ");
+  return { skill: encode(normal), skill9x: encode(high) };
+}
 
 async function gas(action, payload) {
   if (!GAS_URL || !GAS_TOKEN) throw new Error("Thiếu GOOGLE_APPS_SCRIPT_URL hoặc GOOGLE_APPS_SCRIPT_TOKEN");
@@ -60,16 +100,7 @@ function accountsToFiles(accounts) {
     if (!/^[a-z0-9_]{3,20}$/.test(username)) throw new Error(`Username không hợp lệ trong Account: ${username || "(trống)"}`);
     if (!String(row.password || "").startsWith("scrypt$")) throw new Error(`Account ${username}: cột password phải chứa hash scrypt, không phải mật khẩu thô`);
     if (files[`tai-khoan/${username}.json`]) throw new Error(`Username bị trùng trong Account: ${username}`);
-    let skills = {};
-    if (row.skill !== "" && row.skill != null) {
-      try {
-        const parsed = typeof row.skill === "string" ? JSON.parse(row.skill) : row.skill;
-        if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("not object");
-        skills = parsed;
-      } catch { throw new Error(`Account ${username}: cột skill phải là JSON object kỹ năng`); }
-    }
-    let skill9x = row.skill9x == null || row.skill9x === "" ? "" : row.skill9x;
-    if (typeof skill9x === "string") { try { skill9x = JSON.parse(skill9x); } catch {} }
+    const skills = { ...parseSkillCell(row.skill, username, "skill"), ...parseSkillCell(row.skill9x, username, "skill9x") };
     const created = asTime(row.time, Date.now());
     const lastLogin = asTime(row.login, null);
     const facSheet = row.phai === "" || row.phai == null ? null : asNumber(row.phai, NaN);
@@ -80,7 +111,7 @@ function accountsToFiles(accounts) {
       series: row.he === "" ? null : asNumber(row.he, row.he), fac: facSheet == null ? null : (facSheet === 0 ? 0 : facSheet - 1), // 0 cũ = Thiếu Lâm, được nhận để tự chuyển thành 1 ở lần snapshot kế tiếp
       camp: row.bang || "", rank: row.rank || "", lvl: Math.max(1, asNumber(row.lv, 1)),
       exp: asNumber(row.exp), gold: asNumber(row.gold), xu: asNumber(row.xu),
-      tiemNangThem: asNumber(row.tiemnang), skills, skill9x, bag: [], equip: {}, looks: {},
+      tiemNangThem: asNumber(row.tiemnang), skills, bag: [], equip: {}, looks: {},
       created, last: lastLogin || created,
     } : null;
     const account = {
@@ -95,6 +126,7 @@ function accountsToFiles(accounts) {
 function accountsFromRam(accounts) {
   return accounts.map((account) => {
     const h = Array.isArray(account.nv) ? account.nv[0] : null;
+    const skill = skillCells(h && h.skills);
     return {
       id: account.id || account.ten,
       username: account.ten,
@@ -110,8 +142,8 @@ function accountsFromRam(accounts) {
       gold: h && h.gold || 0,
       xu: h && h.xu || 0,
       tiemnang: h && h.tiemNangThem || 0,
-      skill: h ? JSON.stringify(h.skills || {}) : "",
-      skill9x: h && h.skill9x != null ? (typeof h.skill9x === "object" ? JSON.stringify(h.skill9x) : h.skill9x) : "",
+      skill: skill.skill,
+      skill9x: skill.skill9x,
       time: account.tao || "",
       login: account.vao || "",
     };
