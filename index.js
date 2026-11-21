@@ -18,8 +18,16 @@ function parseSkillCell(value, username, column) {
   if (value == null || value === "") return {};
   let parsed = value;
   if (typeof value === "string") {
-    const text = value.trim();
+    let text = value.trim();
     if (!text) return {};
+    // Older Apps Script deployments used getValues(), which serializes a
+    // Sheets-coerced date like "8-3" as an ISO timestamp. The spreadsheet is
+    // configured for day-month notation, so restore the displayed pair.
+    const coercedDate = text.match(/^\d{4}-\d{2}-(\d{2})T/);
+    if (coercedDate) {
+      const date = new Date(text);
+      if (Number.isFinite(date.getTime())) text = `${date.getUTCDate()}-${date.getUTCMonth() + 1}`;
+    }
     if (text.startsWith("{")) {
       try { parsed = JSON.parse(text); } catch { throw new Error(`Account ${username}: cột ${column} không phải JSON kỹ năng hợp lệ`); }
     } else {
