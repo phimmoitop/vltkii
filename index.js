@@ -72,9 +72,12 @@ function accountsToFiles(accounts) {
     if (typeof skill9x === "string") { try { skill9x = JSON.parse(skill9x); } catch {} }
     const created = asTime(row.time, Date.now());
     const lastLogin = asTime(row.login, null);
+    const facSheet = row.phai === "" || row.phai == null ? null : asNumber(row.phai, NaN);
+    if (facSheet != null && (!Number.isInteger(facSheet) || facSheet < 1 || facSheet > 10)) throw new Error(`Account ${username}: cột phai phải trống hoặc là số từ 1 đến 10`);
     const hero = row.character ? {
       v: 1, slot: 0, name: String(row.character), server: "1", sex: row.sex || "",
-      series: row.he === "" ? null : asNumber(row.he, row.he), fac: row.phai === "" ? null : asNumber(row.phai, row.phai),
+      // Google Sheets dùng phai = 1..10; game nội bộ dùng faction id = 0..9.
+      series: row.he === "" ? null : asNumber(row.he, row.he), fac: facSheet == null ? null : facSheet - 1,
       camp: row.bang || "", rank: row.rank || "", lvl: Math.max(1, asNumber(row.lv, 1)),
       exp: asNumber(row.exp), gold: asNumber(row.gold), xu: asNumber(row.xu),
       tiemNangThem: asNumber(row.tiemnang), skills, skill9x, bag: [], equip: {}, looks: {},
@@ -100,7 +103,7 @@ function accountsFromRam(accounts) {
       sex: h && h.sex || "",
       he: h && h.series != null ? h.series : "",
       lv: h && h.lvl || "",
-      phai: h && h.fac != null ? h.fac : "",
+      phai: h && h.fac != null ? (h.fac | 0) + 1 : "",
       bang: h && h.camp || "",
       rank: h && h.rank || "",
       exp: h && h.exp || 0,

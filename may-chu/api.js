@@ -317,11 +317,12 @@ function luuNv(res, tk, o, b) {
   const dpCu = (h.dpV | 0) !== (cu.dpV | 0); // bản lưu gửi trước lần đổi môn phái gần nhất (may-chu/doi-phai.js): phái / hệ / võ công theo bản máy chủ
   for (const k of GIU) if (k in cu) hero[k] = cu[k]; else delete hero[k];
   // + sex: Dị Dung Bí Thuật đổi giới tính cũng tăng dpV (anh 16/11 — do.js dungVat doiGioi): bản lưu gửi trước lúc đổi không ghi đè giới mới
-  if (dpCu) for (const k of ["fac", "facKey", "camp", "rank", "series", "start", "skills", "sex"]) if (k in cu) hero[k] = cu[k]; else delete hero[k];
+  if (dpCu) for (const k of ["fac", "camp", "rank", "series", "start", "skills", "sex"]) if (k in cu) hero[k] = cu[k]; else delete hero[k];
   // giới tính chỉ đổi qua máy chủ (Dị Dung Bí Thuật — do.js doiGioi; F10 — quan-tri.js gioi): bản lưu trình duyệt không đổi được (soát 16/11: sửa bản lưu = đổi giới
   // không tốn 100 Xu). Không đưa vào GIU — taoNv bỏ các khóa GIU nên nhân vật mới mất giới đã chọn
   if ("sex" in cu) hero.sex = cu.sex;
-  if (cu.doiPhai) { hero.fac = null; hero.facKey = null; delete hero.camp; delete hero.rank; hero.skills = {}; } // đang chờ bái nhập phái mới: Vô Môn Phái
+  if (cu.doiPhai) { hero.fac = null; delete hero.camp; delete hero.rank; hero.skills = {}; } // đang chờ bái nhập phái mới: Vô Môn Phái
+  delete hero.facKey;
   delete hero.coMk; // cờ "đã có mật mã rương" chỉ để trình duyệt xem (nvGui)
   // điểm tiềm năng / kỹ năng đã cộng không được quá số cấp cho (5 / 1 mỗi cấp — src/game/rules.js) + điểm từ vật phẩm (Tẩy Tủy Kinh,
   // Võ Lâm Mật Tịch, sách võ công, Đại Thành Bí Kíp — may-chu/do.js dungVat): quá thì trả lại hết. Chiêu sách (90 / 120 / 150) chưa đọc sách:
@@ -634,12 +635,12 @@ async function xuLyApi(req, res, p) {
     if (p === "/api/nhap-phai" && m === "POST") {
       const h = oCua(tk, body), f = (SK.factions || []).find((x) => x.key === String(body.key || ""));
       if (!f) return loi(res, 400, "Môn phái không hợp lệ");
-      if (h.fac != null) return guiJson(res, 200, { fac: h.fac, facKey: h.facKey || f.key });
+      if (h.fac != null) return guiJson(res, 200, { fac: h.fac });
       if ((h.lvl | 0) < 10) return loi(res, 400, "Cần đạt cấp 10 mới có thể nhập môn");
-      h.fac = f.id; h.facKey = f.key; h.skills = h.skills || {};
+      h.fac = f.id; delete h.facKey; h.skills = h.skills || {};
       D.ghiTk(tk);
       if (typeof globalThis.VLTK_SHEETS_FLUSH === "function") globalThis.VLTK_SHEETS_FLUSH("nhập môn phái").catch((e) => console.error("Lưu môn phái lên Google Sheets lỗi:", e.message));
-      return guiJson(res, 200, { fac: h.fac, facKey: h.facKey });
+      return guiJson(res, 200, { fac: h.fac });
     }
     if (p === "/api/nhip" && m === "POST") return nhip(res, tk, body, trang);
     if (p === "/api/chat" && m === "POST") return guiJson(res, 200, TG.chat(tk, body));
