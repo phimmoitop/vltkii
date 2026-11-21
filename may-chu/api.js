@@ -97,6 +97,7 @@ const NCS = require("./nhat-chia-se"); // tham khảo cài đặt Nhặt đồ c
 const TTY = require("./tay-tuy"); // Đảo Tẩy Tủy — Xa phu / Thích Minh (anh 28/10)
 const QT = require("./quan-tri"); // bảng quản trị (anh 28/10)
 const NK = require("./nhat-ky"); // nhật ký hoạt động (anh 28/10)
+const WS = require("./ws"); // trạng thái quái canh chỉ đi kèm nhịp khi kênh WebSocket không kết nối
 // nhật ký chung theo hoạt động (anh 18/11: "chia ra cái hoạt động … để biết được người chơi làm những gì" — F10 → Nhật ký, nhóm con nhat-ky.js HD_NHOM):
 // câu kết quả của hoạt động (tin / msg — mở hộp thoại NPC, xem trạng thái thì không ghi) -> 1 dòng "hd" bắt đầu bằng tên hoạt động
 const boThe = (t) => (Array.isArray(t) ? t.map((x) => (Array.isArray(x) ? x[0] : x)).join("") : String(t ?? "")).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
@@ -452,7 +453,9 @@ function nhip(res, tk, b, trang) {
     const mcd = MC.nhanDoi(h, tk.ten);
     // quái canh cây (minh-chu.js veTT / danhVe — anh 03/11 lượt 2): sát thương khi kênh tức thời chưa mở + trạng thái
     if (Array.isArray(b.mcv)) for (const r of b.mcv.slice(0, 20)) if (Array.isArray(r)) MC.danhVe(tk.ten, r[0], r[1]);
-    ket.mcv = MC.veTT(tk.ten);
+    // Trạng thái quái canh đã được đẩy qua WebSocket. Chỉ gửi bản dự phòng khi
+    // socket mất và chỉ cho bản đồ hiện tại; không lặp cả danh sách toàn máy mỗi nhịp.
+    if (b.s && !WS.cua(tk.ten)) ket.mcv = MC.veTT(tk.ten, b.s.zone | 0);
     if (mcd) { if (mcd.tin.length) ket.mcTin = mcd.tin; ket.nv = nvCua(h); ghi = true; }
     // boss thế giới (may-chu/boss-tg.js — anh 31/10): sát thương gửi kèm nhịp khi kênh WebSocket chưa mở + thưởng đang chờ (kinh nghiệm, đồ)
     if (Array.isArray(b.bst)) for (const r of b.bst.slice(0, 20)) if (Array.isArray(r)) BTG.danh(tk.ten, r[0], r[1]);
