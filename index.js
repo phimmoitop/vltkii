@@ -29,8 +29,19 @@ function parseSkillCell(value, username, column) {
       if (Number.isFinite(date.getTime())) text = `${date.getUTCDate()}-${date.getUTCMonth() + 1}`;
     }
     if (text.startsWith("{")) {
-      try { parsed = JSON.parse(text); } catch { throw new Error(`Account ${username}: cột ${column} không phải JSON kỹ năng hợp lệ`); }
-    } else {
+      try {
+        parsed = JSON.parse(text);
+      } catch {
+        // Also accept a brace-wrapped pair list, e.g. {8-3,11-1}; this is
+        // useful in Sheets because the leading brace prevents date coercion.
+        if (text.endsWith("}")) text = text.slice(1, -1).trim();
+        else throw new Error(`Account ${username}: cột ${column} không phải JSON kỹ năng hợp lệ`);
+      }
+    } else if (text.startsWith("(") && text.endsWith(")")) {
+      text = text.slice(1, -1).trim();
+    }
+    if (typeof parsed === "string") {
+      if (!text) return {};
       parsed = {};
       for (const pair of text.split(",")) {
         const m = pair.trim().match(/^(\d+)\s*-\s*(\d+)$/);
