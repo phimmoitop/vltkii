@@ -311,6 +311,7 @@ function taoNv(res, tk, o, b, trang) {
 
 function luuNv(res, tk, o, b) {
   const cu = tk.nv[o]; if (!cu) return loi(res, 404, "Ô này không có nhân vật");
+  const skillsCu = JSON.stringify(cu.skills || {});
   const h = b.hero; if (!h || typeof h !== "object" || Array.isArray(h)) return loi(res, 400, "Thiếu nhân vật");
   if (h.name !== cu.name) return loi(res, 409, "Nhân vật không khớp ô lưu — hãy tải lại trang");
   const hero = { ...h, v: 1, slot: o, name: cu.name, server: cu.server, created: cu.created, last: Date.now() };
@@ -342,6 +343,8 @@ function luuNv(res, tk, o, b) {
   DO.hamChieu(hero); // từng chiêu ≤ cấp nhân vật − cấp yêu cầu + 1 (anh 29/10 — như engine)
   if (JSON.stringify(hero).length > NV_MAX) return loi(res, 413, "Nhân vật quá lớn");
   tk.nv[o] = hero; D.ghiTk(tk);
+  if (skillsCu !== JSON.stringify(hero.skills || {}) && typeof globalThis.VLTK_SHEETS_FLUSH === "function")
+    globalThis.VLTK_SHEETS_FLUSH("cập nhật kỹ năng").catch((e) => console.error("Lưu kỹ năng lên Google Sheets lỗi:", e.message));
   guiJson(res, 200, { ok: 1, online: soOnline() });
 }
 
