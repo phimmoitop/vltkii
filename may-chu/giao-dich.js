@@ -78,6 +78,7 @@ const moiBen = (tk, ten) => ({ tk, ten, ds: [], tien: 0, khoa: 0, xn: 0, ver: 0,
 // dấu thứ tự trạng thái gửi trình duyệt (cua / trangThai): theo đồng hồ, luôn tăng (khởi động lại máy chủ vẫn lớn hơn dấu cũ)
 let dauCuoi = 0;
 const dau = () => (dauCuoi = Math.max(Date.now(), dauCuoi + 1));
+const phienBanTrangThai = new Map();
 // bên S (đang không khóa — khóa thì không đổi được) vừa đổi tiền / món: bỏ Đồng ý + Xác nhận của CẢ 2 bên, phần của S lên phiên bản mới; câu InfoText cho
 // người kia (cau — câu client G_STR_OPP_*); người kia đang Đồng ý thì thêm câu báo phải Đồng ý lại, bên S thấy "Chờ đối phương đặt mã khóa"
 function doiPhan(S, O, cau) {
@@ -112,7 +113,13 @@ function phienGui(P, tk) {
 // trạng thái của tài khoản tk, không kèm câu báo (câu báo chỉ đi theo nhịp / trả lời bấm — cua — mỗi câu 1 lần)
 function trangThai(tk) {
   const P = phienCua(tk), xd = [...xin.values()].filter((x) => x.den === tk).map((x) => ({ id: x.id, tu: tenCua(x.tu) }));
-  return { mo: moGd.has(tk) ? 1 : 0, ...(xd.length ? { xin: xd } : {}), ...(P ? { p: phienGui(P, tk) } : {}), s: dau() };
+  const r = { mo: moGd.has(tk) ? 1 : 0, ...(xd.length ? { xin: xd } : {}), ...(P ? { p: phienGui(P, tk) } : {}) };
+  // Nhịp game gọi cua() khoảng 2 lần/giây. Giữ nguyên dấu phiên bản nếu trạng thái giao dịch và thông báo đang chờ không đổi;
+  // dấu mới chỉ cần khi có thay đổi thực để sắp thứ tự giữa phản hồi RPC và tin WebSocket đẩy.
+  const sig = JSON.stringify([r, baoTk.get(tk) || []]), cu = phienBanTrangThai.get(tk);
+  if (cu && cu.sig === sig) r.s = cu.s;
+  else { r.s = dau(); phienBanTrangThai.set(tk, { sig, s: r.s }); }
+  return r;
 }
 function cua(tk) {
   don();
