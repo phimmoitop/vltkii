@@ -132,6 +132,23 @@ function asTime(value, fallback = null) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+function parseMapCell(value, username) {
+  if (value == null || String(value).trim() === "") return null;
+  const m = String(value).trim().match(/^(\d+)-(-?\d+)-(-?\d+)$/);
+  if (!m) throw new Error(`Account ${username}: cột map cần dạng mapid-x-y, ví dụ 53-7432-4034`);
+  const [z, x, y] = m.slice(1).map(Number);
+  if (![z, x, y].every(Number.isSafeInteger) || z > 1e6 || Math.abs(x) > 1e6 || Math.abs(y) > 1e6)
+    throw new Error(`Account ${username}: tọa độ trong cột map không hợp lệ`);
+  return { z, x, y };
+}
+
+function mapCell(position) {
+  if (!position || typeof position !== "object") return "";
+  const z = Number(position.z), x = Number(position.x), y = Number(position.y);
+  if (![z, x, y].every(Number.isSafeInteger) || z < 0 || z > 1e6 || Math.abs(x) > 1e6 || Math.abs(y) > 1e6) return "";
+  return `${z}-${x}-${y}`;
+}
+
 function accountsToFiles(accounts) {
   if (!Array.isArray(accounts)) throw new Error('Apps Script không trả mảng "accounts"');
   const files = {};
@@ -143,6 +160,7 @@ function accountsToFiles(accounts) {
     if (files[`tai-khoan/${username}.json`]) throw new Error(`Username bị trùng trong Account: ${username}`);
     const skills = { ...parseSkillCell(row.skill, username, "skill"), ...parseSkillCell(row.skill9x, username, "skill9x") };
     const potential = parsePotentialCell(row.tiemnang, username);
+    const viTri = parseMapCell(row.map, username);
     const potentialBonus = potential.legacyBonus;
     const created = asTime(row.time, Date.now());
     const lastLogin = asTime(row.login, null);
@@ -155,6 +173,7 @@ function accountsToFiles(accounts) {
       camp: row.bang || "", rank: row.rank || "", lvl: Math.max(1, asNumber(row.lv, 1)),
       exp: asNumber(row.exp), gold: asNumber(row.gold), xu: asNumber(row.xu),
       attr: potential.attr, tiemNangThem: potentialBonus, skills, bag: [], equip: {}, looks: {},
+      ...(viTri ? { viTri } : {}),
       created, last: lastLogin || created,
     } : null;
     const account = {
@@ -185,6 +204,7 @@ function accountsFromRam(accounts) {
       gold: h && h.gold || 0,
       xu: h && h.xu || 0,
       tiemnang: potentialCell(h && h.attr),
+      map: mapCell(h && h.viTri),
       skill: skill.skill,
       skill9x: skill.skill9x,
       time: account.tao || "",
