@@ -88,10 +88,12 @@ function sach(s) {
   const vs = vsSach(s.vs);
   // bl = mã các bùa lợi đang có (anh 03/11 "buff côn lôn cho đồng đội chưa hiển thị đều như nga mi") — người khác vẽ hình trạng thái của bùa
   const bl = blSach(s.bl), bc = bcSach(s.bc), kd = kdSach(s.kd);
+  const v0 = s.view, view = v0 && [v0.x, v0.y, v0.w, v0.h].every((n) => Number.isFinite(+n)) && +v0.w >= 100 && +v0.h >= 100
+    ? { x: Math.max(-1e6, Math.min(1e6, +v0.x)), y: Math.max(-1e6, Math.min(1e6, +v0.y)), w: Math.min(10000, +v0.w), h: Math.min(10000, +v0.h) } : null;
   // phân thân đang theo (anh 05/11): mã + mốc + vòng sáng / bùa — nhip kiểm mã với h.pt.ra
   const pt = (Array.isArray(s.pt) ? s.pt : []).slice(0, PT_MAX).filter((c) => c && typeof c.i === "string" && Array.isArray(c.tr))
     .map((c) => ({ i: c.i.slice(0, 80), tr: c.tr.slice(-MOC_GUI).filter(Array.isArray).map(moc).sort((a, b) => a[0] - b[0]), vs: vsSach(c.vs), bl: blSach(c.bl) }));
-  return tr.length ? { zone: nguyen(s.zone, 0, 1e6, -1), ...(s.c ? { chung: 1 } : {}), lvl: nguyen(s.lvl, 1, 200, 1), look, tr, hp: nguyen(s.hp, 0, 100, 100), mp: nguyen(s.mp, 0, 100, 100), ...(vs.length ? { vs } : {}), ...(bc.length ? { bc } : {}), ...(kd ? { kd } : {}), ...(bl.length ? { bl } : {}), ...(pt.length ? { pt } : {}) } : null;
+  return tr.length ? { zone: nguyen(s.zone, 0, 1e6, -1), ...(s.c ? { chung: 1 } : {}), lvl: nguyen(s.lvl, 1, 200, 1), look, tr, ...(view ? { view } : {}), hp: nguyen(s.hp, 0, 100, 100), mp: nguyen(s.mp, 0, 100, 100), ...(vs.length ? { vs } : {}), ...(bc.length ? { bc } : {}), ...(kd ? { kd } : {}), ...(bl.length ? { bl } : {}), ...(pt.length ? { pt } : {}) } : null;
 }
 
 // phe đang theo (anh 31/10 "tên nhân vật đúng màu chính tà trung lập theo client … vào pt thì đổi sang màu của chủ pt"): trong đội -> phe theo
@@ -145,10 +147,11 @@ function nhip(tk, b) {
   // co: đội trưởng của đội đang mở -> cờ trên đầu (to-doi.js coMo — engine menu state 队伍开放状态)
   // + phân thân đang theo của họ (pt: 1 — cùng phe người thuê, không qt / cờ)
   // bh: nhãn bang của người đó (đã dựng ở nhịp của họ) — người đang trong Tống Kim không gửi (bot không có bang, anh chốt C4); bhp (phe bang) chỉ để tính cp, không gửi
-  const ai = toi ? [...ben].filter(([k, x]) => k !== tk.ten && x.zone === toi.zone && !x.chung === !toi.chung && VAI().cungCho(k, tk.ten, x.zone)).flatMap(([k, x]) => {
+  const inView = (x, y) => require("./ws").trongTam({ view: toi && toi.view }, x, y);
+  const ai = toi ? [...ben].filter(([k, x]) => { const m = x.tr[x.tr.length - 1]; return k !== tk.ten && x.zone === toi.zone && !x.chung === !toi.chung && m && inView(m[1], m[2]) && VAI().cungCho(k, tk.ten, x.zone); }).flatMap(([k, x]) => {
     const { at, zone, lead, chung, pt, oNv: _o, bh, bhp: _bp, bid: _bi, bhc, ...r } = x, g = GD().co(k), tkp = TKM().pheCua(k, x.zone), cp = pheNay(k, x, tkp);
     // bhc: mã chức của người đó (màu chức vụ ở dòng bang — mẫu 4, anh 14/11)
-    return [{ ...r, cp, ...(bh && tkp == null ? { bh, ...(bhc ? { bhc } : {}) } : {}), ...(TD().coMo(k) ? { co: 1 } : {}), ...(g ? { gd: g } : {}) }, ...(pt || []).map(({ i, ...c }) => ({ ...c, cp, hp: 100, mp: 100, pt: 1, chu: x.name }))];
+    return [{ ...r, cp, ...(bh && tkp == null ? { bh, ...(bhc ? { bhc } : {}) } : {}), ...(TD().coMo(k) ? { co: 1 } : {}), ...(g ? { gd: g } : {}) }, ...(pt || []).filter((c) => { const m = c.tr[c.tr.length - 1]; return m && inView(m[1], m[2]); }).map(({ i, ...c }) => ({ ...c, cp, hp: 100, mp: 100, pt: 1, chu: x.name }))];
   }) : [];
   // tin chat: mới hơn mã đã nhận (lần đầu, hoặc máy chủ vừa bật lại nên mã đã nhận > mã mới nhất: TIN_DAU tin gần nhất); không gửi
   // lại tin của chính mình; phụ cận / thành thị chỉ cùng bản đồ; kênh Bang hội chỉ cùng bang (mã bang của nhân vật đang chơi — tra O(1))

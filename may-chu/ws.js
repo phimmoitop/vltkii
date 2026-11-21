@@ -15,6 +15,20 @@ const GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 const TIN_GAME_MAX = 16 * 1024, TIN_MAX = 520 * 1024, PING_MS = 25000, CHET_MS = 70000; // RPC body tối đa 512 KB + envelope; ping 25 giây, 70 giây im lặng = mất kết nối
 const ds = new Map();     // tài khoản -> kết nối
 const viec = new Map();   // loại tin -> [fn(kn, tin)]
+function datView(kn, value) {
+  if (!value || typeof value !== "object") return;
+  const x = Number(value.x), y = Number(value.y), w = Number(value.w), h = Number(value.h);
+  if (![x, y, w, h].every(Number.isFinite) || w < 100 || h < 100 || w > 10000 || h > 10000) return;
+  kn.view = { x: Math.max(-1e6, Math.min(1e6, x)), y: Math.max(-1e6, Math.min(1e6, y)), w, h };
+}
+function trongTam(kn, x, y) {
+  const v = kn && kn.view;
+  return !v || (Number.isFinite(+x) && Number.isFinite(+y) && +x >= v.x && +x <= v.x + v.w && +y >= v.y && +y <= v.y + v.h);
+}
+function khoaView(kn) {
+  const v = kn && kn.view;
+  return v ? [v.x, v.y, v.w, v.h].map((n) => Math.floor(n / 256)).join(":") : "*";
+}
 function nhan(loai, fn) { viec.set(loai, [...(viec.get(loai) || []), fn]); }
 let loc = null;          // fn(tkGui, tkNhan, zone) -> cùng chỗ (guiBai)
 function locBai(fn) { loc = fn; }
@@ -107,7 +121,9 @@ function gan(server, xacThuc, tuyChon = {}) {
         try { tin = JSON.parse(data.toString("utf8")); } catch { continue; }
         if (!tin || typeof tin.t !== "string") continue;
         if (tin.t !== "rpc" && n > TIN_GAME_MAX) return dongKn(kn, 1009); // gói game vẫn giới hạn 16 KB; riêng RPC có body nhân vật lớn hơn
-        if (tin.t === "vao") { kn.vtb = tin.b === 1 ? 1 : 0; kn.o = tin.o | 0; kn.zone = tin.zone | 0; kn.chung = tin.chung ? 1 : 0; kn.moi = "chung" in tin; kn.bdv = tin.bdv | 0; } // moi: trang từ 03/11 (luôn gửi chung); bdv: phiên bản bản đồ bãi của trang (quai-chung.js — anh 11/11)
+        if (tin.t === "vao") { kn.vtb = tin.b === 1 ? 1 : 0; kn.o = tin.o | 0; kn.zone = tin.zone | 0; kn.chung = tin.chung ? 1 : 0; kn.moi = "chung" in tin; kn.bdv = tin.bdv | 0; datView(kn, tin.view); } // moi: trang từ 03/11 (luôn gửi chung); bdv: phiên bản bản đồ bãi; view: vùng camera
+        else if (tin.t === "view") datView(kn, tin.view);
+        else if (tin.t === "vt") datView(kn, tin.view);
         chay(kn, tin);
       }
     });
@@ -130,7 +146,8 @@ setInterval(() => {
 // chon(kn) (tùy chọn): chỉ gửi người nhận thỏa (vd chỉ trang cũ chưa nhận tin gom); khung dựng khi gặp người nhận đầu tiên
 function guiBai(zone, obj, tru, roi, chon) {
   let k = null;
-  for (const kn of ds.values()) if (kn.zone === zone && kn !== tru && !kn.dong && (!tru || !kn.chung === !tru.chung) && (!chon || chon(kn)) && (!loc || !tru || loc(tru.ten, kn.ten, zone))) ghi(kn, k || (k = khung(1, Buffer.from(JSON.stringify(obj)))), roi);
+  const moc = obj && obj.t === "vt" && Array.isArray(obj.tr) ? obj.tr[obj.tr.length - 1] : null;
+  for (const kn of ds.values()) if (kn.zone === zone && kn !== tru && !kn.dong && (!moc || trongTam(kn, moc[1], moc[2])) && (!obj || obj.t !== "chieu" || trongTam(kn, obj.x, obj.y)) && (!tru || !kn.chung === !tru.chung) && (!chon || chon(kn)) && (!loc || !tru || loc(tru.ten, kn.ten, zone))) ghi(kn, k || (k = khung(1, Buffer.from(JSON.stringify(obj)))), roi);
 }
 // Vị trí gom theo bãi (anh 13/11 tối — độ mượt bước 1): trang mới ("vao" b: 1 -> kn.vtb) không nhận từng mốc "vt" (mỗi mốc × mỗi người cùng bãi: 100 người
 // cùng bãi ~33 000 tin / giây, máy chủ quá tải, trả lời chậm 0,3–0,65 giây) mà mỗi GOM_MS 1 tin "vtb" { ds: [[tên nhân vật, [mốc…]], …] } cho cả bãi — dựng 1 lần,
@@ -157,8 +174,8 @@ function xaGom(chi) {
     let kc = null;
     for (const nh of ds.values()) {
       if (nh.zone !== zone || nh.dong || !nh.vtb || !nh.chung !== !chung) continue;
-      if (!phong) { if (gui.length === 1 && gui[0] === nh) continue; ghi(nh, kc || (kc = khung(1, Buffer.from(JSON.stringify({ t: "vtb", ds: muc })))), true); continue; }
-      const r = muc.filter((_, j) => gui[j] !== nh && loc(gui[j].ten, nh.ten, zone));
+      if (!phong) { if (gui.length === 1 && gui[0] === nh) continue; const r = muc.filter((a, j) => gui[j] !== nh && a[1].some((m) => trongTam(nh, m[1], m[2]))); if (r.length) ghi(nh, khung(1, Buffer.from(JSON.stringify({ t: "vtb", ds: r }))), true); continue; }
+      const r = muc.filter((a, j) => gui[j] !== nh && loc(gui[j].ten, nh.ten, zone) && a[1].some((m) => trongTam(nh, m[1], m[2])));
       if (r.length) ghi(nh, khung(1, Buffer.from(JSON.stringify({ t: "vtb", ds: r }))), true);
     }
   }
@@ -188,4 +205,4 @@ function ganTaiKhoan(kn, ten) {
 function dongHet() { for (const kn of [...ds.values()]) dongKn(kn, 1001); }
 function moi(fn) { for (const kn of ds.values()) if (!kn.dong) fn(kn); }
 
-module.exports = { gan, nhan, guiBai, guiHet, guiTk, moi, cua, ganTaiKhoan, dongHet, locBai, locCanBai, gomVt, coCu, soKetNoi: () => ds.size, _thu: { xaGom, GOM, ds, GUI_LUC } };
+module.exports = { gan, nhan, guiBai, guiHet, guiTk, moi, cua, ganTaiKhoan, dongHet, locBai, locCanBai, gomVt, coCu, trongTam, khoaView, soKetNoi: () => ds.size, _thu: { xaGom, GOM, ds, GUI_LUC } };

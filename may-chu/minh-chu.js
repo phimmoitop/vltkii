@@ -322,10 +322,10 @@ const VE = new Map((MC.ve || []).map((o) => [o.u, { ...o, mau: CF.ve.mau, mauMax
 let veV = 0, veDoi = false, veGui = 0;
 // trạng thái gửi trình duyệt của tài khoản tk: { v, ten, tpl, lv, thay, ds: [[u, bãi, x, y, máu, máu tối đa, nhận (sát thương của mình máy chủ đã nhận lần
 // sống này), hồi (giây tới lúc sống lại — 0: đang sống), lần sống]] }
-function veTT(tk, bai) {
+function veTT(tk, bai, view) {
   const t = Date.now();
   return { v: veV, ten: CF.ve.ten, tpl: CF.ve.tpl, lv: CF.ve.lv, thay: CF.ve.thay,
-    ds: [...VE.values()].filter((g) => bai == null || g.bai === bai).map((g) => [g.u, g.bai, g.x, g.y, Math.max(0, Math.ceil(g.mau)), g.mauMax, g.nhan.get(tk) || 0, g.chet ? Math.max(1, Math.ceil((lucChet(g) + CF.ve.hoi * 1000 - t) / 1000)) : 0, g.lan]) };
+    ds: [...VE.values()].filter((g) => (bai == null || g.bai === bai) && WS.trongTam({ view }, g.x, g.y)).map((g) => [g.u, g.bai, g.x, g.y, Math.max(0, Math.ceil(g.mau)), g.mauMax, g.nhan.get(tk) || 0, g.chet ? Math.max(1, Math.ceil((lucChet(g) + CF.ve.hoi * 1000 - t) / 1000)) : 0, g.lan]) };
 }
 // mốc tính giờ sống lại của con đã chết g: hoiCum -> lúc con cuối của cụm chết (cụm còn con sống: chưa bắt đầu tính — trả bây giờ); không thì lúc g chết
 function lucChet(g) {
@@ -349,15 +349,16 @@ function danhVe(tk, u, d) {
   if (g.mau <= 0) { g.mau = 0; g.chet = t; g.ai = p.name; }
   return true;
 }
-WS.nhan("mo", (kn) => kn.gui({ t: "mcv", s: veTT(kn.ten, kn.zone) }));
-WS.nhan("vao", (kn) => kn.gui({ t: "mcv", s: veTT(kn.ten, kn.zone) }));
+WS.nhan("mo", (kn) => kn.gui({ t: "mcv", s: veTT(kn.ten, kn.zone, kn.view) }));
+WS.nhan("vao", (kn) => kn.gui({ t: "mcv", s: veTT(kn.ten, kn.zone, kn.view) }));
+WS.nhan("view", (kn) => kn.gui({ t: "mcv", s: veTT(kn.ten, kn.zone, kn.view) }));
 WS.nhan("mcv", (kn, tin) => { danhVe(kn.ten, tin.u, tin.d); });
 // sống lại sau CF.ve.hoi giây; gửi trạng thái tối đa 4 lần / giây
 setInterval(() => {
   const t = Date.now();
   const song = [...VE.values()].filter((g) => g.chet && t - lucChet(g) >= CF.ve.hoi * 1000); // tính hết trước rồi mới cho sống (cùng cụm cùng lúc)
   for (const g of song) { g.chet = 0; g.mau = g.mauMax; g.lan++; g.nhan.clear(); g.han.clear(); delete g.ai; veDoi = true; }
-  if (veDoi && t - veGui >= 250) { veDoi = false; veGui = t; veV++; WS.moi((kn) => kn.gui({ t: "mcv", s: veTT(kn.ten, kn.zone) })); }
+  if (veDoi && t - veGui >= 250) { veDoi = false; veGui = t; veV++; WS.moi((kn) => kn.gui({ t: "mcv", s: veTT(kn.ten, kn.zone, kn.view) })); }
 }, 250).unref();
 
 // công cụ thử (tài khoản quản trị): { viec: "xem" } | { viec: "dat", giet?: n (số con đã hạ), xong?: true (bỏ dấu đã xong hôm nay) } | { viec: "ve",

@@ -90,9 +90,11 @@ function doiDs(P, e) {
 }
 // hd: chỉ các con đổi máu từ lượt trước (null: gửi đủ hp); qd: danh sách đổi từ bản tu { tu, a: [dòng q thêm], x: [mã bỏ] }
 function trangThai(P, tk, full, dan, hd, qd) {
+  const kn = WS.cua(tk), inView = (m) => { const v = P.vt.get(m.uid); return WS.trongTam(kn, v ? v[0] : m.x, v ? v[1] : m.y); };
+  const ids = new Set([...P.q.values()].filter(inView).map((m) => m.uid));
   return { bai: P.bai, chu: P.trong.get(P.chu) || null, tv: [...P.trong.values()], cap: capP(P), sv: P.sv,
-    ...(hd ? { hd } : { hp: [...P.q.values()].map(mauCua) }), dan, ack: P.ack.get(tk) || 0, gio: Date.now(), ...(qd ? { qd } : {}),
-    ...(full ? { q: [...P.q.values()].map(dongQ), vt: [...P.vt].map(([u, v]) => [u, ...v]) } : {}) };
+    ...(hd ? { hd: hd.filter((r) => ids.has(r[0])) } : { hp: [...P.q.values()].filter(inView).map(mauCua) }), dan: dan.filter((r) => ids.has(r[0])), ack: P.ack.get(tk) || 0, gio: Date.now(), ...(qd ? { qd } : {}),
+    ...(full ? { q: [...P.q.values()].filter(inView).map(dongQ), vt: [...P.vt].filter(([u]) => ids.has(u)).map(([u, v]) => [u, ...v]) } : {}) };
 }
 // gửi trạng thái cho cả bãi: người có bản danh sách mà nhật ký còn giữ đủ từ đó -> chỉ phần đổi (qd); người mới / bản quá cũ -> đủ danh sách
 function phat(P) {
@@ -104,7 +106,9 @@ function phat(P) {
   for (const tk of P.trong.keys()) {
     const kn = WS.cua(tk); if (!kn) continue;
     const s0 = P.daSpec.get(tk);
-    let full = false, qd = null, hdc = hd;
+    // Camera thay đổi liên tục; gửi snapshot đã lọc theo camera để các con vừa ra/vào khung hình
+    // được dựng / gỡ ngay mà client không phải giữ cả đàn quái ngoài màn hình.
+    let full = true, qd = null, hdc = hd;
     if (s0 !== P.sv) {
       if (s0 != null && P.nk.length && P.nk[0].sv <= s0 + 1) {
         const a = new Map(), x = [];
@@ -114,7 +118,7 @@ function phat(P) {
       } else full = true;
       P.daSpec.set(tk, P.sv);
     }
-    kn.gui({ t: "qc", p: trangThai(P, tk, full, dan, full ? null : hdc, qd) });
+    kn.gui({ t: "qc", p: trangThai(P, tk, full, dan, hdc, qd) });
   }
 }
 
@@ -256,7 +260,10 @@ WS.nhan("qch", (kn, tin) => {
     P.vt.set(r[0] | 0, v); q.push([r[0] | 0, ...v, Math.max(0, r[4] | 0)]);
   }
   // d: tin báo đòn (chỉ con vừa vung — máy khác không lấy làm mốc nhịp, quaichung.js viTri; soát 06/11)
-  if (q.length) for (const a of P.trong.keys()) if (a !== kn.ten) WS.guiTk(a, { t: "qch", q, ...(ts > 0 ? { ts } : {}), ...(tin.d ? { d: 1 } : {}) });
+  if (q.length) for (const a of P.trong.keys()) if (a !== kn.ten) {
+    const nh = WS.cua(a), gan = q.filter((r) => WS.trongTam(nh, r[1], r[2]));
+    if (gan.length) WS.guiTk(a, { t: "qch", q: gan, ...(ts > 0 ? { ts } : {}), ...(tin.d ? { d: 1 } : {}) });
+  }
 });
 // chủ bãi (bản đồ dựng nguyên — Phong Lăng Độ): con ở quá xa mọi người trong bãi -> bỏ (chủ bãi sinh lại quanh người — như World.boQuaiXa bản
 // riêng); con đang có người đánh (trong BO_MS) / thủ lĩnh / tinh anh thì giữ

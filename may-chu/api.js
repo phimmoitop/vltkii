@@ -455,7 +455,7 @@ function nhip(res, tk, b, trang) {
     if (Array.isArray(b.mcv)) for (const r of b.mcv.slice(0, 20)) if (Array.isArray(r)) MC.danhVe(tk.ten, r[0], r[1]);
     // Trạng thái quái canh đã được đẩy qua WebSocket. Chỉ gửi bản dự phòng khi
     // socket mất và chỉ cho bản đồ hiện tại; không lặp cả danh sách toàn máy mỗi nhịp.
-    if (b.s && !WS.cua(tk.ten)) ket.mcv = MC.veTT(tk.ten, b.s.zone | 0);
+    if (b.s && !WS.cua(tk.ten)) ket.mcv = MC.veTT(tk.ten, b.s.zone | 0, b.s.view);
     if (mcd) { if (mcd.tin.length) ket.mcTin = mcd.tin; ket.nv = nvCua(h); ghi = true; }
     // boss thế giới (may-chu/boss-tg.js — anh 31/10): sát thương gửi kèm nhịp khi kênh WebSocket chưa mở + thưởng đang chờ (kinh nghiệm, đồ)
     if (Array.isArray(b.bst)) for (const r of b.bst.slice(0, 20)) if (Array.isArray(r)) BTG.danh(tk.ten, r[0], r[1]);
