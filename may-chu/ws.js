@@ -1,5 +1,5 @@
 // Kênh tức thời WebSocket (anh 31/10 — "quái chung" bước 1: boss thế giới máu chung cần báo máu / chết ngay; nhịp /api/nhip 2 lần / giây
-// chậm). RFC 6455 tối giản, không thư viện ngoài (gói không có node_modules): chỉ khung chữ JSON không phân mảnh (≤ 16 KB), ping / pong,
+// chậm). RFC 6455 tối giản, không thư viện ngoài (gói không có node_modules): JSON game ≤ 16 KB; RPC lưu nhân vật ≤ 520 KB, ping / pong,
 // đóng. Đường: GET /api/ws (Upgrade: websocket) — xác thực bằng cookie phiên như API (api.js tkPhien); Caddy trên VPS chuyển tiếp nâng cấp
 // sẵn. Mỗi tài khoản 1 kết nối (mở mới thì đóng cũ). Trình duyệt báo { t: "vao", o, zone, chung? } lúc mở / đổi bãi (chung = đang ở bản quái
 // chung của bãi — may-chu/quai-chung.js, anh 03/11: mỗi bãi chính có bản quái riêng + bản quái chung; guiBai chỉ chuyển cho người cùng bản).
@@ -12,7 +12,7 @@ const crypto = require("crypto");
 const CSC = require("./chong-sao-chep"); // chống sao chép (anh 10/11): kênh mở từ trang tên miền khác -> từ chối
 
 const GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-const TIN_MAX = 16 * 1024, PING_MS = 25000, CHET_MS = 70000; // ping mỗi 25 giây; 70 giây không nghe gì = mất kết nối
+const TIN_GAME_MAX = 16 * 1024, TIN_MAX = 520 * 1024, PING_MS = 25000, CHET_MS = 70000; // RPC body tối đa 512 KB + envelope; ping 25 giây, 70 giây im lặng = mất kết nối
 const ds = new Map();     // tài khoản -> kết nối
 const viec = new Map();   // loại tin -> [fn(kn, tin)]
 function nhan(loai, fn) { viec.set(loai, [...(viec.get(loai) || []), fn]); }
@@ -94,7 +94,7 @@ function gan(server, xacThuc, tuyChon = {}) {
         let n = buf[1] & 0x7f, o = 2;
         if (n === 126) { if (buf.length < 4) return; n = buf.readUInt16BE(2); o = 4; }
         else if (n === 127) { if (buf.length < 10) return; n = Number(buf.readBigUInt64BE(2)); o = 10; }
-        if (!mat || !fin || n > TIN_MAX) return dongKn(kn, 1002); // trình duyệt luôn che mặt nạ; tin phân mảnh / quá lớn: không nhận
+        if (!mat || !fin || n > TIN_MAX) return dongKn(kn, 1002); // trình duyệt luôn che mặt nạ; tin phân mảnh / RPC quá lớn: không nhận
         if (buf.length < o + 4 + n) return;
         const m = buf.subarray(o, o + 4), data = Buffer.from(buf.subarray(o + 4, o + 4 + n));
         for (let i = 0; i < n; i++) data[i] ^= m[i & 3];
@@ -106,6 +106,7 @@ function gan(server, xacThuc, tuyChon = {}) {
         let tin;
         try { tin = JSON.parse(data.toString("utf8")); } catch { continue; }
         if (!tin || typeof tin.t !== "string") continue;
+        if (tin.t !== "rpc" && n > TIN_GAME_MAX) return dongKn(kn, 1009); // gói game vẫn giới hạn 16 KB; riêng RPC có body nhân vật lớn hơn
         if (tin.t === "vao") { kn.vtb = tin.b === 1 ? 1 : 0; kn.o = tin.o | 0; kn.zone = tin.zone | 0; kn.chung = tin.chung ? 1 : 0; kn.moi = "chung" in tin; kn.bdv = tin.bdv | 0; } // moi: trang từ 03/11 (luôn gửi chung); bdv: phiên bản bản đồ bãi của trang (quai-chung.js — anh 11/11)
         chay(kn, tin);
       }
