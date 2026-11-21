@@ -67,7 +67,10 @@ function skillCells(skills) {
     if (!Number.isInteger(key) || key < 0 || !Number.isInteger(level) || level < 1) continue;
     (SKILL_9X.has(key) ? high : normal).push([key, level]);
   }
-  const encode = (rows) => rows.sort((a, b) => a[0] - b[0]).map(([id, level]) => `${id}-${level}`).join(", ");
+  const encode = (rows) => {
+    const pairs = rows.sort((a, b) => a[0] - b[0]).map(([id, level]) => `${id}-${level}`).join(",");
+    return pairs ? `(${pairs})` : "";
+  };
   return { skill: encode(normal), skill9x: encode(high) };
 }
 
