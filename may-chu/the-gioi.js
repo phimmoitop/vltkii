@@ -78,11 +78,17 @@ function ptCua(h, ds, cu) {
       ...(c.vs.length ? { vs: c.vs } : {}), ...(c.bl.length ? { bl: c.bl } : {}) };
   }).filter(Boolean);
 }
-function sach(s) {
-  if (!s || typeof s !== "object" || !Array.isArray(s.tr)) return null;
+function sach(s, cu) {
+  if (!s || typeof s !== "object") return null;
+  const zone = nguyen(s.zone, 0, 1e6, -1), chung = !!s.c;
+  const moi = (Array.isArray(s.tr) ? s.tr : []).slice(-MOC_GUI).filter(Array.isArray).map(moc).sort((a, b) => a[0] - b[0]);
+  // Nhịp hiện diện vẫn tới khi người chơi đứng yên, nhưng không có mốc mới.
+  // Giữ mốc cuối nếu đúng cùng nhân vật / bản đồ / bản quái để người khác
+  // không bị xóa khỏi danh sách rồi chỉ hiện lại khi bắt đầu di chuyển.
+  const tr = moi.length ? moi : (cu && cu.zone === zone && !!cu.chung === chung ? cu.tr.slice(-MOC_GIU) : []);
+  if (!tr.length || zone < 0) return null;
   const look = {};
   for (const k of LOOKS) { const v = nguyen(s.look && s.look[k], 0, 9999); if (v) look[k] = v; }
-  const tr = s.tr.slice(-MOC_GUI).filter(Array.isArray).map(moc).sort((a, b) => a[0] - b[0]);
   // hp / mp = % sinh lực / nội lực (bảng đội ngũ); vs = vòng sáng hỗ trợ đang bật [[mã chiêu, cấp chạy]] (vòng chính + vòng ghép — đồng đội
   // đứng trong tầm được hưởng, anh 29/10: src/game/world.js vongDoi)
   const vs = vsSach(s.vs);
@@ -93,7 +99,7 @@ function sach(s) {
   // phân thân đang theo (anh 05/11): mã + mốc + vòng sáng / bùa — nhip kiểm mã với h.pt.ra
   const pt = (Array.isArray(s.pt) ? s.pt : []).slice(0, PT_MAX).filter((c) => c && typeof c.i === "string" && Array.isArray(c.tr))
     .map((c) => ({ i: c.i.slice(0, 80), tr: c.tr.slice(-MOC_GUI).filter(Array.isArray).map(moc).sort((a, b) => a[0] - b[0]), vs: vsSach(c.vs), bl: blSach(c.bl) }));
-  return tr.length ? { zone: nguyen(s.zone, 0, 1e6, -1), ...(s.c ? { chung: 1 } : {}), lvl: nguyen(s.lvl, 1, 200, 1), look, tr, ...(view ? { view } : {}), hp: nguyen(s.hp, 0, 100, 100), mp: nguyen(s.mp, 0, 100, 100), ...(vs.length ? { vs } : {}), ...(bc.length ? { bc } : {}), ...(kd ? { kd } : {}), ...(bl.length ? { bl } : {}), ...(pt.length ? { pt } : {}) } : null;
+  return { zone, ...(chung ? { chung: 1 } : {}), lvl: nguyen(s.lvl, 1, 200, 1), look, tr, ...(view ? { view } : {}), hp: nguyen(s.hp, 0, 100, 100), mp: nguyen(s.mp, 0, 100, 100), ...(vs.length ? { vs } : {}), ...(bc.length ? { bc } : {}), ...(kd ? { kd } : {}), ...(bl.length ? { bl } : {}), ...(pt.length ? { pt } : {}) };
 }
 
 // phe đang theo (anh 31/10 "tên nhân vật đúng màu chính tà trung lập theo client … vào pt thì đổi sang màu của chủ pt"): trong đội -> phe theo
@@ -125,13 +131,14 @@ function conLai(t) { for (const [k, b] of ben) if (t - b.at > BEN_MS) ben.delete
 
 function nhip(tk, b) {
   const t = Date.now(), oNv = nguyen(b.o, 0, tk.nv.length - 1), h = tk.nv[oNv];
-  const s = h && sach(b.s);
+  const cu = ben.get(tk.ten), cuCungNv = cu && h && cu.oNv === oNv && cu.name === h.name ? cu : null;
+  const s = h && sach(b.s, cuCungNv);
   // Lôi Đài (soát 16/11): vùng sân không có bản quái chung — bỏ c (báo c = 1 thì người khác c 0 không thấy mình trong ai: vô hình mà vẫn đánh người được)
   if (s && s.chung && LD().laSan(s.zone)) delete s.chung;
   if (s) {
     // nối mốc mới vào mốc cũ (cùng bản đồ + CÙNG NHÂN VẬT — 2 thẻ cùng tài khoản không trộn mốc 2 nhân vật, soát 13/11; người đó tải lại trang thì đồng hồ chạy
     // lại từ 0 -> bỏ mốc cũ)
-    const cu = ben.get(tk.ten), cung = cu && cu.zone === s.zone && cu.name === h.name, tr = noiMoc(cung ? cu.tr : [], s.tr);
+    const cung = cu && cu.zone === s.zone && cu.name === h.name, tr = noiMoc(cung ? cu.tr : [], s.tr);
     // Phân Thân không vào chiến trường Tống Kim (anh chốt — THIET-KE-TONG-KIM.md §3): bãi kind "tongkim" thì không nhận phân thân đi theo; Lôi Đài (anh 15/11) cũng không
     const kz = (DOJS().NOI.ZONES.get(s.zone) || {}).kind, pt = s.pt && kz !== "tongkim" && kz !== "lôi đài" && kz !== "đua ngựa" ? ptCua(h, s.pt, cung ? cu.pt || [] : []) : []; // đua ngựa (anh 16/11): đường đua 863 không có phân thân
     // bang hội (anh 14/11): nhãn "Tên bang(Chức)" + phe bang dựng 1 lần ở nhịp của chính người này (bang-hoi.js nhan — tra O(1)); lỗi bang không làm hỏng nhịp
