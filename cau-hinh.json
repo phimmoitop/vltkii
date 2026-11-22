@@ -1,6 +1,6 @@
 {
   "_ghi_chu": "Cấu hình máy chủ S1 (THIET-KE-S1.md mục 2–4). Sửa xong thì tắt bật lại Chay_Game.bat. Không phát ra ngoài trình duyệt.",
-  "kinhNghiem": 3.5,
+  "kinhNghiem": 35,
   "_kinhNghiem": "hệ số nhân kinh nghiệm quái (bảng client) — x3,5: người chơi chăm ~cấp 120 sau 1 tháng",
   "roiDo": {
     "quaiThuong": 0.01,

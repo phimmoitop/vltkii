@@ -181,6 +181,34 @@ WS.nhan("dong", (kn, tin) => {
   ghiViTriRam("mất kết nối", kn.ten, o, h, `code=${tin.code || 0}`);
 });
 
+// Vị trí đi qua WebSocket mỗi khi nhân vật đổi chỗ. "vt" vốn chỉ dùng để
+// chuyển động cho người chơi khác xem; ghi thêm mốc cuối vào tài khoản RAM
+// để snapshot Google Sheets định kỳ lấy được tọa độ mới nhất, không phải chờ
+// lần lưu nhân vật 30 giây tiếp theo.
+const vtLogLuc = new Map();
+WS.nhan("vt", (kn, tin) => {
+  const tk = D.docTk(kn.ten), o = kn.o | 0;
+  if (!tk || o < 0 || o >= D.SLOT_N) return;
+  const h = tk.nv[o], dang = TG.dangChoi(kn.ten);
+  if (!h || !dang || dang.o !== o || dang.zone !== kn.zone) return;
+  const zone = DO.ZONES.get(kn.zone);
+  // Không ghi vị trí trong bản đồ sự kiện / phòng riêng làm chỗ đăng nhập lần sau.
+  if (!zone || !["chính", "phụ", "thành"].includes(zone.kind) || zone.chiThuyen || zone.bang) return;
+  if (!Array.isArray(tin.tr) || !tin.tr.length) return;
+  const moc = tin.tr[tin.tr.length - 1];
+  if (!Array.isArray(moc) || !Number.isFinite(moc[1]) || !Number.isFinite(moc[2])) return;
+  const viTri = { z: kn.zone | 0, x: Math.round(moc[1]), y: Math.round(moc[2]) };
+  const cu = h.viTri;
+  if (cu && cu.z === viTri.z && cu.x === viTri.x && cu.y === viTri.y) return;
+  h.viTri = viTri;
+  D.ghiTk(tk);
+  const key = `${tk.ten}:${o}`, now = Date.now(), truoc = vtLogLuc.get(key);
+  if (!truoc || truoc.z !== viTri.z || now - truoc.at >= 5000) {
+    ghiViTriRam("WebSocket → RAM", tk.ten, o, h);
+    vtLogLuc.set(key, { z: viTri.z, at: now });
+  }
+});
+
 const diaChi = (req) => req.headers["cf-connecting-ip"] || req.socket.remoteAddress || "?"; // qua Cloudflare Tunnel: địa chỉ thật của người chơi
 function guiJson(res, code, obj, head = {}) {
   res.writeHead(code, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...head });
