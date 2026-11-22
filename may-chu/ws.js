@@ -102,35 +102,59 @@ function gan(server, xacThuc, tuyChon = {}) {
     const kn = { ten: tk ? tk.ten : "guest-" + crypto.randomBytes(12).toString("hex"), daXacThuc: !!tk, rpcCookie: req.headers.cookie || "", reqHeaders: req.headers, remoteAddress: sock.remoteAddress, o: -1, zone: -1, sock, luc: Date.now(), dong: false, ket: 0 }; // guest được dùng RPC đăng ký / đăng nhập; ket: ping thấy hàng chờ quá LUI
     kn.gui = (obj) => { if (!kn.dong) ghi(kn, khung(1, Buffer.from(JSON.stringify(obj))), false); };
     if (tk) { const cu = ds.get(tk.ten); if (cu) dongKn(cu, 4000, "đã có WebSocket mới đăng nhập cùng tài khoản"); ds.set(tk.ten, kn); }
-    let buf = Buffer.alloc(0);
+    let buf = Buffer.alloc(0), phanOp = 0, phanMau = [], phanTong = 0;
+    const xuLyTin = (data) => {
+      if (data.length > TIN_MAX) { dongKn(kn, 1009, `thông điệp vượt ${TIN_MAX} byte`); return false; }
+      let tin;
+      try { tin = JSON.parse(data.toString("utf8")); } catch { return true; }
+      if (!tin || typeof tin.t !== "string") return true;
+      if (tin.t !== "rpc" && data.length > TIN_GAME_MAX) { dongKn(kn, 1009, "gói game vượt 16 KB"); return false; }
+      if (tin.t === "vao") { kn.vtb = tin.b === 1 ? 1 : 0; kn.o = tin.o | 0; kn.zone = tin.zone | 0; kn.chung = tin.chung ? 1 : 0; kn.moi = "chung" in tin; kn.bdv = tin.bdv | 0; datView(kn, tin.view); } // moi: trang từ 03/11 (luôn gửi chung); bdv: phiên bản bản đồ bãi; view: vùng camera
+      else if (tin.t === "view") datView(kn, tin.view);
+      else if (tin.t === "vt") datView(kn, tin.view);
+      chay(kn, tin);
+      return true;
+    };
     sock.on("data", (d) => {
       buf = buf.length ? Buffer.concat([buf, d]) : d;
       while (buf.length >= 2) {
-        const fin = buf[0] & 0x80, op = buf[0] & 0x0f, mat = buf[1] & 0x80;
+        const fin = !!(buf[0] & 0x80), rsv = buf[0] & 0x70, op = buf[0] & 0x0f, mat = !!(buf[1] & 0x80);
         let n = buf[1] & 0x7f, o = 2;
         if (n === 126) { if (buf.length < 4) return; n = buf.readUInt16BE(2); o = 4; }
         else if (n === 127) { if (buf.length < 10) return; n = Number(buf.readBigUInt64BE(2)); o = 10; }
-        if (!mat || !fin || n > TIN_MAX) return dongKn(kn, 1002, "khung WebSocket sai định dạng hoặc vượt giới hạn"); // trình duyệt luôn che mặt nạ; tin phân mảnh / RPC quá lớn: không nhận
+        if (!mat || rsv) return dongKn(kn, 1002, `khung không hợp lệ (mask=${mat ? 1 : 0}, rsv=${rsv})`);
+        if (!Number.isSafeInteger(n) || n > TIN_MAX) return dongKn(kn, 1009, `frame vượt ${TIN_MAX} byte`);
         if (buf.length < o + 4 + n) return;
         const m = buf.subarray(o, o + 4), data = Buffer.from(buf.subarray(o + 4, o + 4 + n));
         for (let i = 0; i < n; i++) data[i] ^= m[i & 3];
         buf = buf.subarray(o + 4 + n);
         kn.luc = Date.now();
-        if (op === 8) {
-          const code = data.length >= 2 ? data.readUInt16BE(0) : 1000;
-          const reason = data.length > 2 ? data.subarray(2).toString("utf8") : "";
-          return dongKn(kn, code, reason || "client gửi close frame", "client");
+        if (op >= 8) {
+          if (!fin || n > 125) return dongKn(kn, 1002, "frame điều khiển bị phân mảnh hoặc vượt 125 byte");
+          if (op === 8) {
+            const code = data.length >= 2 ? data.readUInt16BE(0) : 1000;
+            const reason = data.length > 2 ? data.subarray(2).toString("utf8") : "";
+            return dongKn(kn, code, reason || "client gửi close frame", "client");
+          }
+          if (op === 9) { ghi(kn, khung(10, data), false); continue; }
+          if (op === 10) continue;
+          return dongKn(kn, 1002, `opcode điều khiển không hỗ trợ: ${op}`);
         }
-        if (op === 9) { ghi(kn, khung(10, data), false); continue; }
-        if (op !== 1) continue;
-        let tin;
-        try { tin = JSON.parse(data.toString("utf8")); } catch { continue; }
-        if (!tin || typeof tin.t !== "string") continue;
-        if (tin.t !== "rpc" && n > TIN_GAME_MAX) return dongKn(kn, 1009, "gói game vượt 16 KB"); // gói game vẫn giới hạn 16 KB; riêng RPC có body nhân vật lớn hơn
-        if (tin.t === "vao") { kn.vtb = tin.b === 1 ? 1 : 0; kn.o = tin.o | 0; kn.zone = tin.zone | 0; kn.chung = tin.chung ? 1 : 0; kn.moi = "chung" in tin; kn.bdv = tin.bdv | 0; datView(kn, tin.view); } // moi: trang từ 03/11 (luôn gửi chung); bdv: phiên bản bản đồ bãi; view: vùng camera
-        else if (tin.t === "view") datView(kn, tin.view);
-        else if (tin.t === "vt") datView(kn, tin.view);
-        chay(kn, tin);
+        let message;
+        if (op === 1) {
+          if (phanOp) return dongKn(kn, 1002, "nhận message mới trước khi message phân mảnh kết thúc");
+          if (!fin) { phanOp = op; phanMau = [data]; phanTong = n; continue; }
+          message = data;
+        } else if (op === 0) {
+          if (!phanOp) return dongKn(kn, 1002, "frame continuation không có message mở đầu");
+          phanTong += n;
+          if (phanTong > TIN_MAX) return dongKn(kn, 1009, `message phân mảnh vượt ${TIN_MAX} byte`);
+          phanMau.push(data);
+          if (!fin) continue;
+          message = Buffer.concat(phanMau, phanTong);
+          phanOp = 0; phanMau = []; phanTong = 0;
+        } else return dongKn(kn, 1003, `opcode dữ liệu không hỗ trợ: ${op}`);
+        if (!xuLyTin(message)) return;
       }
     });
     const xong = (code = 0, reason = Buffer.alloc(0)) => {
