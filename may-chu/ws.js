@@ -50,7 +50,8 @@ function khung(op, data) {
 // đồng bộ lại vị trí); hàng chờ còn quá LUI qua 2 lần ping (25–50 giây) = kẹt thật (người kia vẫn gửi lên mà không nhận về) -> cắt. BO thấp hơn
 // LUI nhiều (soát 11/11): máy mạng yếu ở bãi đông chỉ bị bớt tin vị trí, hàng chờ quanh BO — không bị cắt đi cắt lại
 const BO = 64 * 1024, LUI = 1024 * 1024, CAT = 4 * 1024 * 1024;
-function huyKn(kn) {
+function huyKn(kn, reason = "kết nối bị hủy ngay") {
+  kn.dongInfo = { who: "server-abort", code: 1006, reason };
   kn.dong = true;
   if (ds.get(kn.ten) === kn) ds.delete(kn.ten);
   try { kn.sock.destroy(); } catch {}
@@ -58,14 +59,15 @@ function huyKn(kn) {
 function ghi(kn, k, roi) {
   const s = kn.sock; if (s.destroyed) return;
   const L = s.writableLength;
-  if (L > CAT) return huyKn(kn);
+  if (L > CAT) return huyKn(kn, `hàng gửi ra vượt ${CAT} byte`);
   if (roi && L > BO) return;
   try { s.write(k); } catch {}
 }
 // đóng: khung đóng + end(). end() chờ gửi hết hàng chờ — người kia không nhận thì kết nối + hàng chờ nằm mãi trong RAM (anh 11/11) -> hàng chờ
 // đang nhiều thì cắt luôn, còn lại 3 giây sau vẫn chưa đóng xong thì cắt
-function dongKn(kn, ma) {
+function dongKn(kn, ma, reason = "server chủ động đóng", who = "server") {
   if (kn.dong) return;
+  kn.dongInfo = { who, code: ma, reason };
   kn.dong = true;
   if (ds.get(kn.ten) === kn) ds.delete(kn.ten);
   const s = kn.sock;
@@ -99,7 +101,7 @@ function gan(server, xacThuc, tuyChon = {}) {
     sock.setNoDelay(true);
     const kn = { ten: tk ? tk.ten : "guest-" + crypto.randomBytes(12).toString("hex"), daXacThuc: !!tk, rpcCookie: req.headers.cookie || "", reqHeaders: req.headers, remoteAddress: sock.remoteAddress, o: -1, zone: -1, sock, luc: Date.now(), dong: false, ket: 0 }; // guest được dùng RPC đăng ký / đăng nhập; ket: ping thấy hàng chờ quá LUI
     kn.gui = (obj) => { if (!kn.dong) ghi(kn, khung(1, Buffer.from(JSON.stringify(obj))), false); };
-    if (tk) { const cu = ds.get(tk.ten); if (cu) dongKn(cu, 4000); ds.set(tk.ten, kn); }
+    if (tk) { const cu = ds.get(tk.ten); if (cu) dongKn(cu, 4000, "đã có WebSocket mới đăng nhập cùng tài khoản"); ds.set(tk.ten, kn); }
     let buf = Buffer.alloc(0);
     sock.on("data", (d) => {
       buf = buf.length ? Buffer.concat([buf, d]) : d;
@@ -108,19 +110,23 @@ function gan(server, xacThuc, tuyChon = {}) {
         let n = buf[1] & 0x7f, o = 2;
         if (n === 126) { if (buf.length < 4) return; n = buf.readUInt16BE(2); o = 4; }
         else if (n === 127) { if (buf.length < 10) return; n = Number(buf.readBigUInt64BE(2)); o = 10; }
-        if (!mat || !fin || n > TIN_MAX) return dongKn(kn, 1002); // trình duyệt luôn che mặt nạ; tin phân mảnh / RPC quá lớn: không nhận
+        if (!mat || !fin || n > TIN_MAX) return dongKn(kn, 1002, "khung WebSocket sai định dạng hoặc vượt giới hạn"); // trình duyệt luôn che mặt nạ; tin phân mảnh / RPC quá lớn: không nhận
         if (buf.length < o + 4 + n) return;
         const m = buf.subarray(o, o + 4), data = Buffer.from(buf.subarray(o + 4, o + 4 + n));
         for (let i = 0; i < n; i++) data[i] ^= m[i & 3];
         buf = buf.subarray(o + 4 + n);
         kn.luc = Date.now();
-        if (op === 8) return dongKn(kn, 1000);
+        if (op === 8) {
+          const code = data.length >= 2 ? data.readUInt16BE(0) : 1000;
+          const reason = data.length > 2 ? data.subarray(2).toString("utf8") : "";
+          return dongKn(kn, code, reason || "client gửi close frame", "client");
+        }
         if (op === 9) { ghi(kn, khung(10, data), false); continue; }
         if (op !== 1) continue;
         let tin;
         try { tin = JSON.parse(data.toString("utf8")); } catch { continue; }
         if (!tin || typeof tin.t !== "string") continue;
-        if (tin.t !== "rpc" && n > TIN_GAME_MAX) return dongKn(kn, 1009); // gói game vẫn giới hạn 16 KB; riêng RPC có body nhân vật lớn hơn
+        if (tin.t !== "rpc" && n > TIN_GAME_MAX) return dongKn(kn, 1009, "gói game vượt 16 KB"); // gói game vẫn giới hạn 16 KB; riêng RPC có body nhân vật lớn hơn
         if (tin.t === "vao") { kn.vtb = tin.b === 1 ? 1 : 0; kn.o = tin.o | 0; kn.zone = tin.zone | 0; kn.chung = tin.chung ? 1 : 0; kn.moi = "chung" in tin; kn.bdv = tin.bdv | 0; datView(kn, tin.view); } // moi: trang từ 03/11 (luôn gửi chung); bdv: phiên bản bản đồ bãi; view: vùng camera
         else if (tin.t === "view") datView(kn, tin.view);
         else if (tin.t === "vt") datView(kn, tin.view);
@@ -130,19 +136,22 @@ function gan(server, xacThuc, tuyChon = {}) {
     const xong = (code = 0, reason = Buffer.alloc(0)) => {
       if (kn.ketDaGhi) return;
       kn.ketDaGhi = true;
-      chay(kn, { t: "dong", code: Number(code) || 0, reason: Buffer.isBuffer(reason) ? reason.toString("utf8") : String(reason || "") });
+      const info = kn.dongInfo;
+      const lyDoSock = Buffer.isBuffer(reason) ? reason.toString("utf8") : String(reason || "");
+      const lyDo = info ? `${info.who}: ${info.reason}` : (lyDoSock || "TCP đóng mà không có WebSocket close frame");
+      chay(kn, { t: "dong", code: info ? info.code : (Number(code) || 0), reason: lyDo });
       kn.dong = true; if (ds.get(kn.ten) === kn) ds.delete(kn.ten);
     };
     sock.on("close", xong);
-    sock.on("error", (e) => xong(0, e && e.message));
+    sock.on("error", (e) => xong(0, Buffer.from(`socket error: ${e && e.message || "unknown"}`)));
     chay(kn, { t: "mo" });
   });
 }
 setInterval(() => {
   const t = Date.now();
   for (const kn of [...ds.values()]) {
-    if (t - kn.luc > CHET_MS) { dongKn(kn, 1001); continue; }
-    if (kn.sock.writableLength > LUI) { if (++kn.ket >= 2) { huyKn(kn); continue; } } else kn.ket = 0; // hàng chờ kẹt 2 lần ping liền -> cắt
+    if (t - kn.luc > CHET_MS) { dongKn(kn, 1001, `không nhận dữ liệu ${CHET_MS} ms`); continue; }
+    if (kn.sock.writableLength > LUI) { if (++kn.ket >= 2) { huyKn(kn, `hàng gửi ra trên ${LUI} byte ở 2 lần ping liên tiếp`); continue; } } else kn.ket = 0; // hàng chờ kẹt 2 lần ping liền -> cắt
     ghi(kn, khung(9, Buffer.alloc(0)), false);
   }
 }, PING_MS).unref();
@@ -203,11 +212,11 @@ function guiTk(ten, obj) { const kn = ds.get(ten); if (kn) kn.gui(obj); }
 function cua(ten) { const kn = ds.get(ten); return kn && !kn.dong ? kn : null; }
 function ganTaiKhoan(kn, ten) {
   const cu = ds.get(ten);
-  if (cu && cu !== kn) dongKn(cu, 4000);
+  if (cu && cu !== kn) dongKn(cu, 4000, "đã đăng nhập WebSocket mới cùng tài khoản");
   if (ds.get(kn.ten) === kn) ds.delete(kn.ten);
   kn.ten = ten; kn.daXacThuc = true; ds.set(ten, kn);
 }
-function dongHet() { for (const kn of [...ds.values()]) dongKn(kn, 1001); }
+function dongHet() { for (const kn of [...ds.values()]) dongKn(kn, 1001, "Render đang dừng hoặc triển khai lại"); }
 function moi(fn) { for (const kn of ds.values()) if (!kn.dong) fn(kn); }
 
 module.exports = { gan, nhan, guiBai, guiHet, guiTk, moi, cua, ganTaiKhoan, dongHet, locBai, locCanBai, gomVt, coCu, trongTam, khoaView, soKetNoi: () => ds.size, _thu: { xaGom, GOM, ds, GUI_LUC } };

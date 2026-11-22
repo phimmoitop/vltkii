@@ -178,7 +178,7 @@ function ghiViTriRam(suKien, tenTk, o, h, them = "") {
 // là bản lưu API gần nhất, thường được client cập nhật mỗi 30 giây.
 WS.nhan("dong", (kn, tin) => {
   const tk = D.docTk(kn.ten), o = kn.o | 0, h = tk && o >= 0 && o < D.SLOT_N ? tk.nv[o] : null;
-  ghiViTriRam("mất kết nối", kn.ten, o, h, `code=${tin.code || 0}`);
+  ghiViTriRam("mất kết nối", kn.ten, o, h, `code=${tin.code || 0} lýDo=${tin.reason || "không rõ"}`);
 });
 
 // Vị trí đi qua WebSocket mỗi khi nhân vật đổi chỗ. "vt" vốn chỉ dùng để
