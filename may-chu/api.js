@@ -197,7 +197,7 @@ WS.nhan("vt", (kn, tin) => {
   if (!tk || o < 0 || o >= D.SLOT_N) return;
   const h = tk.nv[o], dang = TG.dangChoi(kn.ten);
   if (!h || !dang || dang.o !== o || dang.zone !== kn.zone) return;
-  const zone = DO.ZONES.get(kn.zone);
+  const zone = DO.NOI.ZONES.get(kn.zone);
   // Không ghi vị trí trong bản đồ sự kiện / phòng riêng làm chỗ đăng nhập lần sau.
   if (!zone || !["chính", "phụ", "thành", "thôn"].includes(zone.kind) || zone.chiThuyen || zone.bang) return;
   if (!tin || !Array.isArray(tin.tr) || !tin.tr.length) return;
