@@ -186,23 +186,29 @@ WS.nhan("dong", (kn, tin) => {
 // để snapshot Google Sheets định kỳ lấy được tọa độ mới nhất, không phải chờ
 // lần lưu nhân vật 30 giây tiếp theo.
 const vtLogLuc = new Map();
+const vtNhanLuc = new Map();
 WS.nhan("vt", (kn, tin) => {
   const tk = D.docTk(kn.ten), o = kn.o | 0;
+  const key = `${kn.ten || "?"}:${o}`, now = Date.now(), mocNhan = tin && Array.isArray(tin.tr) && tin.tr[tin.tr.length - 1];
+  if (!vtNhanLuc.has(key) || now - vtNhanLuc.get(key) >= 10000) {
+    console.log(`[tọa độ RAM] nhận vt tk=${kn.ten || "?"} ô=${o} zone=${kn.zone ?? "?"} mốc=${mocNhan ? `${mocNhan[1]},${mocNhan[2]}` : "(trống)"}`);
+    vtNhanLuc.set(key, now);
+  }
   if (!tk || o < 0 || o >= D.SLOT_N) return;
   const h = tk.nv[o], dang = TG.dangChoi(kn.ten);
   if (!h || !dang || dang.o !== o || dang.zone !== kn.zone) return;
   const zone = DO.ZONES.get(kn.zone);
   // Không ghi vị trí trong bản đồ sự kiện / phòng riêng làm chỗ đăng nhập lần sau.
-  if (!zone || !["chính", "phụ", "thành"].includes(zone.kind) || zone.chiThuyen || zone.bang) return;
-  if (!Array.isArray(tin.tr) || !tin.tr.length) return;
-  const moc = tin.tr[tin.tr.length - 1];
+  if (!zone || !["chính", "phụ", "thành", "thôn"].includes(zone.kind) || zone.chiThuyen || zone.bang) return;
+  if (!tin || !Array.isArray(tin.tr) || !tin.tr.length) return;
+  const moc = mocNhan;
   if (!Array.isArray(moc) || !Number.isFinite(moc[1]) || !Number.isFinite(moc[2])) return;
   const viTri = { z: kn.zone | 0, x: Math.round(moc[1]), y: Math.round(moc[2]) };
   const cu = h.viTri;
   if (cu && cu.z === viTri.z && cu.x === viTri.x && cu.y === viTri.y) return;
   h.viTri = viTri;
   D.ghiTk(tk);
-  const key = `${tk.ten}:${o}`, now = Date.now(), truoc = vtLogLuc.get(key);
+  const truoc = vtLogLuc.get(key);
   if (!truoc || truoc.z !== viTri.z || now - truoc.at >= 5000) {
     ghiViTriRam("WebSocket → RAM", tk.ten, o, h);
     vtLogLuc.set(key, { z: viTri.z, at: now });
