@@ -127,9 +127,14 @@ function gan(server, xacThuc, tuyChon = {}) {
         chay(kn, tin);
       }
     });
-    const xong = () => { kn.dong = true; if (ds.get(kn.ten) === kn) ds.delete(kn.ten); };
+    const xong = (code = 0, reason = Buffer.alloc(0)) => {
+      if (kn.ketDaGhi) return;
+      kn.ketDaGhi = true;
+      chay(kn, { t: "dong", code: Number(code) || 0, reason: Buffer.isBuffer(reason) ? reason.toString("utf8") : String(reason || "") });
+      kn.dong = true; if (ds.get(kn.ten) === kn) ds.delete(kn.ten);
+    };
     sock.on("close", xong);
-    sock.on("error", xong);
+    sock.on("error", (e) => xong(0, e && e.message));
     chay(kn, { t: "mo" });
   });
 }

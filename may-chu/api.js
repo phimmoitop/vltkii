@@ -169,6 +169,18 @@ const online = new Map(); // tên tài khoản -> lần cuối hỏi máy chủ 
 const trongGame = new Map(); // tên tài khoản -> tên nhân vật đang chơi (nhật ký vào / rời game — nhip)
 const sai = new Map();    // "địa chỉ|tài khoản" -> { n, den } (khóa theo cả tài khoản: 1 người gõ sai không khóa người khác cùng địa chỉ)
 
+function ghiViTriRam(suKien, tenTk, o, h, them = "") {
+  const viTri = h && h.viTri && typeof h.viTri === "object" ? JSON.stringify(h.viTri) : "(trống)";
+  console.log(`[tọa độ RAM] ${suKien} tk=${tenTk || "?"} nv=${h && h.name || "?"} ô=${Number.isInteger(o) ? o : "?"} viTri=${viTri}${them ? ` ${them}` : ""}`);
+}
+
+// Bắt cả lần WebSocket đóng bất thường (reload, rớt mạng, đóng tab). Nhân vật trong RAM
+// là bản lưu API gần nhất, thường được client cập nhật mỗi 30 giây.
+WS.nhan("dong", (kn, tin) => {
+  const tk = D.docTk(kn.ten), o = kn.o | 0, h = tk && o >= 0 && o < D.SLOT_N ? tk.nv[o] : null;
+  ghiViTriRam("mất kết nối", kn.ten, o, h, `code=${tin.code || 0}`);
+});
+
 const diaChi = (req) => req.headers["cf-connecting-ip"] || req.socket.remoteAddress || "?"; // qua Cloudflare Tunnel: địa chỉ thật của người chơi
 function guiJson(res, code, obj, head = {}) {
   res.writeHead(code, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...head });
@@ -401,7 +413,9 @@ function luuNv(res, tk, o, b) {
   for (const id of Object.keys(hero.skills)) if (DO.CHIEU_SACH.has(+id) && !DO.sachPhai(hero.fac, id)) delete hero.skills[id];
   DO.hamChieu(hero); // từng chiêu ≤ cấp nhân vật − cấp yêu cầu + 1 (anh 29/10 — như engine)
   if (JSON.stringify(hero).length > NV_MAX) return loi(res, 413, "Nhân vật quá lớn");
+  const viTriCu = JSON.stringify(cu.viTri || null), viTriMoi = JSON.stringify(hero.viTri || null);
   tk.nv[o] = hero; D.ghiTk(tk);
+  if (viTriCu !== viTriMoi) ghiViTriRam("cập nhật RAM", tk.ten, o, hero);
   guiJson(res, 200, { ok: 1, online: soOnline() });
 }
 
@@ -411,7 +425,12 @@ function nhip(res, tk, b, trang) {
   const giet = Array.isArray(b.k) && b.k.length, chet = Math.min(3, b.chet | 0), uong = Array.isArray(b.uong) && b.uong.length;
   const nhat = Array.isArray(b.nhat) && b.nhat.length, hao = Array.isArray(b.hao) && b.hao.some((v) => v > 0);
   // nhật ký vào / rời game: 1 lần mỗi lượt chơi của nhân vật (tab ẩn nhịp thưa vẫn là 1 lượt)
-  if (h && b.s && trongGame.get(tk.ten) !== h.name) { trongGame.set(tk.ten, h.name); NK.ghi("choi", tk.ten, h.name, `Vào game — ${DO.tenBai(b.s.zone) || `bản đồ ${b.s.zone | 0}`}`); GD.roi(tk.ten); }
+  if (h && b.s && trongGame.get(tk.ten) !== h.name) {
+    trongGame.set(tk.ten, h.name);
+    ghiViTriRam("vào game", tk.ten, o, h, `zoneClient=${b.s.zone | 0}`);
+    NK.ghi("choi", tk.ten, h.name, `Vào game — ${DO.tenBai(b.s.zone) || `bản đồ ${b.s.zone | 0}`}`); GD.roi(tk.ten);
+  }
+  if (h && b.s === null) ghiViTriRam("thoát game", tk.ten, o, h);
   if (b.s === null) BM.khoaTrang(tk.ten, trang); // thoát game (về màn chọn nhân vật / đóng trang): khóa an toàn của trang này khóa lại (rà soát 10/11)
   if (h && b.s === null && trongGame.delete(tk.ten)) { NK.ghi("roi", tk.ten, h.name, "Rời game"); GD.roi(tk.ten); }
   if (b.s === null) try { LD.roiGame(tk.ten, o); } catch (e) { console.error("Lôi đài — rời game:", e.message); } // Lôi Đài: thoát game giữa trận = bị loại (soát 16/11: chỉ khi ô o là nhân vật có vai — thẻ khác cùng tài khoản thoát thì thôi)
