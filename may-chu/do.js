@@ -19,7 +19,7 @@
 //   uyThacDo(h, key, s, n, ten)   cuối mỗi nhịp: đo tốc độ giết (n = số quái vừa nhận; lúc có tăng ích tổ đội không đo) 30 phút gần nhất ở bãi đang treo, nhớ lúc nhịp
 //   thuUyThac(h, b)          công cụ thử (quản trị): ủy thác b.gio giờ ngay
 //   ghiDev(h, nv)            công cụ thử của quản trị: nhận cấp / kinh nghiệm / tiền / túi / đồ mặc từ trình duyệt
-// Món: u = mã món trong nhân vật (h.uN đếm), k = khóa kho đồ (items.json), s = ngũ hành của món (0–4, mọi trang bị — client in "Thuộc
+// Món: u = id tăng toàn máy chủ (may-chu/item-id.js), k = khóa kho đồ (items.json), s = ngũ hành của món (0–4, mọi trang bị — client in "Thuộc
 // tính Ngũ hành"), d = [[khóa thuộc tính client, số], …] theo đúng vị trí dòng, m = cấp quái đã rơi ra món (giá bán). Số liệu:
 // cau-hinh.json (đọc 1 lần lúc bật máy chủ). THEO CLIENT (anh muốn 25/10, kèm ảnh ô xem món game thật):
 //   - cấp đồ 1–10 ("[cấp N]") = cột cấp của bảng đồ client (assets/data/do-goc.json cl); món rơi có cấp đồ theo cấp quái như bảng rơi
@@ -53,6 +53,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const ITEM_ID = require("./item-id");
 
 const ROOT = path.join(__dirname, "..");
 const doc = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, f), "utf8"));
@@ -604,7 +605,7 @@ function nhanRuongCho(h) {
     for (const it of h.rxMon) {
       const m = { ...it }, at = choDau(h.bag, m);
       if (!at) { con.push(it); continue; }
-      [m.x, m.y] = at; m.u = ++h.uN; h.bag.push(m);
+      [m.x, m.y] = at; m.u = ITEM_ID.next(); h.bag.push(m);
       tin.push(`${tenMon(m).trim()} (${(m.d || []).length} dòng) mở từ ${tenRuongXanh()} đã vào túi`);
     }
     if (con.length) { h.rxMon = con; thieu = true; } else delete h.rxMon;
@@ -736,7 +737,7 @@ function chuan(h) {
     const x = o && BY.get(o.k);
     if (!x) return null;
     if (o.het && +o.het <= Date.now()) return null; // hết hạn (ngựa từ mã bài — 30 ngày): biến mất
-    let u = o.u | 0; if (!u || seen.has(u)) u = ++h.uN; seen.add(u); if (u > h.uN) h.uN = u;
+    let u = o.u | 0; if (!u || seen.has(u)) u = ITEM_ID.next(); else ITEM_ID.floor(u); seen.add(u); if (u > h.uN) h.uN = u;
     const at = Number.isInteger(o.x) && Number.isInteger(o.y) ? { x: o.x, y: o.y } : {};
     let kb = voiKhoa(o.kbh); // khóa bảo hiểm (anh 05/11) — giữ cho mọi loại món
     // khóa có hạn (anh 11/11 — KBH_TAM): còn hạn giữ cả giờ mở khóa; hết hạn bỏ khóa + ghi tên để nhịp báo
@@ -867,7 +868,7 @@ function nhat(h, key, ds) {
       bo(); kq.nhan.push({ g: v.g, n: tenMon(v.it), d: 0, sl: lay });
       continue;
     }
-    if (Q === C) v.it.u = ++h.uN; // món người khác vứt ra: mã món mới theo túi người nhặt
+    if (Q === C) ITEM_ID.floor(v.it.u); // nhặt lại món chung vẫn giữ id đã cấp khi tạo
     if (Q === C && v.vut && laTB(v.it) && v.ai !== h.name) NG.di(v.it, "dat", `${v.ai || "?"} vứt ra đất → ${h.name} nhặt`);
     if (!vaoTui(h, v.it)) { kq.day.push(v.g); continue; }
     bo();
@@ -910,7 +911,7 @@ function doiDo(A, B) {
   for (let i = 0; i < 2; i++) {
     const S = ben[i];
     S.h.bag = con[i]; S.h.gold = vang[i];
-    for (const it of xep[1 - i]) { const m = { ...it, u: ++S.h.uN }; delete m.x; delete m.y; if (laTB(m)) NG.di(m, "gd", `Giao dịch: ${ben[1 - i].h.name} → ${S.h.name}`); vaoTui(S.h, m); }
+    for (const it of xep[1 - i]) { const m = { ...it }; delete m.x; delete m.y; if (laTB(m)) NG.di(m, "gd", `Giao dịch: ${ben[1 - i].h.name} → ${S.h.name}`); vaoTui(S.h, m); }
     for (const k of new Set(xep[1 - i].filter(xepChong).map((o) => o.k))) donChong(S.h, k);
   }
   return { a: dua[1].map(tenMon), b: dua[0].map(tenMon) };
@@ -1059,7 +1060,7 @@ function nhanChia(h, tk, key) {
 // dl: dòng (Trợ Thủ lọc theo dòng); db: món đặc biệt (đồ chí, mật đồ …) — Trợ Thủ luôn nhặt; sl: số bình (thuốc). Dùng ở gietQuai và Vượt Ải
 // tổ đội (vuot-ai.js nhanPhong — quái chung chết ở máy chủ)
 function roiMon(h, key, cho, it, i) {
-  it.u = ++h.uN; ngBai(it, BAI_NAY.get(key));
+  it.u = ITEM_ID.next(); ngBai(it, BAI_NAY.get(key));
   const mo = { u: it.u, n: tenMon(it), d: (it.d || []).length, k: it.k, ...(i != null ? { i } : {}), ...(it.d && it.d.length ? { dl: it.d } : {}), ...(laKtc(it) ? { db: 1 } : {}), ...(it.n > 1 ? { sl: it.n } : {}) };
   mo.g = roiDat(key, { ...cho, it });
   return mo;
@@ -1314,7 +1315,7 @@ function uyThacMon(h, Z, it, kq, N, banO) {
   const dong = it.d.length; ngBai(it, Z && Z.id);
   if (!N.on || !nhatDuoc(N, it)) { kq.bo++; return; } // Trợ Thủ không nhặt
   if (banO && dong < h.locDo) { const p = giaBan(it); h.gold += p; kq.ban++; kq.banTien += p; return; }
-  it.u = ++h.uN;
+  it.u = ITEM_ID.next();
   if (!vaoTui(h, it)) { const p = giaBan(it); h.gold += p; kq.day++; kq.banTien += p; return; }
   kq.giuN++; kq.giuD[dong] = (kq.giuD[dong] || 0) + 1; // giuD: số món giữ lại theo số dòng (bảng tổng kết gọn — anh 27/10)
   if (kq.giu.length < 30) kq.giu.push({ n: tenMon(it), d: dong });
@@ -1441,7 +1442,7 @@ function lam(h, b, key, tk) { // tk: tài khoản (api.js /api/do) — việc đ
       do {
         const moi = { ...it, n }; delete moi.u; delete moi.x; delete moi.y;
         const at = choDau(h.bag, moi); if (!at) break;
-        [moi.x, moi.y] = at; moi.u = ++h.uN; h.bag.push(moi); it.n -= n; lan++;
+        [moi.x, moi.y] = at; moi.u = ITEM_ID.next(); h.bag.push(moi); it.n -= n; lan++;
       } while (b.het && it.n > n);
       if (!lan) loi("Hành trang không đủ chỗ");
       return {};
@@ -1557,7 +1558,7 @@ function lam(h, b, key, tk) { // tk: tài khoản (api.js /api/do) — việc đ
       if (laLeBao({ k: x.k })) { // lễ bao: mỗi bao 1 ô (đếm số viên còn)
         const moi = [];
         for (let j = 0; j < n; j++) { const o = { k: x.k, n: 1, con: x.dung.so, ...voiKhoa(kb) }, at = choDau([...h.bag, ...moi], o); if (!at) loi("Hành trang không đủ chỗ"); [o.x, o.y] = at; moi.push(o); }
-        for (const o of moi) { o.u = ++h.uN; h.bag.push(o); }
+        for (const o of moi) { o.u = ITEM_ID.next(); h.bag.push(o); }
       } else themChong(h, x, n, kb);
       h.xu -= gia * n;
       return { msg: `Mua ${n} ${x.n.trim()}: -${gia * n} Xu${kb ? " — " + CAU_KBH.xu : ""}` };
@@ -1593,7 +1594,7 @@ function lam(h, b, key, tk) { // tk: tài khoản (api.js /api/do) — việc đ
       if (!x) loi("Món này không còn trong danh sách mua lại");
       if ((h.gold || 0) < r.gia) loi(`${CAU_KHIA} — Ngân lượng không đủ: mua lại cần ${tien(r.gia)}`);
       if (laThuoc(r.it) && soThuoc(h) + (r.it.n | 0) > MANG()) loi(`Mang tối đa ${MANG()} bình thuốc — bớt thuốc trong túi rồi mua lại`);
-      const moi = { ...r.it, u: h.uN + 1 }; delete moi.x; delete moi.y;
+      const moi = { ...r.it, u: ITEM_ID.next() }; delete moi.x; delete moi.y;
       if (!vaoTui(h, moi)) loi("Hành trang không đủ chỗ");
       h.uN = moi.u; h.gold -= r.gia; L.splice(j, 1);
       if (L.length) h.muaLai = L; else delete h.muaLai;
@@ -1643,7 +1644,7 @@ function lam(h, b, key, tk) { // tk: tài khoản (api.js /api/do) — việc đ
       const heNv = DTA().heCanMua(h, x.k), it = { k: x.k, s: coDinh ?? g.s ?? heNv ?? ri(0, 4), d: [], m: 1 }, at = choDau(h.bag, it);
       if (!at) loi("Hành trang không đủ chỗ");
       NG.gan(it, "mua", "cửa hàng NPC", h.name);
-      [it.x, it.y] = at; it.u = ++h.uN; h.bag.push(it); h.gold -= g.gia;
+      [it.x, it.y] = at; it.u = ITEM_ID.next(); h.bag.push(it); h.gold -= g.gia;
       // câu báo (anh 10/11 — người chơi mua nhầm Đại Uyển Bạch Mã cấp 7 cho nhiệm vụ cấp 8): tên có cấp khi trùng tên, hệ với hàng không ghi hệ (ngựa);
       // đúng món nhiệm vụ Dã Tẩu đang đòi -> xác nhận, món cùng tên khác cấp -> nhắc món cần
       const dung = heNv != null && heNv === it.s, khac = dung ? null : DTA().canMuaKhac(h, x.k);
@@ -1798,7 +1799,7 @@ function chuyen(h, A, B, it, x, y, toiDa = Infinity) {
   if (con > 0) {
     const moi = { k: it.k, n: con, ...khoaCua(it), ...(it.tk ? { tk: 1 } : {}) }, at = coXY ? (choTrong(B, moi, x, y) ? [x, y] : null) : choDau(B, moi);
     if (at && !da && con === it.n) { A.splice(A.indexOf(it), 1); [it.x, it.y] = at; B.push(it); return con; } // cả chồng sang
-    if (at) { moi.u = ++h.uN; [moi.x, moi.y] = at; B.push(moi); da += con; }
+    if (at) { moi.u = ITEM_ID.next(); [moi.x, moi.y] = at; B.push(moi); da += con; }
   }
   if (!da) loi(het);
   it.n -= da; if (it.n <= 0) A.splice(A.indexOf(it), 1);
@@ -1944,7 +1945,7 @@ function themChong(h, x, n, kbh = 0, tk = false, het = 0) { // tk: thuốc Tốn
   }
   let du = n - moi.reduce((t, o) => t + o.n, 0);
   for (const o of chong) { const m = Math.min(du, mx - o.n); if (m > 0 && (kbh | 0) === KBH_TAM) gopHet(o, { kbhHet: het }); o.n += m; du -= m; }
-  for (const it of moi) { it.u = ++h.uN; h.bag.push(it); }
+  for (const it of moi) { it.u = ITEM_ID.next(); h.bag.push(it); }
 }
 
 // ---------- dùng món Kỳ Trân Các (act dung — công dụng theo script client, cong-cu/dung-ky-tran-cac.js ghi nguồn từng món) ----------
@@ -2002,7 +2003,7 @@ function dungVat(h, it, b, key, qt = false) {
     if (!at) loi(het);
     Object.assign(moi, kb);
     if (laTB(moi)) NG.gan(moi, D.loai === "ngua" ? "ngua" : "dung", x.n.trim(), h.name); // nguồn gốc món (Bảo rương đã gắn "ruong" lúc quay món)
-    bot(); [moi.x, moi.y] = at; moi.u = ++h.uN; h.bag.push(moi);
+    bot(); [moi.x, moi.y] = at; moi.u = ITEM_ID.next(); h.bag.push(moi);
   };
   switch (D.loai) {
     case "ngua": { // mã bài (market_pack.lua): 1 con ngựa — hạn D.ngay ngày từ lúc dùng (anh 27/10), hết hạn thì biến mất (chuan)
@@ -2398,7 +2399,7 @@ function taoQua(h, q) {
       if (loai === "do") {
         const s = m.he >= 0 && m.he <= 4 ? m.he | 0 : ri(0, 4), dong = clamp(m.dong | 0, 0, 6), n = clamp(m.n | 0 || 1, 1, 10);
         for (let i = 0; i < n; i++) {
-          const it = NG.gan({ k: x.k, s, d: dong ? gieoDong(x.t, capDo(x.k), s, dong) : [], m: Math.max(1, x.lv | 0), ...kb, u: ++h.uN }, "qua", q.ng || "", h.name); // q.ng: tên phần thưởng (không có: việc đang làm)
+          const it = NG.gan({ k: x.k, s, d: dong ? gieoDong(x.t, capDo(x.k), s, dong) : [], m: Math.max(1, x.lv | 0), ...kb, u: ITEM_ID.next() }, "qua", q.ng || "", h.name); // q.ng: tên phần thưởng (không có: việc đang làm)
           if (!vaoTui(h, it)) loi("Hành trang không đủ chỗ");
           ds.push(`${ten}${it.d.length ? ` (${it.d.length} dòng)` : ""}`);
         }
@@ -2408,7 +2409,7 @@ function taoQua(h, q) {
         ds.push(`${n} ${ten}`);
       } else {
         const n = clamp(m.n | 0 || 1, 1, 20);
-        for (let i = 0; i < n; i++) if (!vaoTui(h, { k: x.k, ...(loai === "leBao" ? { n: 1, con: x.dung.so } : {}), ...(m.het > 0 ? { het: Math.floor(+m.het) } : {}), ...kb, u: ++h.uN })) loi("Hành trang không đủ chỗ");
+        for (let i = 0; i < n; i++) if (!vaoTui(h, { k: x.k, ...(loai === "leBao" ? { n: 1, con: x.dung.so } : {}), ...(m.het > 0 ? { het: Math.floor(+m.het) } : {}), ...kb, u: ITEM_ID.next() })) loi("Hành trang không đủ chỗ");
         ds.push(`${n} ${ten}`);
       }
     }

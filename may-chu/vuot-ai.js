@@ -575,7 +575,7 @@ function dev(h, b) {
       if (P) { const t = Date.now(); if (P.bd > t) P.bd = t; if (P.sinh > t) P.sinh = t; P.doi = true; }
       else if (S.dang && S.dang.bd > Date.now()) S.dang.bd = Date.now();
       r = { tin: ["Vượt Ải (thử): bỏ chờ — ra quái ngay"] }; break;
-    case "hop": { let n = 0; for (let i = 0; i < 5; i++) if (N.vaoTui(h, { k: CF.leBao.k, u: ++h.uN })) n++; r = { tin: [`Vượt Ải (thử): +${n} Hộp lễ vật vượt ải`] }; break; }
+    case "hop": { let n = 0; for (let i = 0; i < 5; i++) if (N.vaoTui(h, { k: CF.leBao.k, u: require("./item-id").next() })) n++; r = { tin: [`Vượt Ải (thử): +${n} Hộp lễ vật vượt ải`] }; break; }
     case "gian": {
       let n = 0;
       for (const cap of [80, 90]) try { N.themChong(h, N.BY.get(`ms:400:${cap}`), 8); n += 8; } catch { /* túi đầy */ }

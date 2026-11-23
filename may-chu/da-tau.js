@@ -630,7 +630,7 @@ function buocTu(h, opt = {}) {
     if (o) {
       const thieu = o.gia - (h.gold || 0);
       if (thieu > 0 && (h.khoa || (h.tienRuong || 0) < thieu)) return ra("dung", { ly: `Thiếu ${N.tien(thieu)} để mua món Dã Tẩu đòi (${N.tien(o.gia)} — ${o.noi})${h.khoa ? " — rương đang khóa" : ""}` });
-      const m = { ...o.it, u: (h.uN = (h.uN | 0) + 1) };
+      const m = { ...o.it, u: require("./item-id").next() };
       if (N.laTB(m)) { delete m.g; delete m.ng; delete m.di; require("./nguon-mon").gan(m, "he", "Dã Tẩu · mua hộ món nhiệm vụ", h.name); } // nguồn gốc món (anh 18/11 tối)
       if (!N.vaoTui(h, m)) return ra("tui");
       if (thieu > 0) { h.tienRuong -= thieu; h.gold = (h.gold || 0) + thieu; tin.push(`Lấy ${N.tien(thieu)} trong rương`); }

@@ -1124,7 +1124,7 @@ function ducKiem(h, tk) {
   }
   try {
     if (N.xepChong(x)) N.themChong(h, x, 1, kbh);
-    else if (!N.vaoTui(h, { k: x.k, n: 1, ...(kbh ? { kbh } : {}), u: ++h.uN })) loi("Hành trang không đủ chỗ");
+    else if (!N.vaoTui(h, { k: x.k, n: 1, ...(kbh ? { kbh } : {}), u: require("./item-id").next() })) loi("Hành trang không đủ chỗ");
   } catch {
     h.bag = bag0; h.uN = uN0;
     return talk(`Quân Nhu quan: Nhạc Vương Kiếm chiếm không gian trong hành trang là ${Y(`${c[0] * c[1]} (${c[0]} X ${c[1]})`)}ô — ngươi hãy xếp gọn hành trang rồi quay lại.`);

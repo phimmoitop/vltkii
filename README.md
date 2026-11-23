@@ -15,18 +15,26 @@ Required environment variables:
 
 ## Data lifecycle
 
-On boot, the server requests `action=load`, receives rows from the `Account`
-tab, and converts each row into the existing in-memory account and character
-shape before loading the game modules. Mutable `du-lieu` reads and writes are
-redirected to an in-memory filesystem. The current Account columns do not yet
-represent inventory, equipment, or all activity state; those tables must be
-implemented before the complete game state can be safely round-tripped.
+On boot, the server requests `action=load`, receives account rows and the
+`TrangBi` table, then converts them into the in-memory game state. The account
+ID is a unique integer beginning at 1000000001 and also serves as the item
+owner `uid`. New accounts receive the next ID. Item IDs start after the largest
+item still present in `TrangBi`; dropped items live only in RAM, so their IDs
+can be reused after a restart if those drops were lost. Every five minutes and
+on shutdown, it snapshots `Account` and persistent `TrangBi` rows to Sheets.
+Mutable `du-lieu` reads and writes are redirected to an in-memory filesystem.
 Fixed game rules and tables remain JSON files in `assets/`.
+
+Create the `TrangBi` tab with headers `id, uid, item, s, option, stt, gia, time` and
+deploy the matching `../apps-script/Code.gs`. It stores equipment options as
+attribute-id/value pairs and syncs items in the bag, equipped slots, vaults,
+and market stalls. Market rows retain their price and listing timestamp. Ground
+drops remain in RAM and are omitted from Sheets. See `../apps-script/README.md`
+for the status values and item details that are not in these eight columns.
 
 Apps Script is a separate Google deployment. Its source is at
 `../apps-script/Code.gs` in the workspace and is intentionally not copied to
-the GitHub server repository. Apps Script reads and writes the `Account` tab;
-deploy its changes separately from Node.
+the GitHub server repository. Deploy its changes separately from Node.
 New registrations are regular accounts; the first account is not promoted to
 admin. Signup works with an empty `Account` sheet when the header row is
 present; set `VL_DANG_KY=0` only to close registration.

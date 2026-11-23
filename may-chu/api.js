@@ -86,6 +86,24 @@ const TD = require("./to-doi"); // tổ đội (anh 28/10 lần 4)
 const GD = require("./giao-dich"); // giao dịch (anh 30/10)
 const CHO = require("./cho-troi"); // chợ trời — bày bán (anh 02/11)
 const DO = require("./do");
+const ITEM_ID = require("./item-id");
+// Nâng mã cũ theo từng nhân vật thành một dải id duy nhất toàn máy chủ.
+// Hai lượt để bộ đếm bắt đầu cao hơn mọi mã đang tồn tại trước khi xử lý trùng.
+const allItemLists = (h) => [h.bag || [], Object.values(h.equip || {}), h.ruong || [], ...(h.ruongPhu || []).map((x) => Array.isArray(x) ? x : []), h.tuiTM || [], h.sap && h.sap.ds || []];
+const existingItems = D.dsTk().flatMap((tk) => (tk.nv || []).filter(Boolean).flatMap((h) => allItemLists(h).flat()));
+ITEM_ID.floor(existingItems.reduce((m, it) => Math.max(m, Number(it && it.u) || 0), 0));
+const usedItemIds = new Set();
+for (const tk of D.dsTk()) {
+  let changed = false;
+  for (const h of (tk.nv || []).filter(Boolean)) for (const list of allItemLists(h)) for (const it of list) {
+    if (!it || !it.k) continue;
+    let id = Number(it.u) || 0;
+    if (id < 1 || usedItemIds.has(id)) { id = ITEM_ID.next(); it.u = id; changed = true; }
+    else ITEM_ID.floor(id);
+    usedItemIds.add(id);
+  }
+  if (changed) D.ghiTk(tk);
+}
 const SK = require("../assets/web/skill/skills.json");
 const XH = require("./xep-hang");
 const DTau = require("./da-tau"); // Dã Tẩu (anh 27/10)

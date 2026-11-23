@@ -13,6 +13,17 @@ const CHUNK_CHARS = 40000;
 const SKILL_PACK = require("./assets/web/skill/skills.json");
 const SKILL_9X = new Set((SKILL_PACK.factions || []).flatMap((f) => Object.entries(f.books || {}).filter(([tier]) => +tier >= 90).flatMap(([, ids]) => ids.map(Number))));
 let store, game, timer, saving = Promise.resolve(), stopping = false;
+const ACCOUNT_ID_MIN = 1000000001;
+let nextAccountId = ACCOUNT_ID_MIN - 1;
+const usedAccountIds = new Set();
+const ITEM_PACK = require("./assets/web/item/items.json");
+const ITEM_TYPE = new Map((ITEM_PACK.items || []).map((item) => [item.k, item.t]));
+const ITEM_LEVEL = new Map((ITEM_PACK.items || []).map((item) => [item.k, item.lv || 1]));
+const ITEM_SIZE = new Map((ITEM_PACK.items || []).map((item) => [item.k, item.c || [1, 1]]));
+const ITEM_SLOT = { 0: "Weapon", 1: "Weapon", 2: "Cloth", 3: "Ring1", 4: "Necklace", 5: "Shoes", 6: "Sash", 7: "Cap", 8: "Bangle", 9: "Pendant", 10: "Horse" };
+const ATTRS = require("./assets/data/attr.json").attrs || [];
+const ATTR_ID = new Map(ATTRS.map((a) => [a.key, a.id]));
+const ATTR_KEY = new Map(ATTRS.map((a) => [String(a.id), a.key]));
 
 function parseSkillCell(value, username, column) {
   if (value == null || value === "") return {};
@@ -96,11 +107,11 @@ function potentialCell(attr, legacyBonus = 0) {
 async function gas(action, payload) {
   if (!GAS_URL || !GAS_TOKEN) throw new Error("Thiếu GOOGLE_APPS_SCRIPT_URL hoặc GOOGLE_APPS_SCRIPT_TOKEN");
   const url = new URL(GAS_URL);
-  if (action === "load") { url.searchParams.set("action", "load"); url.searchParams.set("token", GAS_TOKEN); }
+  if (action !== "save") { url.searchParams.set("action", action); url.searchParams.set("token", GAS_TOKEN); }
   const res = await fetch(url, {
-    method: action === "load" ? "GET" : "POST", redirect: "follow",
+    method: action === "save" ? "POST" : "GET", redirect: "follow",
     headers: action === "save" ? { "content-type": "application/json" } : undefined,
-    body: action === "save" ? JSON.stringify({ action: "save", token: GAS_TOKEN, accounts: payload }) : undefined,
+    body: action === "save" ? JSON.stringify({ action: "save", token: GAS_TOKEN, accounts: payload.accounts, trangBi: payload.trangBi, nextAccountId: payload.nextAccountId }) : undefined,
     signal: AbortSignal.timeout(120000),
   });
   if (!res.ok) throw new Error(`Apps Script HTTP ${res.status}`);
@@ -185,6 +196,114 @@ function accountsToFiles(accounts) {
   return files;
 }
 
+function normalizeAccountIds(accounts, items = [], highWater = 0) {
+  nextAccountId = Math.max(nextAccountId, ACCOUNT_ID_MIN - 1, Number(highWater) || 0);
+  for (const account of accounts || []) {
+    const id = Number(account.id);
+    if (Number.isSafeInteger(id) && id >= ACCOUNT_ID_MIN) nextAccountId = Math.max(nextAccountId, id);
+  }
+  const uidMap = new Map();
+  for (const account of accounts || []) {
+    const username = String(account.username || "").trim().toLowerCase();
+    const oldUid = String(account.id || username);
+    let id = Number(account.id);
+    if (!Number.isSafeInteger(id) || id < ACCOUNT_ID_MIN || usedAccountIds.has(id)) id = ++nextAccountId;
+    else nextAccountId = Math.max(nextAccountId, id);
+    usedAccountIds.add(id);
+    account.id = String(id);
+    uidMap.set(oldUid, account.id);
+    uidMap.set(username, account.id);
+  }
+  for (const item of items || []) {
+    const replacement = uidMap.get(String(item.uid || ""));
+    if (replacement) item.uid = replacement;
+  }
+}
+
+function ensureLiveAccountIds(accounts, D) {
+  const current = new Set();
+  for (const account of accounts) {
+    let id = Number(account.id);
+    if (!Number.isSafeInteger(id) || id < ACCOUNT_ID_MIN || current.has(id)) {
+      id = ++nextAccountId;
+      account.id = String(id);
+      D.ghiTk(account);
+    }
+    current.add(id);
+    usedAccountIds.add(id);
+    nextAccountId = Math.max(nextAccountId, id);
+  }
+}
+
+function itemRowsFromAccounts(accounts) {
+  const rows = [];
+  const add = (account, h, it, stt) => {
+    if (!it || !it.k || !Array.isArray(it.d)) return;
+    rows.push({ id: Number(it.u) || 0, uid: String(account.id), item: String(it.k), s: Number(it.s) + 1,
+      option: `(${it.d.map(([key, value]) => `${ATTR_ID.get(key) ?? key}-${value}`).join(",")})`, stt,
+      gia: stt === 4 ? Number(it.gia) || "" : "", time: stt === 4 ? Number(it.time) || "" : "" });
+  };
+  for (const account of accounts) for (const h of account.nv || []) {
+    if (!h) continue;
+    for (const it of h.bag || []) add(account, h, it, 10);
+    for (const [slot, it] of Object.entries(h.equip || {})) add(account, h, it, slot === "Ring1" ? 1 : slot === "Ring2" ? 2 : 3);
+    for (const it of h.ruong || []) add(account, h, it, 11);
+    for (const box of h.ruongPhu || []) for (const it of (Array.isArray(box) ? box : [])) add(account, h, it, 12);
+    for (const it of h.tuiTM || []) add(account, h, it, 13);
+    for (const offer of (h.sap && h.sap.ds) || []) add(account, h, offer, 4);
+  }
+  return rows;
+}
+
+function restoreTrangBi(accounts, rows) {
+  const byUid = new Map(accounts.map((a) => [String(a.id || a.ten), a]));
+  const seen = new Set();
+  for (const row of rows || []) {
+    const id = Number(row.id), uid = String(row.uid || ""), stt = Number(row.stt), account = byUid.get(uid), h = account && account.nv && account.nv[0];
+    if (!h || !Number.isSafeInteger(id) || id < 1 || seen.has(id)) continue;
+    const k = String(row.item || ""), type = ITEM_TYPE.get(k);
+    if (type == null) continue;
+    const text = String(row.option || "").trim().replace(/^\(|\)$/g, "");
+    const d = text ? text.split(",").map((part) => {
+      const i = part.lastIndexOf("-"); if (i < 1) return null;
+      const code = part.slice(0, i), key = ATTR_KEY.get(code) || code;
+      return [key, Number(part.slice(i + 1))];
+    }).filter((x) => x && Number.isFinite(x[1])) : [];
+    const it = { u: id, k, s: Math.max(0, Math.min(4, Number(row.s) - 1)), d, m: ITEM_LEVEL.get(k) || 1 };
+    seen.add(id);
+    if (stt === 10) h.bag.push(it);
+    else if (stt === 11) (h.ruong ||= []).push(it);
+    else if (stt === 12) { h.ruongMo = Math.max(h.ruongMo | 0, 1); (h.ruongPhu ||= [[]])[0].push(it); }
+    else if (stt === 13) (h.tuiTM ||= []).push(it);
+    else if (stt === 4) {
+      const gia = Number(row.gia) || 0, time = Number(row.time) || 0;
+      if (gia > 0 && time > 0) {
+        const p = h.viTri || {};
+        h.sap ||= { qc: "Sạp hàng", mo: 1, ds: [], bai: Number(p.z) || 0, x: Number(p.x) || 0, y: Number(p.y) || 0, hinh: 1 };
+        h.sap.mo = 1; h.sap.ds ||= [];
+        const offer = { ...it, gia, time };
+        const [w, height] = ITEM_SIZE.get(k) || [1, 1];
+        let at = null;
+        for (let y = 0; y <= 10 - height && !at; y++) for (let x = 0; x <= 6 - w && !at; x++) {
+          const overlap = h.sap.ds.some((old) => {
+            const [ow, oh] = ITEM_SIZE.get(old.k) || [1, 1];
+            return x < old.x + ow && x + w > old.x && y < old.y + oh && y + height > old.y;
+          });
+          if (!overlap) at = [x, y];
+        }
+        if (at) { offer.x = at[0]; offer.y = at[1]; h.sap.ds.push(offer); }
+        else h.bag.push(it);
+      } else h.bag.push(it);
+    }
+    else if (stt === 1 || stt === 2 || stt === 3) {
+      const slot = stt === 1 ? "Ring1" : stt === 2 ? "Ring2" : ITEM_SLOT[type];
+      if (slot && !h.equip[slot]) h.equip[slot] = it;
+      else h.bag.push(it);
+    }
+  }
+  return accounts;
+}
+
 function accountsFromRam(accounts) {
   return accounts.map((account) => {
     const h = Array.isArray(account.nv) ? account.nv[0] : null;
@@ -216,9 +335,11 @@ function accountsFromRam(accounts) {
 async function flush(reason) {
   saving = saving.catch(() => {}).then(async () => {
     const D = require("./may-chu/du-lieu");
-    D.ghiTaiKhoanRaDia(); // serialize account Map to the virtual filesystem
-    const accounts = accountsFromRam(D.dsTk());
-    await gas("save", accounts);
+    const live = D.dsTk();
+    ensureLiveAccountIds(live, D);
+    D.ghiTaiKhoanRaDia();
+    const accounts = accountsFromRam(live), trangBi = itemRowsFromAccounts(live);
+    await gas("save", { accounts, trangBi, nextAccountId });
     console.log(`Đã lưu ${accounts.length} tài khoản lên tab Account · ${reason}`);
   });
   return saving;
@@ -240,6 +361,18 @@ async function start() {
   if (!GAS_URL || !GAS_TOKEN) throw new Error("Cần GOOGLE_APPS_SCRIPT_URL và GOOGLE_APPS_SCRIPT_TOKEN");
   console.log('Đang nạp bảng "Account" từ Google Sheets...');
   const loaded = await gas("load");
+  const trangBi = Array.isArray(loaded.trangBi) ? loaded.trangBi : [];
+  normalizeAccountIds(loaded.accounts || [], trangBi, loaded.nextAccountId);
+  const itemId = require("./may-chu/item-id");
+  itemId.floor(trangBi.filter((x) => Number(x.stt) !== 0).reduce((m, x) => Math.max(m, Number(x.id) || 0), Number(loaded.nextItemId) || 0));
+  const ids = new Set();
+  for (const row of trangBi) {
+    if (Number(row.stt) === 0) continue;
+    let id = Number(row.id) || 0;
+    if (id < 1 || ids.has(id)) { id = itemId.next(); row.id = id; }
+    ids.add(id);
+  }
+  restoreTrangBi(loaded.accounts || [], trangBi);
   const initial = accountsToFiles(loaded.accounts);
   if (!initial || typeof initial !== "object" || Array.isArray(initial)) throw new Error("Snapshot Sheets không hợp lệ");
 

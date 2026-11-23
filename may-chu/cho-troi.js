@@ -149,7 +149,7 @@ function muaHt(tk, h, b) {
   const tinh = Math.floor(+b.gia);
   if (tinh !== o.gia) N.loi(cau(o.gia > tinh ? "tangGia" : "giamGia"));
   if ((h.gold || 0) < o.gia) N.loi(cau("thieuTien"));
-  const m = { ...o.it, u: (h.uN = (h.uN | 0) + 1) };
+  const m = { ...o.it, u: require("./item-id").next() };
   delete m.g; delete m.ng; delete m.di; NG.gan(m, "he", "Chợ trời · sạp Hệ thống", h.name); // nguồn gốc món (anh 18/11 tối)
   if (!N.vaoTui(h, m)) N.loi(cau("heCho"));
   h.gold -= o.gia;
@@ -181,14 +181,14 @@ function lam(tk, h, o, b) {
     const gia = Math.floor(+b.gia), u = +b.u;
     if (!(gia >= 1 && giaMua(gia) <= DO.NOI.TIEN_MAX)) N.loi(`Giá niêm yết từ 1 lượng tới ${N.tien(Math.floor(DO.NOI.TIEN_MAX / (1 + THUE_MUA / 100)))}`);
     const tren = s.ds.find((v) => v.u === u);
-    if (tren) { tren.gia = gia; chiMuc(tk.ten, o, h); D.ghiTk(tk); return { sap: sapGui(h), msg: `${DO.tenMon(tren)}: giá niêm yết ${N.tien(gia)}` }; }
+    if (tren) { tren.gia = gia; tren.time = Number(tren.time) || Date.now(); chiMuc(tk.ten, o, h); D.ghiTk(tk); return { sap: sapGui(h), msg: `${DO.tenMon(tren)}: giá niêm yết ${N.tien(gia)}` }; }
     const it = (h.bag || []).find((v) => v.u === u);
     if (!it) N.loi("Không tìm thấy vật phẩm trong hành trang");
     if (it.het) N.loi(cau("khongBay")); // ngựa có hạn của Kỳ Trân Các — như giao dịch (MSG_TRADE_TASK_ITEM)
     if (it.kbh) N.loi(N.CAU_KBH.dat); // khóa bảo hiểm (anh 05/11): engine để giá bày bán 0 — không bày bán được
     if (it.tk) N.loi(N.CAU_TK); // thuốc Tống Kim (anh 12/11): không mang ra ngoài trận
     if (GD().co(tk.ten) === 2) N.loi("Đang giao dịch — xong giao dịch rồi hãy định giá");
-    const m = { ...it, gia }; delete m.x; delete m.y;
+    const m = { ...it, gia, time: Date.now() }; delete m.x; delete m.y;
     const at = choDau(s.ds, m);
     if (!at) N.loi("Sạp đã đầy (6 × 10 ô) — thu bớt món về hành trang rồi định giá tiếp");
     [m.x, m.y] = at;
@@ -245,7 +245,7 @@ function lam(tk, h, o, b) {
     if ((h.gold || 0) < tra) N.loi(cau("thieuTien"));
     const nhan = nhanBan(it.gia); // người bán nhận niêm yết − thuế phần người bán (anh 18/11)
     if ((hS.gold || 0) + nhan > DO.NOI.TIEN_MAX) N.loi(`Ngân lượng của ${hS.name} đã tới mức tối đa — chưa bán được`);
-    const m = { ...it, u: ++h.uN }; delete m.x; delete m.y; delete m.gia;
+    const m = { ...it }; delete m.x; delete m.y; delete m.gia;
     if (N.laTB(m)) NG.di(m, "cho", `Chợ trời: ${hS.name} → ${h.name} (${N.tien(tra)})`); // nguồn gốc món — đường đi
     if (N.laThuoc(m) && N.soThuoc(h) + (m.n || 0) > N.mang()) N.loi(`Chỉ mang tối đa ${N.mang()} bình thuốc (mọi loại) — không mua thêm được`);
     if (!N.vaoTui(h, m)) N.loi(cau("heCho"));
