@@ -175,16 +175,19 @@ function accountsToFiles(accounts) {
     const potentialBonus = potential.legacyBonus;
     const created = asTime(row.time, Date.now());
     const lastLogin = asTime(row.login, null);
+    const seriesSheet = row.s === "" || row.s == null ? null : asNumber(row.s, NaN);
+    if (seriesSheet != null && (!Number.isInteger(seriesSheet) || seriesSheet < 1 || seriesSheet > 5)) throw new Error(`Account ${username}: cột s phải trống hoặc là số từ 1 đến 5`);
     const facSheet = row.phai === "" || row.phai == null ? null : asNumber(row.phai, NaN);
     if (facSheet != null && (!Number.isInteger(facSheet) || facSheet < 0 || facSheet > 10)) throw new Error(`Account ${username}: cột phai phải trống hoặc là số từ 1 đến 10`);
     const hero = row.character ? {
       v: 1, slot: 0, name: String(row.character), server: "1", sex: row.sex || "",
-      // Google Sheets dùng phai = 1..10; game nội bộ dùng faction id = 0..9.
-      series: row.he === "" ? null : asNumber(row.he, row.he), fac: facSheet == null ? null : (facSheet === 0 ? 0 : facSheet - 1), // 0 cũ = Thiếu Lâm, được nhận để tự chuyển thành 1 ở lần snapshot kế tiếp
+      // Google Sheets dùng s = 1..5; game nội bộ dùng series = 0..4.
+      // Cột phai vẫn dùng faction id 1..10 trên Sheet, 0..9 trong game.
+      series: seriesSheet == null ? null : seriesSheet - 1, fac: facSheet == null ? null : (facSheet === 0 ? 0 : facSheet - 1), // 0 cũ = Thiếu Lâm, được nhận để tự chuyển thành 1 ở lần snapshot kế tiếp
       // Bang hội và chức vụ bang chưa được lưu trong tab Account. Môn phái
       // được khôi phục riêng từ cột phai phía trên.
       lvl: Math.max(1, asNumber(row.lv, 1)),
-      exp: asNumber(row.exp), gold: asNumber(row.gold), xu: asNumber(row.xu),
+      exp: asNumber(row.exp), gold: asNumber(row.gold), tienRuong: asNumber(row.goldz), xu: asNumber(row.xu),
       attr: potential.attr, tiemNangThem: potentialBonus, skills, bag: [], equip: {}, looks: {},
       ...(viTri ? { viTri } : {}),
       created, last: lastLogin || created,
@@ -321,7 +324,7 @@ function accountsFromRam(accounts) {
       password: account.bam,
       character: h && h.name || "",
       sex: h && h.sex || "",
-      he: h && h.series != null ? h.series : "",
+      s: h && h.series != null ? (h.series | 0) + 1 : "",
       lv: h && h.lvl || "",
       phai: h && h.fac != null ? (h.fac | 0) + 1 : "",
       // Hai cột này dành cho bang hội / chức vụ bang; dữ liệu bang hiện nằm
@@ -330,6 +333,7 @@ function accountsFromRam(accounts) {
       rank: "",
       exp: h && h.exp || 0,
       gold: h && h.gold || 0,
+      goldz: h && h.tienRuong || 0,
       xu: h && h.xu || 0,
       tiemnang: potentialCell(h && h.attr),
       map: mapCell(h && h.viTri),

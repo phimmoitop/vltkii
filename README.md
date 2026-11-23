@@ -25,6 +25,11 @@ on shutdown, it snapshots `Account` and persistent `TrangBi` rows to Sheets.
 Mutable `du-lieu` reads and writes are redirected to an in-memory filesystem.
 Fixed game rules and tables remain JSON files in `assets/`.
 
+The `Account` columns `s`, `gold`, and `goldz` store character series (1–5),
+carried silver, and vault silver. The runtime converts `s` to its internal
+series id (0–4), maps `goldz` to `tienRuong`, and calculates total silver as
+`gold + tienRuong` where a total is needed.
+
 Create the `TrangBi` tab with headers `id, uid, item, s, option, stt, gia, time` and
 deploy the matching `../apps-script/Code.gs`. It stores equipment options as
 attribute-id/value pairs and syncs items in the bag, equipped slots, vaults,
