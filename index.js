@@ -12,6 +12,7 @@ const FLUSH_MS = 5 * 60 * 1000;
 const CHUNK_CHARS = 40000;
 const SKILL_PACK = require("./assets/web/skill/skills.json");
 const SKILL_9X = new Set((SKILL_PACK.factions || []).flatMap((f) => Object.entries(f.books || {}).filter(([tier]) => +tier >= 90).flatMap(([, ids]) => ids.map(Number))));
+const LUYEN_NEED = require("./assets/data/luyen-ky-nang.json").ky || {};
 let store, game, timer, saving = Promise.resolve(), stopping = false;
 const ACCOUNT_ID_MIN = 1000000001;
 let nextAccountId = ACCOUNT_ID_MIN - 1;
@@ -20,17 +21,18 @@ const ITEM_PACK = require("./assets/web/item/items.json");
 const ITEM_TYPE = new Map((ITEM_PACK.items || []).map((item) => [item.k, item.t]));
 const ITEM_LEVEL = new Map((ITEM_PACK.items || []).map((item) => [item.k, item.lv || 1]));
 const ITEM_SIZE = new Map((ITEM_PACK.items || []).map((item) => [item.k, item.c || [1, 1]]));
+const ITEM_LOOK = new Map((ITEM_PACK.items || []).filter((item) => item.g && item.id != null).map((item) => [item.k, [item.g, item.id]]));
 const ITEM_SLOT = { 0: "Weapon", 1: "Weapon", 2: "Cloth", 3: "Ring1", 4: "Necklace", 5: "Shoes", 6: "Sash", 7: "Cap", 8: "Bangle", 9: "Pendant", 10: "Horse" };
 const ATTRS = require("./assets/data/attr.json").attrs || [];
 const ATTR_ID = new Map(ATTRS.map((a) => [a.key, a.id]));
 const ATTR_KEY = new Map(ATTRS.map((a) => [String(a.id), a.key]));
 
-function parseSkillCell(value, username, column) {
-  if (value == null || value === "") return {};
+function parseSkillCell(value, username, column, withMastery = false) {
+  if (value == null || value === "") return withMastery ? { skills: {}, mastery: {} } : {};
   let parsed = value;
   if (typeof value === "string") {
     let text = value.trim();
-    if (!text) return {};
+    if (!text) return withMastery ? { skills: {}, mastery: {} } : {};
     // Older Apps Script deployments used getValues(), which serializes a
     // Sheets-coerced date like "8-3" as an ISO timestamp. The spreadsheet is
     // configured for day-month notation, so restore the displayed pair.
@@ -52,13 +54,16 @@ function parseSkillCell(value, username, column) {
       text = text.slice(1, -1).trim();
     }
     if (typeof parsed === "string") {
-      if (!text) return {};
-      parsed = {};
+      if (!text) return withMastery ? { skills: {}, mastery: {} } : {};
+      const skills = {}, mastery = {};
       for (const pair of text.split(",")) {
-        const m = pair.trim().match(/^(\d+)\s*-\s*(\d+)$/);
-        if (!m || +m[2] < 1) throw new Error(`Account ${username}: cột ${column} cần dạng id-cấp, id-cấp`);
-        parsed[m[1]] = +m[2];
+        const m = pair.trim().match(/^(\d+)\s*-\s*(\d+)(?:\s*-\s*(\d+))?$/);
+        if (!m || +m[2] < 1 || (m[3] != null && (!withMastery || +m[3] > 100)))
+          throw new Error(`Account ${username}: cột ${column} cần dạng id-cấp${withMastery ? "-%" : ""}, id-cấp${withMastery ? "-%" : ""}`);
+        skills[m[1]] = +m[2];
+        if (m[3] != null) mastery[m[1]] = +m[3];
       }
+      return withMastery ? { skills, mastery } : skills;
     }
   }
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error(`Account ${username}: cột ${column} cần là danh sách kỹ năng`);
@@ -68,21 +73,25 @@ function parseSkillCell(value, username, column) {
     if (!/^\d+$/.test(id) || !Number.isInteger(lv) || lv < 1) throw new Error(`Account ${username}: cột ${column} chứa id/cấp kỹ năng không hợp lệ`);
     skills[id] = lv;
   }
-  return skills;
+  return withMastery ? { skills, mastery: {} } : skills;
 }
 
-function skillCells(skills) {
+function skillCells(skills, luyen = {}) {
   const normal = [], high = [];
   for (const [id, value] of Object.entries(skills || {})) {
     const level = Number(value), key = Number(id);
     if (!Number.isInteger(key) || key < 0 || !Number.isInteger(level) || level < 1) continue;
-    (SKILL_9X.has(key) ? high : normal).push([key, level]);
+    if (SKILL_9X.has(key)) {
+      const need = Number((LUYEN_NEED[key] || [])[level - 1]) || 0;
+      const pct = need > 0 ? Math.max(0, Math.min(99, Math.floor((Number(luyen[key]) || 0) * 100 / need))) : 0;
+      high.push([key, level, pct]);
+    } else normal.push([key, level]);
   }
-  const encode = (rows) => {
-    const pairs = rows.sort((a, b) => a[0] - b[0]).map(([id, level]) => `${id}-${level}`).join(",");
+  const encode = (rows, mastery = false) => {
+    const pairs = rows.sort((a, b) => a[0] - b[0]).map(([id, level, pct]) => `${id}-${level}${mastery ? `-${pct}` : ""}`).join(",");
     return pairs ? `(${pairs})` : "";
   };
-  return { skill: encode(normal), skill9x: encode(high) };
+  return { skill: encode(normal), skill9x: encode(high, true) };
 }
 
 function parsePotentialCell(value, username) {
@@ -169,7 +178,13 @@ function accountsToFiles(accounts) {
     if (!/^[a-z0-9_]{3,20}$/.test(username)) throw new Error(`Username không hợp lệ trong Account: ${username || "(trống)"}`);
     if (!String(row.password || "").startsWith("scrypt$")) throw new Error(`Account ${username}: cột password phải chứa hash scrypt, không phải mật khẩu thô`);
     if (files[`tai-khoan/${username}.json`]) throw new Error(`Username bị trùng trong Account: ${username}`);
-    const skills = { ...parseSkillCell(row.skill, username, "skill"), ...parseSkillCell(row.skill9x, username, "skill9x") };
+    const skill9x = parseSkillCell(row.skill9x, username, "skill9x", true);
+    const skills = { ...parseSkillCell(row.skill, username, "skill"), ...skill9x.skills };
+    const luyen = {};
+    for (const [id, pct] of Object.entries(skill9x.mastery)) {
+      const need = Number((LUYEN_NEED[id] || [])[skills[id] - 1]) || 0;
+      if (need > 0 && pct > 0) luyen[id] = Math.floor(need * pct / 100);
+    }
     const potential = parsePotentialCell(row.tiemnang, username);
     const viTri = parseMapCell(row.map, username);
     const potentialBonus = potential.legacyBonus;
@@ -188,6 +203,7 @@ function accountsToFiles(accounts) {
       // được khôi phục riêng từ cột phai phía trên.
       lvl: Math.max(1, asNumber(row.lv, 1)),
       exp: asNumber(row.exp), gold: asNumber(row.gold), tienRuong: asNumber(row.goldz), xu: asNumber(row.xu),
+      books: Object.keys(skill9x.skills).map(Number), luyen,
       attr: potential.attr, tiemNangThem: potentialBonus, skills, bag: [], equip: {}, looks: {},
       ...(viTri ? { viTri } : {}),
       created, last: lastLogin || created,
@@ -257,7 +273,7 @@ function itemRowsFromAccounts(accounts) {
     for (const it of h.tuiTM || []) add(account, h, it, 13);
     for (const offer of (h.sap && h.sap.ds) || []) add(account, h, offer, 4);
   }
-  return rows;
+  return rows.sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
 }
 
 function restoreTrangBi(accounts, rows) {
@@ -306,7 +322,14 @@ function restoreTrangBi(accounts, rows) {
     }
     else if (stt === 1 || stt === 2 || stt === 3) {
       const slot = stt === 1 ? "Ring1" : stt === 2 ? "Ring2" : ITEM_SLOT[type];
-      if (slot && !h.equip[slot]) h.equip[slot] = it;
+      if (slot && !h.equip[slot]) {
+        h.equip[slot] = it;
+        if (slot === "Horse") {
+          const appearance = ITEM_LOOK.get(k);
+          if (appearance) { h.looks ||= {}; h.looks[appearance[0]] = appearance[1]; }
+          delete h.rideOff;
+        }
+      }
       else h.bag.push(it);
     }
     restored++;
@@ -317,7 +340,7 @@ function restoreTrangBi(accounts, rows) {
 function accountsFromRam(accounts) {
   return accounts.map((account) => {
     const h = Array.isArray(account.nv) ? account.nv[0] : null;
-    const skill = skillCells(h && h.skills);
+    const skill = skillCells(h && h.skills, h && h.luyen);
     return {
       id: account.id || account.ten,
       username: account.ten,

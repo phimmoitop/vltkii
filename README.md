@@ -30,6 +30,11 @@ carried silver, and vault silver. The runtime converts `s` to its internal
 series id (0–4), maps `goldz` to `tienRuong`, and calculates total silver as
 `gold + tienRuong` where a total is needed.
 
+`skill9x` stores learned book skills as `id-level-masteryPercent` entries; the
+server restores the learned book list and training progress from those values.
+Equipment rows are written by item ID, and an equipped horse restores its
+appearance so the character enters the game riding it.
+
 Create the `TrangBi` tab with headers `id, uid, item, s, option, stt, gia, time` and
 deploy the matching `../apps-script/Code.gs`. It stores equipment options as
 attribute-id/value pairs and syncs items in the bag, equipped slots, vaults,
