@@ -295,7 +295,6 @@ function tangKyNang(res, tk, o, body) {
     if ((body.from | 0) + 1 === current) return guiJson(res, 200, { ok: 1, id, level: current, skPts: h.skPts | 0 }); // lần gửi trước đã tới RAM nhưng phản hồi bị đứt
     return loi(res, 409, "Cấp kỹ năng đã thay đổi; hãy tải lại bảng kỹ năng");
   }
-  if (id !== 1110 && current > 19) return loi(res, 400, "Cấp tu luyện của bạn đã tới đỉnh rồi, không thể nâng cao hơn nữa.");
   const needs = SKILL_NEED[id] || [];
   for (const needId of needs) {
     const level = ((h.skills || {})[needId] | 0), name = (((SK.skills[needId] || {}).n) || ("chiêu " + needId)).trim();

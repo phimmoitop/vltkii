@@ -39,6 +39,15 @@ New registrations are regular accounts; the first account is not promoted to
 admin. Signup works with an empty `Account` sheet when the header row is
 present; set `VL_DANG_KY=0` only to close registration.
 
+## Recent server fixes
+
+- `Account.bang` and `Account.rank` are reserved for guild name and guild role.
+  They remain blank in the current Sheets snapshot because guild state is
+  stored separately; `phai` continues to hold the character's faction.
+- Skill upgrades use each skill's configured maximum. Skills configured with
+  a maximum of 30, including faction passives, can now be upgraded beyond 20
+  when the character level and remaining skill points allow it.
+
 ## Socket protocol
 
 Connect to `wss://<render-host>/api/ws`. Send API requests over that socket:

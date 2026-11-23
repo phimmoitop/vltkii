@@ -181,7 +181,9 @@ function accountsToFiles(accounts) {
       v: 1, slot: 0, name: String(row.character), server: "1", sex: row.sex || "",
       // Google Sheets dùng phai = 1..10; game nội bộ dùng faction id = 0..9.
       series: row.he === "" ? null : asNumber(row.he, row.he), fac: facSheet == null ? null : (facSheet === 0 ? 0 : facSheet - 1), // 0 cũ = Thiếu Lâm, được nhận để tự chuyển thành 1 ở lần snapshot kế tiếp
-      camp: row.bang || "", rank: row.rank || "", lvl: Math.max(1, asNumber(row.lv, 1)),
+      // Bang hội và chức vụ bang chưa được lưu trong tab Account. Môn phái
+      // được khôi phục riêng từ cột phai phía trên.
+      lvl: Math.max(1, asNumber(row.lv, 1)),
       exp: asNumber(row.exp), gold: asNumber(row.gold), xu: asNumber(row.xu),
       attr: potential.attr, tiemNangThem: potentialBonus, skills, bag: [], equip: {}, looks: {},
       ...(viTri ? { viTri } : {}),
@@ -317,8 +319,10 @@ function accountsFromRam(accounts) {
       he: h && h.series != null ? h.series : "",
       lv: h && h.lvl || "",
       phai: h && h.fac != null ? (h.fac | 0) + 1 : "",
-      bang: h && h.camp || "",
-      rank: h && h.rank || "",
+      // Hai cột này dành cho bang hội / chức vụ bang; dữ liệu bang hiện nằm
+      // trong trạng thái riêng của máy chủ, không thuộc snapshot nhân vật.
+      bang: "",
+      rank: "",
       exp: h && h.exp || 0,
       gold: h && h.gold || 0,
       xu: h && h.xu || 0,
