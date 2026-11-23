@@ -260,11 +260,15 @@ function itemRowsFromAccounts(accounts) {
 function restoreTrangBi(accounts, rows) {
   const byUid = new Map(accounts.map((a) => [String(a.id || a.ten), a]));
   const seen = new Set();
+  let restored = 0;
   for (const row of rows || []) {
     const id = Number(row.id), uid = String(row.uid || ""), stt = Number(row.stt), account = byUid.get(uid), h = account && account.nv && account.nv[0];
-    if (!h || !Number.isSafeInteger(id) || id < 1 || seen.has(id)) continue;
+    if (stt === 0) continue;
+    if (!h) throw new Error(`TrangBi ${row.id}: không tìm thấy nhân vật cho uid ${uid || "(trống)"}`);
+    if (!Number.isSafeInteger(id) || id < 1 || seen.has(id)) throw new Error(`TrangBi có id không hợp lệ hoặc bị trùng: ${row.id}`);
     const k = String(row.item || ""), type = ITEM_TYPE.get(k);
-    if (type == null) continue;
+    if (type == null) throw new Error(`TrangBi ${id}: không nhận diện được mã vật phẩm ${k || "(trống)"}`);
+    if (![1, 2, 3, 4, 10, 11, 12, 13].includes(stt)) throw new Error(`TrangBi ${id}: trạng thái ${stt} không hợp lệ`);
     const text = String(row.option || "").trim().replace(/^\(|\)$/g, "");
     const d = text ? text.split(",").map((part) => {
       const i = part.lastIndexOf("-"); if (i < 1) return null;
@@ -302,8 +306,9 @@ function restoreTrangBi(accounts, rows) {
       if (slot && !h.equip[slot]) h.equip[slot] = it;
       else h.bag.push(it);
     }
+    restored++;
   }
-  return accounts;
+  return restored;
 }
 
 function accountsFromRam(accounts) {
@@ -376,9 +381,12 @@ async function start() {
     if (id < 1 || ids.has(id)) { id = itemId.next(); row.id = id; }
     ids.add(id);
   }
-  restoreTrangBi(loaded.accounts || [], trangBi);
   const initial = accountsToFiles(loaded.accounts);
   if (!initial || typeof initial !== "object" || Array.isArray(initial)) throw new Error("Snapshot Sheets không hợp lệ");
+  const accountFiles = Object.entries(initial).map(([name, value]) => [name, JSON.parse(value)]);
+  const restoredItems = restoreTrangBi(accountFiles.map(([, account]) => account), trangBi);
+  for (const [name, account] of accountFiles) initial[name] = JSON.stringify(account);
+  console.log(`Đã khôi phục ${restoredItems} vật phẩm từ tab TrangBi.`);
 
   process.env.VL_DU_LIEU = DATA_ROOT;
   process.env.VL_MANAGED_SHUTDOWN = "1";
